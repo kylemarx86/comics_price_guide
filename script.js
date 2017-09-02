@@ -1,6 +1,6 @@
 $(document).ready(function(){
     retrieveIdentity("Thing");
-    retrieveDebut("Benjamin Grimm (Earth-616)");
+    // retrieveDebut("Benjamin Grimm (Earth-616)");
 });
 
 /**
@@ -13,10 +13,21 @@ $(document).ready(function(){
   * @param {string} mantle - mantle (public name) of character to be looked up (for instance Iron Man or Spider-Man)
   */
 function retrieveIdentity(mantle){
+    var queryOptions = {
+        format: 'json',
+        action: 'query',
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+        callback: '?',
+        titles: encodeURIComponent(mantle)
+    };
+
+    var queryString = parseDataOptions(queryOptions);
+
     $.ajax({
         type: "GET",
-        url: 'https://marvel.wikia.com/api.php?format=json&action=query&prop=revisions&rvprop=content&rvsection=0&callback=?&titles=' + encodeURIComponent(mantle),
-        contentType: "application/json; charset=utf-8",
+        url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             parseWiki(data);
@@ -24,6 +35,20 @@ function retrieveIdentity(mantle){
         error: function (errorMessage) {
         }
     });
+}
+
+/**
+ * parse together data options to create query string for calls to wikia API
+ * @param {object} data - an object holding properties 
+ */
+function parseDataOptions(data){
+    var queryString = "";
+    for(var i = 0; i < Object.keys(data).length; i++){
+        queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
+    }
+    // remove final ampersand from end of query string
+    queryString = queryString.substring(0, queryString.length - 1);
+    return queryString;
 }
 
 function parseWiki(result){
