@@ -1,6 +1,11 @@
 $(document).ready(function(){
     retrieveIdentity("Thing");
-    retrieveDebut("Benjamin Grimm (Earth-616)");
+    // retrieveIdentity("spider-man");
+    retrieveIdentity("Spider-Man");
+    // retrieveIdentity("venom");
+    // retrieveDebut("Benjamin Grimm (Earth-616)");
+    
+    // retrieveDebut('Edward Brock (Earth-616)');
 });
 
 /**
@@ -50,7 +55,8 @@ function retrieveIdentity(mantle){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            parseWikiAndExtractCharacter(data);
+            var identity = parseWikiAndExtractIdentity(data);
+            retrieveDebut(identity);
         },
         error: function (errorMessage) {
         }
@@ -60,21 +66,26 @@ function retrieveIdentity(mantle){
 
 /**
  * extracts the most relavant character from the disambiguation page of the wiki
+ * 
+ * find way to allow redirects in this method. for example try spider-man with lower case s and m
+ * 
  * @param {*} result - json object from wikia API containing disambiguation on characters
  */
-function parseWikiAndExtractCharacter(result){
+function parseWikiAndExtractIdentity(result){
     var key = 0;
     for(i in result.query.pages)
     key = i;
     
     content = result.query.pages[key].revisions[0]['*'];
+    // console.log('content: ', content);
 
     var identity = content.match(/Main Character\s*=\s(.*)\|/g)[0];
     var delimiter = '= [[';
     var startIndex = identity.indexOf(delimiter);
     identity = identity.substring(startIndex + delimiter.length, identity.length - 1);
-
+    
     console.log(identity);
+    return identity;
 }
 
 
@@ -102,7 +113,7 @@ function retrieveDebut(secretIdentity){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            parseWikiAndExtractDebut(data);
+            var debut = parseWikiAndExtractDebut(data);
         },
         error: function (errorMessage) {
         }
@@ -119,11 +130,12 @@ function parseWikiAndExtractDebut(result){
     key = i;
     
     content = result.query.pages[key].revisions[0]['*'];
-
+    // console.log('content: ', content)
     var debut = content.match(/\| First\s*=\s(.*)/g)[0];
     var delimiter = '= ';
     var startIndex = debut.indexOf(delimiter);
     debut = debut.substring(startIndex + delimiter.length);
 
     console.log(debut);
+    return debut;
 }
