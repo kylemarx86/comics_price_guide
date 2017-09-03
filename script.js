@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    // retrieveIdentity("Thing");
+    retrieveIdentity("Thing");
     retrieveDebut("Benjamin Grimm (Earth-616)");
 });
 
@@ -50,7 +50,7 @@ function retrieveIdentity(mantle){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            parseWiki(data);
+            parseWikiAndExtractCharacter(data);
         },
         error: function (errorMessage) {
         }
@@ -62,7 +62,7 @@ function retrieveIdentity(mantle){
  * extracts the most relavant character from the disambiguation page of the wiki
  * @param {*} result - json object from wikia API containing disambiguation on characters
  */
-function parseWiki(result){
+function parseWikiAndExtractCharacter(result){
     var key = 0;
     for(i in result.query.pages)
     key = i;
@@ -102,7 +102,7 @@ function retrieveDebut(secretIdentity){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            parseWiki2(data);
+            parseWikiAndExtractDebut(data);
         },
         error: function (errorMessage) {
         }
@@ -113,7 +113,7 @@ function retrieveDebut(secretIdentity){
  * extracts the debut issue of the searched character from the wiki
  * @param {*} result - json object from wikia API containing character information
  */
-function parseWiki2(result){
+function parseWikiAndExtractDebut(result){
     var key = 0;
     for(i in result.query.pages)
     key = i;
