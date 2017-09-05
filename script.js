@@ -2,7 +2,8 @@ $(document).ready(function(){
     retrieveIdentity("Thing");
     // retrieveIdentity("spider-man");
     retrieveIdentity("Spider-Man");
-    // retrieveIdentity("venom");
+    // retrieveIdentity("Venom");      // retrieving non Earth-616 info back
+    retrieveIdentity("venom");
     // retrieveDebut("Benjamin Grimm (Earth-616)");
     
     // retrieveDebut('Edward Brock (Earth-616)');
@@ -83,6 +84,13 @@ function parseWikiAndExtractIdentity(result){
     var delimiter = '= [[';
     var startIndex = identity.indexOf(delimiter);
     identity = identity.substring(startIndex + delimiter.length, identity.length - 1);
+
+    // check to ensure identity is from main universe
+    var searchStr = " (Earth-616)";
+    if(identity.indexOf(searchStr) < 0){
+        // if not found concatenate searchStr to identity
+        identity += searchStr;
+    }
     
     console.log(identity);
     return identity;
@@ -103,7 +111,8 @@ function retrieveDebut(secretIdentity){
         rvprop: 'content',
         rvsection: '0',
         callback: '?',
-        titles: encodeURIComponent(secretIdentity)
+        titles: encodeURIComponent(secretIdentity),
+        redirects: ''
     };
 
     var queryString = parseDataOptions(queryOptions);
@@ -131,7 +140,7 @@ function parseWikiAndExtractDebut(result){
     
     content = result.query.pages[key].revisions[0]['*'];
     // console.log('content: ', content)
-    var debut = content.match(/\| First\s*=\s(.*)/g)[0];
+    var debut = content.match(/\| First\s*=\s(.*)/g)[0];        //amend to get multiple firsts, as in the case of venom
     var delimiter = '= ';
     var startIndex = debut.indexOf(delimiter);
     debut = debut.substring(startIndex + delimiter.length);
