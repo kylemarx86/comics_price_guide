@@ -2,8 +2,9 @@ $(document).ready(function(){
     retrieveIdentity("Thing");
     // retrieveIdentity("spider-man");
     retrieveIdentity("Spider-Man");
-    // retrieveIdentity("Venom");      // retrieving non Earth-616 info back
-    retrieveIdentity("venom");
+    retrieveIdentity("Venom");
+    // retrieveIdentity("venom");
+    retrieveIdentity("Falcon");
     // retrieveDebut("Benjamin Grimm (Earth-616)");
     
     // retrieveDebut('Edward Brock (Earth-616)');
@@ -28,9 +29,6 @@ function parseDataOptions(data){
     queryString = queryString.substring(0, queryString.length - 1);
     return queryString;
 }
-
-
-
 
 
  /**
@@ -131,6 +129,10 @@ function retrieveDebut(secretIdentity){
 
 /**
  * extracts the debut issue of the searched character from the wiki
+ * comments: comics are weird in that there can be multiple first appearances/debuts for a character
+ * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
+ * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
+ *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
  * @param {*} result - json object from wikia API containing character information
  */
 function parseWikiAndExtractDebut(result){
@@ -140,11 +142,27 @@ function parseWikiAndExtractDebut(result){
     
     content = result.query.pages[key].revisions[0]['*'];
     // console.log('content: ', content)
-    var debut = content.match(/\| First\s*=\s(.*)/g)[0];        //amend to get multiple firsts, as in the case of venom
-    var delimiter = '= ';
-    var startIndex = debut.indexOf(delimiter);
-    debut = debut.substring(startIndex + delimiter.length);
 
-    console.log(debut);
-    return debut;
+    var debutArr = [];
+
+    var debut = content.match(/\| First.*=\s(.*)/g);
+    // format first debut
+    var delimiter = '= ';
+    var startIndex = debut[0].indexOf(delimiter);
+    debutArr.push(debut[0].substring(startIndex + delimiter.length));
+    
+    // check to see if there is more than one debut
+    if(debut.length > 1){
+        // extract further debuts
+        // pattern: {{cid|"text to grab"}}("more text to grab")
+        var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
+        var extraDebuts = null;
+    
+        while( (extraDebuts = pattern.exec(debut[1])) !== null){
+            debutArr.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+        }
+    }
+
+    console.log("debutArr: ", debutArr);
+    return debutArr;
 }
