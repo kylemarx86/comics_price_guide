@@ -1,8 +1,15 @@
 $(document).ready(function(){
-    retrieveIdentity("Thing");
+    gatherInfo("Thing");
+    gatherInfo("Venom");
+    gatherInfo("Spider-Man");
+
+
+    // retrieveIdentity("Thing");
     // retrieveIdentity("spider-man");
-    retrieveIdentity("Spider-Man");
+    // retrieveIdentity("Spider-Man");
+    // retrieveIdentity("Venom");
     // retrieveIdentity("venom");
+    // retrieveIdentity("Falcon");
     // retrieveDebut("Benjamin Grimm (Earth-616)");
     
     // retrieveDebut('Edward Brock (Earth-616)');
@@ -11,6 +18,17 @@ $(document).ready(function(){
 /**
  * Adapted from work by ujjawal found at https://github.com/ujjawal/Parse-Wiki-Infobox
  */
+
+
+/**
+ * @param {string} characterName - name of character
+ */
+function gatherInfo(characterName){
+    var character = {
+        name: characterName
+    }
+    retrieveIdentity(character);
+}
 
 
 
@@ -29,15 +47,12 @@ function parseDataOptions(data){
 }
 
 
-
-
-
  /**
   * retrieveIdentity
   * searches Marvel wiki for mantle and will retrieve information on the character from which their real identity will be extracted
-  * @param {string} mantle - mantle (public name) of character to be looked up (for instance Iron Man or Spider-Man)
+  * @param {object} character - character object containing name of character to be looked up
   */
-function retrieveIdentity(mantle){
+function retrieveIdentity(character){
     var queryOptions = {
         format: 'json',
         action: 'query',
@@ -45,7 +60,7 @@ function retrieveIdentity(mantle){
         rvprop: 'content',
         rvsection: '0',
         callback: '?',
-        titles: encodeURIComponent(mantle)
+        titles: encodeURIComponent(character.name)
     };
 
     var queryString = parseDataOptions(queryOptions);
@@ -55,8 +70,9 @@ function retrieveIdentity(mantle){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            var identity = parseWikiAndExtractIdentity(data);
-            retrieveDebut(identity);
+            character.secretIdentity = parseSecretIdentity(data);
+            // console.log(character.secretIdentity);
+            character.debutArr = retrieveDebutComics(character);
         },
         error: function (errorMessage) {
         }
@@ -71,7 +87,7 @@ function retrieveIdentity(mantle){
  * 
  * @param {*} result - json object from wikia API containing disambiguation on characters
  */
-function parseWikiAndExtractIdentity(result){
+function parseSecretIdentity(result){
     var key = 0;
     for(i in result.query.pages)
     key = i;
@@ -83,8 +99,13 @@ function parseWikiAndExtractIdentity(result){
     var delimiter = '= [[';
     var startIndex = identity.indexOf(delimiter);
     identity = identity.substring(startIndex + delimiter.length, identity.length - 1);
-    
-    console.log(identity);
+
+    // check to ensure identity is from main universe
+    var searchStr = " (Earth-616)";
+    if(identity.indexOf(searchStr) < 0){
+        // if not found concatenate searchStr to identity
+        identity += searchStr;
+    }    
     return identity;
 }
 
@@ -92,10 +113,13 @@ function parseWikiAndExtractIdentity(result){
 
  /**
   * retrieveDebut
-  * searches the Marvel wiki for a character name (based on their true identity) and will retrieve information on the character from which their first appearance/debut comic will be extracted.
-  * @param {string} secretIdentity - real name of character looked up
+  * searches the Marvel wiki for a character name (based on their true identity) and will retrieve
+  *     information on the character from which their first appearance/debut comic will be extracted.
+  * @param {object} character - character object that contains secretIdentity that will be used to
+  *     retrieve debuts
+//   * @returns {array} an array of comics that the character debuts in
   */
-function retrieveDebut(secretIdentity){
+function retrieveDebutComics(character){
     var queryOptions = {
         format: 'json',
         action: 'query',
@@ -103,7 +127,8 @@ function retrieveDebut(secretIdentity){
         rvprop: 'content',
         rvsection: '0',
         callback: '?',
-        titles: encodeURIComponent(secretIdentity)
+        titles: encodeURIComponent(character.secretIdentity),
+        redirects: ''
     };
 
     var queryString = parseDataOptions(queryOptions);
@@ -113,29 +138,53 @@ function retrieveDebut(secretIdentity){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            var debut = parseWikiAndExtractDebut(data);
+            // var debut = parseWikiAndExtractDebut(data);
+            character.debutArr = parseDebutComics(data);
+            console.log('character: ', character);
+            // return debut;
         },
         error: function (errorMessage) {
+            // need to return something in case there is an error
         }
     });
 }
 
 /**
  * extracts the debut issue of the searched character from the wiki
+ * comments: comics are weird in that there can be multiple first appearances/debuts for a character
+ * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
+ * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
+ *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
  * @param {*} result - json object from wikia API containing character information
  */
-function parseWikiAndExtractDebut(result){
+function parseDebutComics(result){
     var key = 0;
     for(i in result.query.pages)
     key = i;
     
     content = result.query.pages[key].revisions[0]['*'];
     // console.log('content: ', content)
-    var debut = content.match(/\| First\s*=\s(.*)/g)[0];
-    var delimiter = '= ';
-    var startIndex = debut.indexOf(delimiter);
-    debut = debut.substring(startIndex + delimiter.length);
 
-    console.log(debut);
-    return debut;
+    var debutArr = [];
+
+    var debut = content.match(/\| First.*=\s(.*)/g);
+    // format first debut
+    var delimiter = '= ';
+    var startIndex = debut[0].indexOf(delimiter);
+    debutArr.push(debut[0].substring(startIndex + delimiter.length));
+    
+    // check to see if there is more than one debut
+    if(debut.length > 1){
+        // extract further debuts
+        // pattern: {{cid|"text to grab"}}("more text to grab")
+        var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
+        var extraDebuts = null;
+    
+        while( (extraDebuts = pattern.exec(debut[1])) !== null){
+            debutArr.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+        }
+    }
+
+    // console.log("debutArr: ", debutArr);
+    return debutArr;
 }
