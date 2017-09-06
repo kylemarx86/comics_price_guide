@@ -1,9 +1,29 @@
+function Character(name) {
+    this.name = name;
+    this.secretIdentity = null;
+    this.debutArr = [];
+}
+Character.prototype.setSecretIdentity = function(secretIdentity){
+    this.secretIdentity = secretIdentity;
+}
+Character.prototype.setDebutArr = function(debutArr){
+    this.debutArr = debutArr;
+}
+Character.prototype.getSecretIdentity = function(){
+    return this.secretIdentity;
+}
+Character.prototype.getDebutArr = function(){
+    return this.debutArr;
+}
+
+
+
 $(document).ready(function(){
-    gatherInfo("Thing");
-    gatherInfo("Venom");
-    gatherInfo("Spider-Man");
+    // gatherInfo("Thing");
+    // gatherInfo("Venom");
+    // gatherInfo("Spider-Man");
 
-
+    applyEventHandlers();
     // retrieveIdentity("Thing");
     // retrieveIdentity("spider-man");
     // retrieveIdentity("Spider-Man");
@@ -15,6 +35,17 @@ $(document).ready(function(){
     // retrieveDebut('Edward Brock (Earth-616)');
 });
 
+function applyEventHandlers(){
+    $('#submit').click(submitForm);
+}
+
+function submitForm(){
+    console.log('submit');
+    // var charName = $("input[name:'charName']").val();
+    var charName = $("#charName").val();
+    gatherInfo(charName);
+}
+
 /**
  * Adapted from work by ujjawal found at https://github.com/ujjawal/Parse-Wiki-Infobox
  */
@@ -24,9 +55,12 @@ $(document).ready(function(){
  * @param {string} characterName - name of character
  */
 function gatherInfo(characterName){
-    var character = {
-        name: characterName
-    }
+    // var character = {
+    //     name: characterName
+    // }
+    // var character;
+    // character = new character(characterName);
+    var character = new Character(characterName);
     retrieveIdentity(character);
 }
 
@@ -60,7 +94,8 @@ function retrieveIdentity(character){
         rvprop: 'content',
         rvsection: '0',
         callback: '?',
-        titles: encodeURIComponent(character.name)
+        titles: encodeURIComponent(character.name),
+        redirects: ''
     };
 
     var queryString = parseDataOptions(queryOptions);
@@ -70,9 +105,11 @@ function retrieveIdentity(character){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            character.secretIdentity = parseSecretIdentity(data);
+            character.setSecretIdentity(parseSecretIdentity(data));
+            // character.secretIdentity = parseSecretIdentity(data);
             // console.log(character.secretIdentity);
-            character.debutArr = retrieveDebutComics(character);
+            // character.debutArr = retrieveDebutComics(character);
+            character.setDebutArr( retrieveDebutComics(character) );
         },
         error: function (errorMessage) {
         }
@@ -92,6 +129,8 @@ function parseSecretIdentity(result){
     for(i in result.query.pages)
     key = i;
     
+    // PAGES = -1 FOR ERROR
+    console.log('result: ', result);
     content = result.query.pages[key].revisions[0]['*'];
     // console.log('content: ', content);
 
@@ -141,6 +180,7 @@ function retrieveDebutComics(character){
             // var debut = parseWikiAndExtractDebut(data);
             character.debutArr = parseDebutComics(data);
             console.log('character: ', character);
+            displayResults(character);
             // return debut;
         },
         error: function (errorMessage) {
@@ -166,7 +206,7 @@ function parseDebutComics(result){
     // console.log('content: ', content)
 
     var debutArr = [];
-
+    
     var debut = content.match(/\| First.*=\s(.*)/g);
     // format first debut
     var delimiter = '= ';
@@ -187,4 +227,18 @@ function parseDebutComics(result){
 
     // console.log("debutArr: ", debutArr);
     return debutArr;
+}
+
+
+function displayResults(character){
+    $('#identity').empty();
+    $('#debut').empty();
+
+    $('#identity').append(character.getSecretIdentity());
+    var debutComics = character.getDebutArr();
+    for(var i = 0; i < debutComics.length; i++){
+        var comic = $('<p>').text(debutComics[i]);
+        $('#debut').append(comic);
+    }
+    
 }
