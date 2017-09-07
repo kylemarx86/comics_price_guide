@@ -9,6 +9,9 @@ Character.prototype.setSecretIdentity = function(secretIdentity){
 Character.prototype.setDebutArr = function(debutArr){
     this.debutArr = debutArr;
 }
+Character.prototype.getName = function(){
+    return this.name;
+}
 Character.prototype.getSecretIdentity = function(){
     return this.secretIdentity;
 }
@@ -16,23 +19,11 @@ Character.prototype.getDebutArr = function(){
     return this.debutArr;
 }
 
-
-
 $(document).ready(function(){
     // gatherInfo("Thing");
     // gatherInfo("Venom");
     // gatherInfo("Spider-Man");
-
     applyEventHandlers();
-    // retrieveIdentity("Thing");
-    // retrieveIdentity("spider-man");
-    // retrieveIdentity("Spider-Man");
-    // retrieveIdentity("Venom");
-    // retrieveIdentity("venom");
-    // retrieveIdentity("Falcon");
-    // retrieveDebut("Benjamin Grimm (Earth-616)");
-    
-    // retrieveDebut('Edward Brock (Earth-616)');
 });
 
 function applyEventHandlers(){
@@ -47,24 +38,12 @@ function submitForm(){
 }
 
 /**
- * Adapted from work by ujjawal found at https://github.com/ujjawal/Parse-Wiki-Infobox
- */
-
-
-/**
  * @param {string} characterName - name of character
  */
 function gatherInfo(characterName){
-    // var character = {
-    //     name: characterName
-    // }
-    // var character;
-    // character = new character(characterName);
     var character = new Character(characterName);
     retrieveIdentity(character);
 }
-
-
 
 /**
  * parse together data options to create query string for calls to wikia API
@@ -94,7 +73,7 @@ function retrieveIdentity(character){
         rvprop: 'content',
         rvsection: '0',
         callback: '?',
-        titles: encodeURIComponent(character.name),
+        titles: encodeURIComponent(character.getName()),
         redirects: ''
     };
 
@@ -105,11 +84,15 @@ function retrieveIdentity(character){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            character.setSecretIdentity(parseSecretIdentity(data));
-            // character.secretIdentity = parseSecretIdentity(data);
-            // console.log(character.secretIdentity);
-            // character.debutArr = retrieveDebutComics(character);
-            character.setDebutArr( retrieveDebutComics(character) );
+            var identityContent = parseSecretIdentity(data);
+            if(identityContent.success){
+                character.setSecretIdentity(identityContent.identity);
+                retrieveDebutComics(character);
+            }else{
+                // display the error message
+                displayError(identityContent.errorMessage);
+            }
+            
         },
         error: function (errorMessage) {
         }
@@ -126,26 +109,38 @@ function retrieveIdentity(character){
  */
 function parseSecretIdentity(result){
     var key = 0;
+    var identityObj = {
+        success: false,
+    };
     for(i in result.query.pages)
     key = i;
+    // console.log('result: ', result);
     
-    // PAGES = -1 FOR ERROR
-    console.log('result: ', result);
-    content = result.query.pages[key].revisions[0]['*'];
-    // console.log('content: ', content);
+    if(key === "-1"){
+        // call was unsuccessful
+        identityObj.success = false;
+        identityObj.errorMessage = 'Could not find page for character';
+        return identityObj;
+    }else{
+        // call was successful
+        identityObj.success = true;
+        content = result.query.pages[key].revisions[0]['*'];
+        // console.log('content: ', content);
 
-    var identity = content.match(/Main Character\s*=\s(.*)\|/g)[0];
-    var delimiter = '= [[';
-    var startIndex = identity.indexOf(delimiter);
-    identity = identity.substring(startIndex + delimiter.length, identity.length - 1);
+        var identity = content.match(/Main Character\s*=\s(.*)\|/g)[0];
+        var delimiter = '= [[';
+        var startIndex = identity.indexOf(delimiter);
+        identity = identity.substring(startIndex + delimiter.length, identity.length - 1);
 
-    // check to ensure identity is from main universe
-    var searchStr = " (Earth-616)";
-    if(identity.indexOf(searchStr) < 0){
-        // if not found concatenate searchStr to identity
-        identity += searchStr;
-    }    
-    return identity;
+        // check to ensure identity is from main universe
+        var searchStr = " (Earth-616)";
+        if(identity.indexOf(searchStr) < 0){
+            // if not found concatenate searchStr to identity
+            identity += searchStr;
+        }
+        identityObj.identity = identity;
+        return identityObj;
+    }
 }
 
 
@@ -166,7 +161,7 @@ function retrieveDebutComics(character){
         rvprop: 'content',
         rvsection: '0',
         callback: '?',
-        titles: encodeURIComponent(character.secretIdentity),
+        titles: encodeURIComponent(character.getSecretIdentity()),
         redirects: ''
     };
 
@@ -177,11 +172,17 @@ function retrieveDebutComics(character){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            // var debut = parseWikiAndExtractDebut(data);
-            character.debutArr = parseDebutComics(data);
-            console.log('character: ', character);
-            displayResults(character);
-            // return debut;
+            //parser should return success or failure upon determining if correct
+                //information was retrieved
+            var debutContent = parseDebutComics(data);
+            if(debutContent.success){
+                // no errors
+                character.setDebutArr(debutContent.debutList);
+                displayResults(character);
+            }else{
+                // display the error message
+                displayError(debutContent.errorMessage);
+            }            
         },
         error: function (errorMessage) {
             // need to return something in case there is an error
@@ -199,41 +200,56 @@ function retrieveDebutComics(character){
  */
 function parseDebutComics(result){
     var key = 0;
+    var debutObj = {
+        success: false,
+    };
+
     for(i in result.query.pages)
     key = i;
     
-    content = result.query.pages[key].revisions[0]['*'];
-    // console.log('content: ', content)
+    if(key === "-1"){
+        // call was unsuccessful
+        debutObj.success = false;
+        debutObj.errorMessage = 'Could not find debut comics';
+        return debutObj;
+    }else{
+        // call was successful
+        debutObj.success = true;
+        debutObj.debutList = [];
+        var content = result.query.pages[key].revisions[0]['*'];
+        // console.log('content: ', content)
+        var debut = content.match(/\| First.*=\s(.*)/g);
 
-    var debutArr = [];
-    
-    var debut = content.match(/\| First.*=\s(.*)/g);
-    // format first debut
-    var delimiter = '= ';
-    var startIndex = debut[0].indexOf(delimiter);
-    debutArr.push(debut[0].substring(startIndex + delimiter.length));
-    
-    // check to see if there is more than one debut
-    if(debut.length > 1){
-        // extract further debuts
-        // pattern: {{cid|"text to grab"}}("more text to grab")
-        var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
-        var extraDebuts = null;
-    
-        while( (extraDebuts = pattern.exec(debut[1])) !== null){
-            debutArr.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+        // format first debut
+        var delimiter = '= ';
+        var startIndex = debut[0].indexOf(delimiter);
+        debutObj.debutList.push(debut[0].substring(startIndex + delimiter.length));
+        
+        // check to see if there is more than one debut
+        if(debut.length > 1){
+            // extract further debuts
+            // pattern: {{cid|"text to grab"}}("more text to grab")
+            var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
+            var extraDebuts = null;
+        
+            while( (extraDebuts = pattern.exec(debut[1])) !== null){
+                debutObj.debutList.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+            }
         }
+    
+        return debutObj;
     }
-
-    // console.log("debutArr: ", debutArr);
-    return debutArr;
+    
 }
 
-
-function displayResults(character){
+function clearResultsAndStatus(){
     $('#identity').empty();
     $('#debut').empty();
+    $('#status').empty();
+}
 
+function displayResults(character){
+    clearResultsAndStatus();
     $('#identity').append(character.getSecretIdentity());
     var debutComics = character.getDebutArr();
     for(var i = 0; i < debutComics.length; i++){
@@ -241,4 +257,9 @@ function displayResults(character){
         $('#debut').append(comic);
     }
     
+}
+
+function displayError(errorMessage){
+    clearResultsAndStatus();
+    $('#status').append(errorMessage);
 }
