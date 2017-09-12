@@ -19,6 +19,8 @@ Character.prototype.getDebutArr = function(){
     return this.debutArr;
 }
 
+
+
 $(document).ready(function(){
     // gatherInfo("Thing");
     // gatherInfo("Venom");
@@ -32,7 +34,6 @@ function applyEventHandlers(){
 
 function submitForm(){
     console.log('submit');
-    // var charName = $("input[name:'charName']").val();
     var charName = $("#charName").val();
     gatherInfo(charName);
 }
@@ -49,7 +50,18 @@ function gatherInfo(characterName){
  * parse together data options to create query string for calls to wikia API
  * @param {object} data - an object holding properties 
  */
-function parseDataOptions(data){
+function parseDataOptions(titlesValue){
+    var data = {
+        format: 'json',
+        action: 'query',
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+        callback: '?',
+        titles: encodeURIComponent(titlesValue),
+        redirects: ''
+    };
+
     var queryString = "";
     for(var i = 0; i < Object.keys(data).length; i++){
         queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
@@ -66,18 +78,7 @@ function parseDataOptions(data){
   * @param {object} character - character object containing name of character to be looked up
   */
 function retrieveIdentity(character){
-    var queryOptions = {
-        format: 'json',
-        action: 'query',
-        prop: 'revisions',
-        rvprop: 'content',
-        rvsection: '0',
-        callback: '?',
-        titles: encodeURIComponent(character.getName()),
-        redirects: ''
-    };
-
-    var queryString = parseDataOptions(queryOptions);
+    var queryString = parseDataOptions(character.getName());
 
     $.ajax({
         type: "GET",
@@ -86,6 +87,7 @@ function retrieveIdentity(character){
         success: function (data, textStatus, jqXHR) {
             var identityContent = parseSecretIdentity(data);
             if(identityContent.success){
+                // no errors
                 character.setSecretIdentity(identityContent.identity);
                 retrieveDebutComics(character);
             }else{
@@ -154,18 +156,7 @@ function parseSecretIdentity(result){
 //   * @returns {array} an array of comics that the character debuts in
   */
 function retrieveDebutComics(character){
-    var queryOptions = {
-        format: 'json',
-        action: 'query',
-        prop: 'revisions',
-        rvprop: 'content',
-        rvsection: '0',
-        callback: '?',
-        titles: encodeURIComponent(character.getSecretIdentity()),
-        redirects: ''
-    };
-
-    var queryString = parseDataOptions(queryOptions);
+    var queryString = parseDataOptions(character.getSecretIdentity());
 
     $.ajax({
         type: "GET",
