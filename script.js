@@ -9,6 +9,9 @@ Character.prototype.setSecretIdentity = function(secretIdentity){
 Character.prototype.setDebutArr = function(debutArr){
     this.debutArr = debutArr;
 }
+Character.prototype.setDebutImg = function(debutImg){
+    this.debutImg = debutImg;
+}
 Character.prototype.getName = function(){
     return this.name;
 }
@@ -18,7 +21,9 @@ Character.prototype.getSecretIdentity = function(){
 Character.prototype.getDebutArr = function(){
     return this.debutArr;
 }
-
+Character.prototype.getDebutImg = function(){
+    return this.debutImg;
+}
 
 
 $(document).ready(function(){
@@ -33,7 +38,7 @@ function applyEventHandlers(){
 }
 
 function submitForm(){
-    console.log('submit');
+    // console.log('submit');
     var charName = $("#charName").val();
     gatherInfo(charName);
 }
@@ -72,6 +77,52 @@ function parseDataOptions(titlesValue){
 }
 
 
+/**
+ * parse together data options to create query string for calls to wikia API
+ * @param {object} data - an object holding properties 
+ */
+function parseDataOptions2(titlesValue){
+    console.log(titlesValue);
+    var urlBase = 'File:';
+    var title = encodeURIComponent(titlesValue);
+
+    var data = {
+        format: 'json',
+        action: 'query',
+        titles: urlBase + title,
+        // prop: 'image',
+        prop: 'imageinfo',
+        iiprop: 'url',
+        callback: '?',
+        // titles: urlBase + encodeURIComponent(titlesValue),
+        
+        redirects: ''
+    };
+
+    console.log('title call: ', data.titles);
+    // 'https://marvel.wikia.com/api.php?action=query&titles=File:Captain%20America%20Vol%201%20117.jpg&prop=imageinfo&iiprop=url&format=json'
+
+    // 'https://marvel.wikia.com/api.php?
+    // action=query
+    // &titles=File:Captain%20America%20Vol%201%20117.jpg
+    // &prop=imageinfo
+    // &iiprop=url
+    // &format=json'
+
+    // 'https://commons.wikimedia.org/w/api.php?action=query&titles=File:Albert%20Einstein%20Head.jpg&prop=imageinfo&iiprop=url'
+    // 'titles=File:Albert%20Einstein%20Head.jpg&prop=imageinfo&iiprop=url'
+
+    var queryString = "";
+    for(var i = 0; i < Object.keys(data).length; i++){
+        queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
+    }
+    // remove final ampersand from end of query string
+    queryString = queryString.substring(0, queryString.length - 1);
+    console.log(queryString);
+    return queryString;
+}
+
+
  /**
   * retrieveIdentity
   * searches Marvel wiki for mantle and will retrieve information on the character from which their real identity will be extracted
@@ -101,6 +152,107 @@ function retrieveIdentity(character){
     });
 }
 
+ /**
+  * retrieveDebut
+  * searches the Marvel wiki for a character name (based on their true identity) and will retrieve
+  *     information on the character from which their first appearance/debut comic will be extracted.
+  * @param {object} character - character object that contains secretIdentity that will be used to
+  *     retrieve debuts
+//   * @returns {array} an array of comics that the character debuts in
+  */
+function retrieveDebutComics(character){
+    var queryString = parseDataOptions(character.getSecretIdentity());
+
+    $.ajax({
+        type: "GET",
+        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            //parser should return success or failure upon determining if correct
+                //information was retrieved
+            var debutContent = parseDebutComics(data);
+            if(debutContent.success){
+                // no errors
+                character.setDebutArr(debutContent.debutList);
+                retrieveDebutComicFileName(character);
+                displayResults(character);
+            }else{
+                // display the error message
+                displayError(debutContent.errorMessage);
+            }            
+        },
+        error: function (errorMessage) {
+            // need to return something in case there is an error
+        }
+    });
+}
+
+/**
+ * 
+ * @param {*} character 
+ */
+function retrieveDebutComicFileName(character){
+    // console.log('debut: ', character.getDebutArr()[0]);
+    // var queryString = parseDataOptions2(character.getDebutArr()[0]);
+    var queryString = parseDataOptions(character.getDebutArr()[0]);
+
+    $.ajax({
+        type: "GET",
+        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            //parser should return success or failure upon determining if correct
+                //information was retrieved
+            var comicContent = parseImageTitle(data);
+            if(comicContent.success){
+                // no errors
+                var imageFileName = comicContent.comic;
+                retrieveDebutComicImageURL(character, imageFileName);
+                // character.setDebutImg(comicContent.comic);   //don't set debut image yet because we need to search to find the file
+                // console.log('debut img: ', character.getDebutImg());
+
+                // displayResults(character);
+            }else{
+                // display the error message
+                displayError(comicContent.errorMessage);
+            }            
+        },
+        error: function (errorMessage) {
+            // need to return something in case there is an error
+        }
+    });
+}
+
+/**
+ * will find the complete path to the image for the first of the debut comics
+ * @param {*} fileName 
+ */
+function retrieveDebutComicImageURL(character, fileName){
+    // console.log('debut: ', character.getDebutArr()[0]);
+    var queryString = parseDataOptions2(fileName);
+
+    $.ajax({
+        type: "GET",
+        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            //parser should return success or failure upon determining if correct
+                //information was retrieved
+            var imageContent = parseImageURL(data);
+            if(imageContent.success){
+                // no errors
+                character.setDebutImg(imageContent);
+                // displayResults(character);
+            }else{
+                // display the error message
+                displayError(imageContent.errorMessage);
+            }            
+        },
+        error: function (errorMessage) {
+            // need to return something in case there is an error
+        }
+    });
+}
 
 /**
  * extracts the most relavant character from the disambiguation page of the wiki
@@ -146,41 +298,6 @@ function parseSecretIdentity(result){
 }
 
 
-
- /**
-  * retrieveDebut
-  * searches the Marvel wiki for a character name (based on their true identity) and will retrieve
-  *     information on the character from which their first appearance/debut comic will be extracted.
-  * @param {object} character - character object that contains secretIdentity that will be used to
-  *     retrieve debuts
-//   * @returns {array} an array of comics that the character debuts in
-  */
-function retrieveDebutComics(character){
-    var queryString = parseDataOptions(character.getSecretIdentity());
-
-    $.ajax({
-        type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
-        dataType: "json",
-        success: function (data, textStatus, jqXHR) {
-            //parser should return success or failure upon determining if correct
-                //information was retrieved
-            var debutContent = parseDebutComics(data);
-            if(debutContent.success){
-                // no errors
-                character.setDebutArr(debutContent.debutList);
-                displayResults(character);
-            }else{
-                // display the error message
-                displayError(debutContent.errorMessage);
-            }            
-        },
-        error: function (errorMessage) {
-            // need to return something in case there is an error
-        }
-    });
-}
-
 /**
  * extracts the debut issue of the searched character from the wiki
  * comments: comics are weird in that there can be multiple first appearances/debuts for a character
@@ -208,7 +325,8 @@ function parseDebutComics(result){
         debutObj.success = true;
         debutObj.debutList = [];
         var content = result.query.pages[key].revisions[0]['*'];
-        // console.log('content: ', content)
+        // console.log('content: ', content);
+
         var debut = content.match(/\| First.*=\s(.*)/g);
 
         // format first debut
@@ -231,6 +349,72 @@ function parseDebutComics(result){
         return debutObj;
     }
     
+}
+
+function parseImageTitle(result){
+    // console.log('result: ', result);
+
+    var key = 0;
+    var comicObj = {
+        success: false,
+    };
+    for(i in result.query.pages)
+    key = i;
+    
+    if(key === "-1"){
+        // call was unsuccessful
+        comicObj.success = false;
+        comicObj.errorMessage = 'Could not find image.';
+        return comicObj;
+    }else{
+        // call was successful
+        comicObj.success = true;
+        content = result.query.pages[key].revisions[0]['*'];
+        // console.log('content: ', content);
+
+
+        var pattern = /\| Image\s*=\s(.*)/g;
+        // var comic = pattern.exec(content)[1];
+        // comicObj.comic = encodeURIComponent(comic);
+
+        comicObj.comic = pattern.exec(content)[1];
+
+        return comicObj;
+    }
+}
+
+function parseImageURL(result){
+    console.log('result: ', result);
+
+    var key = 0;
+    var imageObj = {
+        success: false,
+    };
+    for(i in result.query.pages)
+    key = i;
+    
+    if(key === "-1"){
+        // call was unsuccessful
+        imageObj.success = false;
+        imageObj.errorMessage = 'Could not find image.';
+        return imageObj;
+    }else{
+        // call was successful
+        imageObj.success = true;
+        content = result.query.pages[key].imageinfo[0].url;
+
+        // console.log('content: ', content);
+
+
+        // var pattern = /\| Image\s*=\s(.*)/g;
+        // var comic = pattern.exec(content)[1];
+        // // comic = comic.replace(" ", "_");
+        // comic = encodeURIComponent(comic);
+        // // var urlBase = 'https://vignette.wikia.nocookie.net/marveldatabase/images/';
+        console.log('content: ', content);
+        
+        return imageObj;
+    }
 }
 
 function clearResultsAndStatus(){
