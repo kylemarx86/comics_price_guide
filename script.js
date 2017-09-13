@@ -254,7 +254,8 @@ function parseSecretIdentity(result){
         identityObj.success = true;
         content = result.query.pages[key].revisions[0]['*'];
         
-        console.log('content: ', content);
+        // off for now
+        // console.log('content: ', content);
 
         var identity = content.match(/Main Character\s*=\s(.*)\|/g)[0];
         var delimiter = '= [[';
@@ -282,6 +283,7 @@ function parseSecretIdentity(result){
  * @param {*} result - json object from wikia API containing character information
  */
 function parseDebutComics(result){
+    // console.log('result: ', result);
     var key = 0;
     var debutObj = {
         success: false,
@@ -303,7 +305,7 @@ function parseDebutComics(result){
         // console.log('content: ', content);
 
         var debut = content.match(/\| First.*=\s(.*)/g);
-
+        // console.log(debut);
         // format first debut
         var delimiter = '= ';
         var startIndex = debut[0].indexOf(delimiter);
@@ -347,11 +349,7 @@ function parseImageTitle(result){
         content = result.query.pages[key].revisions[0]['*'];
         // console.log('content: ', content);
 
-
         var pattern = /\| Image\s*=\s(.*)/g;
-        // var comic = pattern.exec(content)[1];
-        // comicObj.comic = encodeURIComponent(comic);
-
         comicObj.comic = pattern.exec(content)[1];
 
         return comicObj;
@@ -378,16 +376,7 @@ function parseImageURL(result){
         imageObj.success = true;
         imageObj.imageSrc = result.query.pages[key].imageinfo[0].url;
 
-        // console.log('content: ', content);
-
-
-        // var pattern = /\| Image\s*=\s(.*)/g;
-        // var comic = pattern.exec(content)[1];
-        // // comic = comic.replace(" ", "_");
-        // comic = encodeURIComponent(comic);
-        // // var urlBase = 'https://vignette.wikia.nocookie.net/marveldatabase/images/';
-        // console.log('content: ', content);
-        
+        // console.log('imageObj.imageSrc: ', imageObj.imageSrc);
         return imageObj;
     }
 }
