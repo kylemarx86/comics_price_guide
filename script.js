@@ -82,35 +82,17 @@ function parseDataOptions(titlesValue){
  * @param {object} data - an object holding properties 
  */
 function parseDataOptions2(titlesValue){
-    console.log(titlesValue);
     var urlBase = 'File:';
     var title = encodeURIComponent(titlesValue);
-
     var data = {
         format: 'json',
         action: 'query',
-        titles: urlBase + title,
-        // prop: 'image',
         prop: 'imageinfo',
         iiprop: 'url',
         callback: '?',
-        // titles: urlBase + encodeURIComponent(titlesValue),
-        
+        titles: urlBase + title,        
         redirects: ''
     };
-
-    console.log('title call: ', data.titles);
-    // 'https://marvel.wikia.com/api.php?action=query&titles=File:Captain%20America%20Vol%201%20117.jpg&prop=imageinfo&iiprop=url&format=json'
-
-    // 'https://marvel.wikia.com/api.php?
-    // action=query
-    // &titles=File:Captain%20America%20Vol%201%20117.jpg
-    // &prop=imageinfo
-    // &iiprop=url
-    // &format=json'
-
-    // 'https://commons.wikimedia.org/w/api.php?action=query&titles=File:Albert%20Einstein%20Head.jpg&prop=imageinfo&iiprop=url'
-    // 'titles=File:Albert%20Einstein%20Head.jpg&prop=imageinfo&iiprop=url'
 
     var queryString = "";
     for(var i = 0; i < Object.keys(data).length; i++){
@@ -118,7 +100,6 @@ function parseDataOptions2(titlesValue){
     }
     // remove final ampersand from end of query string
     queryString = queryString.substring(0, queryString.length - 1);
-    console.log(queryString);
     return queryString;
 }
 
@@ -175,7 +156,7 @@ function retrieveDebutComics(character){
                 // no errors
                 character.setDebutArr(debutContent.debutList);
                 retrieveDebutComicFileName(character);
-                displayResults(character);
+                // displayResults(character);
             }else{
                 // display the error message
                 displayError(debutContent.errorMessage);
@@ -192,8 +173,6 @@ function retrieveDebutComics(character){
  * @param {*} character 
  */
 function retrieveDebutComicFileName(character){
-    // console.log('debut: ', character.getDebutArr()[0]);
-    // var queryString = parseDataOptions2(character.getDebutArr()[0]);
     var queryString = parseDataOptions(character.getDebutArr()[0]);
 
     $.ajax({
@@ -208,10 +187,6 @@ function retrieveDebutComicFileName(character){
                 // no errors
                 var imageFileName = comicContent.comic;
                 retrieveDebutComicImageURL(character, imageFileName);
-                // character.setDebutImg(comicContent.comic);   //don't set debut image yet because we need to search to find the file
-                // console.log('debut img: ', character.getDebutImg());
-
-                // displayResults(character);
             }else{
                 // display the error message
                 displayError(comicContent.errorMessage);
@@ -228,7 +203,6 @@ function retrieveDebutComicFileName(character){
  * @param {*} fileName 
  */
 function retrieveDebutComicImageURL(character, fileName){
-    // console.log('debut: ', character.getDebutArr()[0]);
     var queryString = parseDataOptions2(fileName);
 
     $.ajax({
@@ -241,8 +215,8 @@ function retrieveDebutComicImageURL(character, fileName){
             var imageContent = parseImageURL(data);
             if(imageContent.success){
                 // no errors
-                character.setDebutImg(imageContent);
-                // displayResults(character);
+                character.setDebutImg(imageContent.imageSrc);
+                displayResults(character);
             }else{
                 // display the error message
                 displayError(imageContent.errorMessage);
@@ -262,13 +236,13 @@ function retrieveDebutComicImageURL(character, fileName){
  * @param {*} result - json object from wikia API containing disambiguation on characters
  */
 function parseSecretIdentity(result){
+    // console.log('result: ', result);
     var key = 0;
     var identityObj = {
         success: false,
     };
     for(i in result.query.pages)
     key = i;
-    // console.log('result: ', result);
     
     if(key === "-1"){
         // call was unsuccessful
@@ -279,7 +253,8 @@ function parseSecretIdentity(result){
         // call was successful
         identityObj.success = true;
         content = result.query.pages[key].revisions[0]['*'];
-        // console.log('content: ', content);
+        
+        console.log('content: ', content);
 
         var identity = content.match(/Main Character\s*=\s(.*)\|/g)[0];
         var delimiter = '= [[';
@@ -384,7 +359,7 @@ function parseImageTitle(result){
 }
 
 function parseImageURL(result){
-    console.log('result: ', result);
+    // console.log('result: ', result);
 
     var key = 0;
     var imageObj = {
@@ -401,7 +376,7 @@ function parseImageURL(result){
     }else{
         // call was successful
         imageObj.success = true;
-        content = result.query.pages[key].imageinfo[0].url;
+        imageObj.imageSrc = result.query.pages[key].imageinfo[0].url;
 
         // console.log('content: ', content);
 
@@ -411,7 +386,7 @@ function parseImageURL(result){
         // // comic = comic.replace(" ", "_");
         // comic = encodeURIComponent(comic);
         // // var urlBase = 'https://vignette.wikia.nocookie.net/marveldatabase/images/';
-        console.log('content: ', content);
+        // console.log('content: ', content);
         
         return imageObj;
     }
@@ -427,6 +402,8 @@ function displayResults(character){
     clearResultsAndStatus();
     $('#identity').append(character.getSecretIdentity());
     var debutComics = character.getDebutArr();
+    var img = $('<img>').attr('src', character.getDebutImg());
+    $('#debut').append(img);
     for(var i = 0; i < debutComics.length; i++){
         var comic = $('<p>').text(debutComics[i]);
         $('#debut').append(comic);
