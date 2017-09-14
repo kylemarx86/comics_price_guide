@@ -53,20 +53,25 @@ function gatherInfo(characterName){
 
 /**
  * parse together data options to create query string for calls to wikia API
- * @param {object} data - an object holding properties 
+ * @param {string} titlesValue - title of the page to be searched for
+ * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
  */
-function parseDataOptions(titlesValue){
+function parseDataOptions(titlesValue, extraDataOptions){
+    // base data incorporated in all calls to wikia API
     var data = {
         format: 'json',
         action: 'query',
-        prop: 'revisions',
-        rvprop: 'content',
-        rvsection: '0',
         callback: '?',
         titles: encodeURIComponent(titlesValue),
         redirects: ''
     };
-
+    // add extra key value pairs into data object
+    for(var key in extraDataOptions){
+        if(extraDataOptions.hasOwnProperty(key)){
+            data[key] = extraDataOptions[key];
+        }
+    }
+    // construct query string from data object's key value pairs
     var queryString = "";
     for(var i = 0; i < Object.keys(data).length; i++){
         queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
@@ -75,32 +80,6 @@ function parseDataOptions(titlesValue){
     queryString = queryString.substring(0, queryString.length - 1);
     return queryString;
 }
-
-
-/**
- * parse together data options to create query string for calls to wikia API
- * @param {object} data - an object holding properties 
- */
-function parseDataOptions2(titlesValue){
-    var data = {
-        format: 'json',
-        action: 'query',
-        prop: 'imageinfo',
-        iiprop: 'url',
-        callback: '?',
-        titles: encodeURIComponent(titlesValue),
-        redirects: ''
-    };
-
-    var queryString = "";
-    for(var i = 0; i < Object.keys(data).length; i++){
-        queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
-    }
-    // remove final ampersand from end of query string
-    queryString = queryString.substring(0, queryString.length - 1);
-    return queryString;
-}
-
 
  /**
   * retrieveRealName
@@ -108,7 +87,12 @@ function parseDataOptions2(titlesValue){
   * @param {object} character - character object containing name of character to be looked up
   */
 function retrieveRealName(character){
-    var queryString = parseDataOptions(character.getName());
+    var extraDataOptions = {
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+    };
+    var queryString = parseDataOptions(character.getName(), extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -140,7 +124,12 @@ function retrieveRealName(character){
 //   * @returns {array} an array of comics that the character debuts in
   */
 function retrieveDebutComics(character){
-    var queryString = parseDataOptions(character.getRealName());
+    var extraDataOptions = {
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+    };
+    var queryString = parseDataOptions(character.getRealName(), extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -175,7 +164,12 @@ function retrieveDebutComicFileName(character){
     // remove any # signs for correct formatting when parsed
     var debutFormatted = character.getDebutArr()[0].replace("#", "");
     console.log('debutFormatted: ', debutFormatted);
-    var queryString = parseDataOptions(debutFormatted);
+    var extraDataOptions = {
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+    };
+    var queryString = parseDataOptions(debutFormatted, extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -205,7 +199,11 @@ function retrieveDebutComicFileName(character){
  * @param {*} fileName 
  */
 function retrieveDebutComicImageURL(character, fileName){
-    var queryString = parseDataOptions2("File:"+fileName);
+    var extraDataOptions = {
+        prop: 'imageinfo',
+        iiprop: 'url',
+    };
+    var queryString = parseDataOptions("File:"+fileName, extraDataOptions);
 
     $.ajax({
         type: "GET",
