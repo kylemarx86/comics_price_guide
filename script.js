@@ -56,7 +56,7 @@ function gatherInfo(characterName){
  * @param {string} titlesValue - title of the page to be searched for
  * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
  */
-function parseDataOptions(titlesValue, extraDataOptions){
+function constructQueryString(titlesValue, extraDataOptions){
     // base data incorporated in all calls to wikia API
     var data = {
         format: 'json',
@@ -92,7 +92,7 @@ function retrieveRealName(character){
         rvprop: 'content',
         rvsection: '0',
     };
-    var queryString = parseDataOptions(character.getName(), extraDataOptions);
+    var queryString = constructQueryString(character.getName(), extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -129,7 +129,7 @@ function retrieveDebutComics(character){
         rvprop: 'content',
         rvsection: '0',
     };
-    var queryString = parseDataOptions(character.getRealName(), extraDataOptions);
+    var queryString = constructQueryString(character.getRealName(), extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -169,7 +169,7 @@ function retrieveDebutComicFileName(character){
         rvprop: 'content',
         rvsection: '0',
     };
-    var queryString = parseDataOptions(debutFormatted, extraDataOptions);
+    var queryString = constructQueryString(debutFormatted, extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -203,7 +203,7 @@ function retrieveDebutComicImageURL(character, fileName){
         prop: 'imageinfo',
         iiprop: 'url',
     };
-    var queryString = parseDataOptions("File:"+fileName, extraDataOptions);
+    var queryString = constructQueryString("File:"+fileName, extraDataOptions);
 
     $.ajax({
         type: "GET",
