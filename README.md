@@ -17,6 +17,10 @@ This application is a intended to be a resource for comics produced by Marvel Co
 - **Regex**
 
 ## Known Issues
-- Some characters with multiple debuts do not have all of these debuts appear (See Scorpion) while others do (See Falcon).
+- Characters are searched by the real name of their most famous iteration. For instance Spider-Man will be searching for Peter Parker not Miles Morales. 
+- For the same reason a character whose real identity showed up prior to their character receiving a secret identity will have their earlier debut (not necessarily their most famous debut) returned.
+- Some characters with multiple debuts do not have all of these debuts appear (See Scorpion) while others do (See Falcon). This is due to the formatting
 - Some return values from wikia lead to disambiguation pages that need to be traversed breaking the program (See Chameleon or Betty Brant).
+- Some debut comics are returned without volume numbers which seem to be important to making further calls (See Hobgoblin or Chameleon).
+
 

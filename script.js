@@ -121,6 +121,7 @@ function retrieveIdentity(character){
             if(identityContent.success){
                 // no errors
                 character.setSecretIdentity(identityContent.identity);
+                // temp end call chain
                 retrieveDebutComics(character);
             }else{
                 // display the error message
@@ -155,6 +156,7 @@ function retrieveDebutComics(character){
             if(debutContent.success){
                 // no errors
                 character.setDebutArr(debutContent.debutList);
+                console.log('character: ', character);
                 retrieveDebutComicFileName(character);
                 // displayResults(character);
             }else{
@@ -173,7 +175,10 @@ function retrieveDebutComics(character){
  * @param {*} character 
  */
 function retrieveDebutComicFileName(character){
-    var queryString = parseDataOptions(character.getDebutArr()[0]);
+    // remove any # signs for correct formatting when parsed
+    var debutFormatted = character.getDebutArr()[0].replace("#", "");
+    console.log('debutFormatted: ', debutFormatted);
+    var queryString = parseDataOptions(debutFormatted);
 
     $.ajax({
         type: "GET",
@@ -257,10 +262,9 @@ function parseSecretIdentity(result){
         // off for now
         // console.log('content: ', content);
 
-        var identity = content.match(/Main Character\s*=\s(.*)\|/g)[0];
-        var delimiter = '= [[';
-        var startIndex = identity.indexOf(delimiter);
-        identity = identity.substring(startIndex + delimiter.length, identity.length - 1);
+        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g
+
+        var identity = pattern.exec(content)[1];
 
         // check to ensure identity is from main universe
         var searchStr = " (Earth-616)";
