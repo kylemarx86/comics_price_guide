@@ -1,10 +1,10 @@
 function Character(name) {
     this.name = name;
-    this.secretIdentity = null;
+    this.realName = null;
     this.debutArr = [];
 }
-Character.prototype.setSecretIdentity = function(secretIdentity){
-    this.secretIdentity = secretIdentity;
+Character.prototype.setRealName = function(realName){
+    this.realName = realName;
 }
 Character.prototype.setDebutArr = function(debutArr){
     this.debutArr = debutArr;
@@ -15,8 +15,8 @@ Character.prototype.setDebutImg = function(debutImg){
 Character.prototype.getName = function(){
     return this.name;
 }
-Character.prototype.getSecretIdentity = function(){
-    return this.secretIdentity;
+Character.prototype.getRealName = function(){
+    return this.realName;
 }
 Character.prototype.getDebutArr = function(){
     return this.debutArr;
@@ -117,15 +117,15 @@ function retrieveIdentity(character){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            var identityContent = parseSecretIdentity(data);
-            if(identityContent.success){
+            var realNameObj = parseRealName(data);
+            if(realNameObj.success){
                 // no errors
-                character.setSecretIdentity(identityContent.identity);
+                character.setRealName(realNameObj.realName);
                 // temp end call chain
                 retrieveDebutComics(character);
             }else{
                 // display the error message
-                displayError(identityContent.errorMessage);
+                displayError(realNameObj.errorMessage);
             }
             
         },
@@ -138,12 +138,12 @@ function retrieveIdentity(character){
   * retrieveDebut
   * searches the Marvel wiki for a character name (based on their true identity) and will retrieve
   *     information on the character from which their first appearance/debut comic will be extracted.
-  * @param {object} character - character object that contains secretIdentity that will be used to
+  * @param {object} character - character object that contains realName that will be used to
   *     retrieve debuts
 //   * @returns {array} an array of comics that the character debuts in
   */
 function retrieveDebutComics(character){
-    var queryString = parseDataOptions(character.getSecretIdentity());
+    var queryString = parseDataOptions(character.getRealName());
 
     $.ajax({
         type: "GET",
@@ -234,16 +234,13 @@ function retrieveDebutComicImageURL(character, fileName){
 }
 
 /**
- * extracts the most relavant character from the disambiguation page of the wiki
- * 
- * find way to allow redirects in this method. for example try spider-man with lower case s and m
- * 
+ * extracts the real name of the most relavant character from the disambiguation page of the wiki
  * @param {*} result - json object from wikia API containing disambiguation on characters
  */
-function parseSecretIdentity(result){
+function parseRealName(result){
     // console.log('result: ', result);
     var key = 0;
-    var identityObj = {
+    var realNameObj = {
         success: false,
     };
     for(i in result.query.pages)
@@ -251,12 +248,12 @@ function parseSecretIdentity(result){
     
     if(key === "-1"){
         // call was unsuccessful
-        identityObj.success = false;
-        identityObj.errorMessage = 'Could not find page for character';
-        return identityObj;
+        realNameObj.success = false;
+        realNameObj.errorMessage = 'Could not find page for character';
+        return realNameObj;
     }else{
         // call was successful
-        identityObj.success = true;
+        realNameObj.success = true;
         content = result.query.pages[key].revisions[0]['*'];
         
         // off for now
@@ -264,16 +261,16 @@ function parseSecretIdentity(result){
 
         var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g
 
-        var identity = pattern.exec(content)[1];
+        var realName = pattern.exec(content)[1];
 
-        // check to ensure identity is from main universe
+        // check to ensure real name is from main universe (Earth-616)
         var searchStr = " (Earth-616)";
-        if(identity.indexOf(searchStr) < 0){
-            // if not found concatenate searchStr to identity
-            identity += searchStr;
+        if(realName.indexOf(searchStr) < 0){
+            // if not found concatenate searchStr to realName
+            realName += searchStr;
         }
-        identityObj.identity = identity;
-        return identityObj;
+        realNameObj.realName = realName;
+        return realNameObj;
     }
 }
 
@@ -393,7 +390,7 @@ function clearResultsAndStatus(){
 
 function displayResults(character){
     clearResultsAndStatus();
-    $('#identity').append(character.getSecretIdentity());
+    $('#identity').append(character.getRealName());
     var debutComics = character.getDebutArr();
     var img = $('<img>').attr('src', character.getDebutImg());
     $('#debut').append(img);
