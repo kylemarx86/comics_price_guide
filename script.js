@@ -254,7 +254,10 @@ function parseRealName(result){
         // off for now
         // console.log('content: ', content);
 
-        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g
+        // some times content will not have Main Character on a page with true disambiguation (try Meteor)
+        // first character will be under "| New Header1"
+
+        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]/g
         var realName = pattern.exec(content)[1];
 
         // check to ensure real name is from main universe (Earth-616)
