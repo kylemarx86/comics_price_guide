@@ -82,15 +82,13 @@ function parseDataOptions(titlesValue){
  * @param {object} data - an object holding properties 
  */
 function parseDataOptions2(titlesValue){
-    var urlBase = 'File:';
-    var title = encodeURIComponent(titlesValue);
     var data = {
         format: 'json',
         action: 'query',
         prop: 'imageinfo',
         iiprop: 'url',
         callback: '?',
-        titles: urlBase + title,        
+        titles: encodeURIComponent(titlesValue),
         redirects: ''
     };
 
@@ -207,7 +205,7 @@ function retrieveDebutComicFileName(character){
  * @param {*} fileName 
  */
 function retrieveDebutComicImageURL(character, fileName){
-    var queryString = parseDataOptions2(fileName);
+    var queryString = parseDataOptions2("File:"+fileName);
 
     $.ajax({
         type: "GET",
