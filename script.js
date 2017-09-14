@@ -48,7 +48,7 @@ function submitForm(){
  */
 function gatherInfo(characterName){
     var character = new Character(characterName);
-    retrieveIdentity(character);
+    retrieveRealName(character);
 }
 
 /**
@@ -105,11 +105,11 @@ function parseDataOptions2(titlesValue){
 
 
  /**
-  * retrieveIdentity
+  * retrieveRealName
   * searches Marvel wiki for mantle and will retrieve information on the character from which their real identity will be extracted
   * @param {object} character - character object containing name of character to be looked up
   */
-function retrieveIdentity(character){
+function retrieveRealName(character){
     var queryString = parseDataOptions(character.getName());
 
     $.ajax({
