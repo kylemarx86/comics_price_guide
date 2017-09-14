@@ -1,10 +1,10 @@
 function Character(name) {
-    this.name = name;
-    this.secretIdentity = null;
+    this.name = toTitleCase(name);
+    this.realName = null;
     this.debutArr = [];
 }
-Character.prototype.setSecretIdentity = function(secretIdentity){
-    this.secretIdentity = secretIdentity;
+Character.prototype.setRealName = function(realName){
+    this.realName = realName;
 }
 Character.prototype.setDebutArr = function(debutArr){
     this.debutArr = debutArr;
@@ -15,8 +15,8 @@ Character.prototype.setDebutImg = function(debutImg){
 Character.prototype.getName = function(){
     return this.name;
 }
-Character.prototype.getSecretIdentity = function(){
-    return this.secretIdentity;
+Character.prototype.getRealName = function(){
+    return this.realName;
 }
 Character.prototype.getDebutArr = function(){
     return this.debutArr;
@@ -25,6 +25,13 @@ Character.prototype.getDebutImg = function(){
     return this.debutImg;
 }
 
+/**
+ * special uppercasing function to capitalize beginnings of words and words that start after hyphen
+ * @param {string} str - string to change to special uppercase
+ */
+function toTitleCase(str){
+    return str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
 
 $(document).ready(function(){
     // gatherInfo("Thing");
@@ -48,25 +55,30 @@ function submitForm(){
  */
 function gatherInfo(characterName){
     var character = new Character(characterName);
-    retrieveIdentity(character);
+    retrieveRealName(character);
 }
 
 /**
  * parse together data options to create query string for calls to wikia API
- * @param {object} data - an object holding properties 
+ * @param {string} titlesValue - title of the page to be searched for
+ * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
  */
-function parseDataOptions(titlesValue){
+function constructQueryString(titlesValue, extraDataOptions){
+    // base data incorporated in all calls to wikia API
     var data = {
         format: 'json',
         action: 'query',
-        prop: 'revisions',
-        rvprop: 'content',
-        rvsection: '0',
         callback: '?',
         titles: encodeURIComponent(titlesValue),
         redirects: ''
     };
-
+    // add extra key value pairs into data object
+    for(var key in extraDataOptions){
+        if(extraDataOptions.hasOwnProperty(key)){
+            data[key] = extraDataOptions[key];
+        }
+    }
+    // construct query string from data object's key value pairs
     var queryString = "";
     for(var i = 0; i < Object.keys(data).length; i++){
         queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
@@ -75,56 +87,33 @@ function parseDataOptions(titlesValue){
     queryString = queryString.substring(0, queryString.length - 1);
     return queryString;
 }
-
-
-/**
- * parse together data options to create query string for calls to wikia API
- * @param {object} data - an object holding properties 
- */
-function parseDataOptions2(titlesValue){
-    var urlBase = 'File:';
-    var title = encodeURIComponent(titlesValue);
-    var data = {
-        format: 'json',
-        action: 'query',
-        prop: 'imageinfo',
-        iiprop: 'url',
-        callback: '?',
-        titles: urlBase + title,        
-        redirects: ''
-    };
-
-    var queryString = "";
-    for(var i = 0; i < Object.keys(data).length; i++){
-        queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
-    }
-    // remove final ampersand from end of query string
-    queryString = queryString.substring(0, queryString.length - 1);
-    return queryString;
-}
-
 
  /**
-  * retrieveIdentity
+  * retrieveRealName
   * searches Marvel wiki for mantle and will retrieve information on the character from which their real identity will be extracted
   * @param {object} character - character object containing name of character to be looked up
   */
-function retrieveIdentity(character){
-    var queryString = parseDataOptions(character.getName());
+function retrieveRealName(character){
+    var extraDataOptions = {
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+    };
+    var queryString = constructQueryString(character.getName(), extraDataOptions);
 
     $.ajax({
         type: "GET",
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            var identityContent = parseSecretIdentity(data);
-            if(identityContent.success){
+            var realNameObj = parseRealName(data);
+            if(realNameObj.success){
                 // no errors
-                character.setSecretIdentity(identityContent.identity);
+                character.setRealName(realNameObj.realName);
                 retrieveDebutComics(character);
             }else{
                 // display the error message
-                displayError(identityContent.errorMessage);
+                displayError(realNameObj.errorMessage);
             }
             
         },
@@ -137,12 +126,17 @@ function retrieveIdentity(character){
   * retrieveDebut
   * searches the Marvel wiki for a character name (based on their true identity) and will retrieve
   *     information on the character from which their first appearance/debut comic will be extracted.
-  * @param {object} character - character object that contains secretIdentity that will be used to
+  * @param {object} character - character object that contains realName that will be used to
   *     retrieve debuts
 //   * @returns {array} an array of comics that the character debuts in
   */
 function retrieveDebutComics(character){
-    var queryString = parseDataOptions(character.getSecretIdentity());
+    var extraDataOptions = {
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+    };
+    var queryString = constructQueryString(character.getRealName(), extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -155,6 +149,7 @@ function retrieveDebutComics(character){
             if(debutContent.success){
                 // no errors
                 character.setDebutArr(debutContent.debutList);
+                console.log('character: ', character);
                 retrieveDebutComicFileName(character);
                 // displayResults(character);
             }else{
@@ -173,7 +168,15 @@ function retrieveDebutComics(character){
  * @param {*} character 
  */
 function retrieveDebutComicFileName(character){
-    var queryString = parseDataOptions(character.getDebutArr()[0]);
+    // remove any # signs for correct formatting when parsed
+    var debutFormatted = character.getDebutArr()[0].replace("#", "");
+    console.log('debutFormatted: ', debutFormatted);
+    var extraDataOptions = {
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+    };
+    var queryString = constructQueryString(debutFormatted, extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -203,7 +206,11 @@ function retrieveDebutComicFileName(character){
  * @param {*} fileName 
  */
 function retrieveDebutComicImageURL(character, fileName){
-    var queryString = parseDataOptions2(fileName);
+    var extraDataOptions = {
+        prop: 'imageinfo',
+        iiprop: 'url',
+    };
+    var queryString = constructQueryString("File:"+fileName, extraDataOptions);
 
     $.ajax({
         type: "GET",
@@ -229,16 +236,13 @@ function retrieveDebutComicImageURL(character, fileName){
 }
 
 /**
- * extracts the most relavant character from the disambiguation page of the wiki
- * 
- * find way to allow redirects in this method. for example try spider-man with lower case s and m
- * 
+ * extracts the real name of the most relavant character from the disambiguation page of the wiki
  * @param {*} result - json object from wikia API containing disambiguation on characters
  */
-function parseSecretIdentity(result){
+function parseRealName(result){
     // console.log('result: ', result);
     var key = 0;
-    var identityObj = {
+    var realNameObj = {
         success: false,
     };
     for(i in result.query.pages)
@@ -246,30 +250,31 @@ function parseSecretIdentity(result){
     
     if(key === "-1"){
         // call was unsuccessful
-        identityObj.success = false;
-        identityObj.errorMessage = 'Could not find page for character';
-        return identityObj;
+        realNameObj.success = false;
+        realNameObj.errorMessage = 'Could not find page for character';
+        return realNameObj;
     }else{
         // call was successful
-        identityObj.success = true;
+        realNameObj.success = true;
         content = result.query.pages[key].revisions[0]['*'];
         
         // off for now
         // console.log('content: ', content);
 
-        var identity = content.match(/Main Character\s*=\s(.*)\|/g)[0];
-        var delimiter = '= [[';
-        var startIndex = identity.indexOf(delimiter);
-        identity = identity.substring(startIndex + delimiter.length, identity.length - 1);
+        // some times content will not have Main Character on a page with true disambiguation (try Meteor)
+        // first character will be under "| New Header1"
 
-        // check to ensure identity is from main universe
+        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]/g
+        var realName = pattern.exec(content)[1];
+
+        // check to ensure real name is from main universe (Earth-616)
         var searchStr = " (Earth-616)";
-        if(identity.indexOf(searchStr) < 0){
-            // if not found concatenate searchStr to identity
-            identity += searchStr;
+        if(realName.indexOf(searchStr) < 0){
+            // if not found concatenate searchStr to realName
+            realName += searchStr;
         }
-        identityObj.identity = identity;
-        return identityObj;
+        realNameObj.realName = realName;
+        return realNameObj;
     }
 }
 
@@ -389,7 +394,7 @@ function clearResultsAndStatus(){
 
 function displayResults(character){
     clearResultsAndStatus();
-    $('#identity').append(character.getSecretIdentity());
+    $('#identity').append(character.getRealName());
     var debutComics = character.getDebutArr();
     var img = $('<img>').attr('src', character.getDebutImg());
     $('#debut').append(img);
