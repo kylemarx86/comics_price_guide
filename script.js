@@ -121,7 +121,6 @@ function retrieveIdentity(character){
             if(realNameObj.success){
                 // no errors
                 character.setRealName(realNameObj.realName);
-                // temp end call chain
                 retrieveDebutComics(character);
             }else{
                 // display the error message
@@ -260,7 +259,6 @@ function parseRealName(result){
         // console.log('content: ', content);
 
         var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g
-
         var realName = pattern.exec(content)[1];
 
         // check to ensure real name is from main universe (Earth-616)
