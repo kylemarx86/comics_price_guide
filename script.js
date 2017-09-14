@@ -1,5 +1,5 @@
 function Character(name) {
-    this.name = name;
+    this.name = toTitleCase(name);
     this.realName = null;
     this.debutArr = [];
 }
@@ -25,6 +25,13 @@ Character.prototype.getDebutImg = function(){
     return this.debutImg;
 }
 
+/**
+ * special uppercasing function to capitalize beginnings of words and words that start after hyphen
+ * @param {string} str - string to change to special uppercase
+ */
+function toTitleCase(str){
+    return str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
 
 $(document).ready(function(){
     // gatherInfo("Thing");
