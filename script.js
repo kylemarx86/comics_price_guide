@@ -108,10 +108,12 @@ function retrieveRealName(character){
         success: function (data, textStatus, jqXHR) {
             var realNameObj = parseRealName(data);
             if(realNameObj.success){
-                // no errors
+                // no errors - single character retrieved
                 character.setRealName(realNameObj.realName);
                 retrieveDebutComics(character);
             }else{
+                // an error occured
+
                 // display the error message
                 displayError(realNameObj.errorMessage);
             }
@@ -255,26 +257,73 @@ function parseRealName(result){
         return realNameObj;
     }else{
         // call was successful
-        realNameObj.success = true;
         content = result.query.pages[key].revisions[0]['*'];
         
         // off for now
         // console.log('content: ', content);
 
-        // some times content will not have Main Character on a page with true disambiguation (try Meteor)
-        // first character will be under "| New Header1"
+        // when searching for most characters there will be a disambiguation page the character in alternate realities (it's a comics thing)
+        // we wish to find the character in the most relevant reality (it's a comics thing)
+        // for most pages this will be found under the section Main Character (see )
+        // others will list this under RealName (see R'tee), (I don't know how often this case comes up but I am accounting for it)
+        // if these tests fail, but there is still info to work with, it will be a true disambiguation page with many different characters (see Meteor)
 
-        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]/g
-        var realName = pattern.exec(content)[1];
+        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]/g;
+        var matchResults = pattern.exec(content);
+        if(matchResults !== null){
+            // page is not a disambiguation page
+            // character found
+            realNameObj.success = true;
+            
+            var realName = matchResults[1];
+            // check to ensure real name is from main universe (Earth-616)
+            var searchStr = " (Earth-616)";
+            if(realName.indexOf(searchStr) < 0){
+                // if not found concatenate searchStr to realName
+                realName += searchStr;
+            }
+            realNameObj.realName = realName;
+            return realNameObj;
+        }else{
+            // patter for some character's real name
+            var pattern = /RealName\s*=\s(.*)/g;
+            var matchResults = pattern.exec(content);
 
-        // check to ensure real name is from main universe (Earth-616)
-        var searchStr = " (Earth-616)";
-        if(realName.indexOf(searchStr) < 0){
-            // if not found concatenate searchStr to realName
-            realName += searchStr;
+            if(matchResults !== null){
+                // page is not a disambiguation page but is of second pattern
+                // character found
+                realNameObj.success = true;
+
+                var realName = matchResults[1];
+                // check to ensure real name is from main universe (Earth-616)
+                var searchStr = " (Earth-616)";
+                if(realName.indexOf(searchStr) < 0){
+                    // if not found concatenate searchStr to realName
+                    realName += searchStr;
+                }
+                realNameObj.realName = realName;
+                return realNameObj;
+            }else{
+                // page is a true disambiguation page
+                realNameObj.success = false;
+                realNameObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
+                // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
+                var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;
+                console.log(content);
+
+                // gather all names in disambiguation page
+                var characterArr = null;
+                realNameObj.charList = [];
+                while( (characterArr = pattern.exec(content)) !== null){
+                    realNameObj.charList.push(characterArr[1]);
+                }
+
+                console.log('charList: ', realNameObj.charList);
+                
+                return realNameObj;
+            }
+            
         }
-        realNameObj.realName = realName;
-        return realNameObj;
     }
 }
 
