@@ -305,6 +305,7 @@ function parseRealName(result){
                 return realNameObj;
             }else{
                 // page is a true disambiguation page
+                // New Header1 denotes a character
                 realNameObj.success = false;
                 realNameObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
                 // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
@@ -329,7 +330,8 @@ function parseRealName(result){
 
 
 /**
- * extracts the debut issue of the searched character from the wiki
+ * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
+ * 
  * comments: comics are weird in that there can be multiple first appearances/debuts for a character
  * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
  * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
@@ -353,35 +355,59 @@ function parseDebutComics(result){
         return debutObj;
     }else{
         // call was successful
-        debutObj.success = true;
         debutObj.debutList = [];
         var content = result.query.pages[key].revisions[0]['*'];
         // console.log('content: ', content);
 
         var debut = content.match(/\| First.*=\s(.*)/g);
-        // console.log(debut);
-        // format first debut
-        var delimiter = '= ';
-        var startIndex = debut[0].indexOf(delimiter);
-        debutObj.debutList.push(debut[0].substring(startIndex + delimiter.length));
-        
-        // check to see if there is more than one debut
-        if(debut.length > 1){
-            // extract further debuts
-            // pattern: {{cid|"text to grab"}}("more text to grab")
-            var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
-            var extraDebuts = null;
-        
-            while( (extraDebuts = pattern.exec(debut[1])) !== null){
-                debutObj.debutList.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+        if(debut !== null){
+            debutObj.success = true;
+            // console.log(debut);
+            // format first debut
+            var delimiter = '= ';
+            var startIndex = debut[0].indexOf(delimiter);
+            debutObj.debutList.push(debut[0].substring(startIndex + delimiter.length));
+            
+            // check to see if there is more than one debut
+            if(debut.length > 1){
+                // extract further debuts
+                // pattern: {{cid|"text to grab"}}("more text to grab")
+                var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
+                var extraDebuts = null;
+            
+                while( (extraDebuts = pattern.exec(debut[1])) !== null){
+                    debutObj.debutList.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+                }
             }
+            return debutObj;
+        }else{
+            // this may not go here
+            // // page is a disambiguation page
+            // // New Header2 denotes a comic or comic volume
+            // debutObj.success = false;
+            // debutObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
+            // // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
+            // var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;
+            // console.log(content);
+
+            // // gather all names in disambiguation page
+            // var comicArr = null;
+            // debutObj.charList = [];
+            // while( (comicArr = pattern.exec(content)) !== null){
+            //     debutObj.comicArr.push(comicArr[1]);
+            // }
+
+            // console.log('comicList: ', debutObj.comicArr);
+            
+            // return debutObj;
         }
-    
-        return debutObj;
     }
-    
 }
 
+/**
+ * 
+ * @param {object} result - json object
+ */
 function parseImageTitle(result){
     // console.log('result: ', result);
 
@@ -404,9 +430,34 @@ function parseImageTitle(result){
         // console.log('content: ', content);
 
         var pattern = /\| Image\s*=\s(.*)/g;
-        comicObj.comic = pattern.exec(content)[1];
+        // comicObj.comic = pattern.exec(content)[1];
+        var imageTitle = content.match(pattern);
 
-        return comicObj;
+        if(imageTitle !== null){
+            comicObj.success = true;
+            comicObj.imageTitle = imageTitle;
+            return comicObj;
+        }else{
+            // page is a disambiguation page
+            // New Header2 denotes a comic or comic volume
+            comicObj.success = false;
+            comicObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
+            // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
+            var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;
+            console.log(content);
+
+            // gather all names in disambiguation page
+            var comicArr = null;
+            // comicObj.charList = [];
+            comicObj.comicArr = [];
+            while( (comicArr = pattern.exec(content)) !== null){
+                comicObj.comicArr.push(comicArr[1]);
+            }
+
+            console.log('comicList: ', comicObj.comicArr);
+            
+            return comicObj;
+        }
     }
 }
 
