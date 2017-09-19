@@ -242,7 +242,7 @@ function retrieveDebutComicImageURL(character, fileName){
 /**
  * will find the complete path to the image for the first of the debut comics
  * @param {*} image - location on DOM that will have its source attribute replaced
- * @param {string} fileName - 
+ * @param {string} fileName - name of file to search the wiki for
  */
 function retrieveImageURL(image, fileName){
     var extraDataOptions = {
@@ -261,20 +261,12 @@ function retrieveImageURL(image, fileName){
             //     //information was retrieved
             var imageContent = parseImageURL(data);
             if(imageContent.success){
-                // no errors
-                
-                // // display image result
-                // displayImage(imageContent.imageSrc);
-
-                // return the object with success and parsed imageURL
-                console.log('image')
-                return imageContent;
-
-                // displayResults(character);
+                // no errors - update image source
+                image.attr('src', imageContent.imageSrc);
             }else{
-                // display the error message
-                return
-                displayError(imageContent.errorMessage);
+                // display the error message and updated image source
+                image.attr('src', '/resources/image_not_found.png');
+                // displayError(imageContent.errorMessage);
             }
         },
         error: function (errorMessage) {
@@ -499,14 +491,12 @@ function parseImageTitle(result){
 
             // gather all names in disambiguation page
             comicObj.pages = parseDisambiguation(pattern, content);
-            console.log('pages: ', comicObj.pages)
-            // var pages = parseDisambiguation(pattern, content);
+            // console.log('pages: ', comicObj.pages)
 
-            // content = [];
-            // for(var i = 0; i < comicObj.comicArr.length; i++){
             for(var i = 0; i < comicObj.pages.length; i++){
                 // for each page represented in disambiguation page, display image and title of page
                 var $div = $('<div>').addClass('comic');
+                var $img = $('<img>');
                 // var $img = $('<img>').attr('src', retrieveImageURL(comicObj.pages[i].img));
                 retrieveImageURL($img, comicObj.pages[i].img)
                 var $title = $('<p>').text(comicObj.pages[i].page);
