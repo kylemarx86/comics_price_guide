@@ -193,8 +193,8 @@ function retrieveDebutComicFileName(character){
                 var imageFileName = comicContent.comic;
                 retrieveDebutComicImageURL(character, imageFileName);
             }else{
-                // display the error message
-                displayError(comicContent.errorMessage);
+                // // display the error message
+                // displayError(comicContent.errorMessage);
             }            
         },
         error: function (errorMessage) {
@@ -241,9 +241,10 @@ function retrieveDebutComicImageURL(character, fileName){
 
 /**
  * will find the complete path to the image for the first of the debut comics
- * @param {*} fileName - 
+ * @param {*} image - location on DOM that will have its source attribute replaced
+ * @param {string} fileName - 
  */
-function retrieveImageURL(fileName){
+function retrieveImageURL(image, fileName){
     var extraDataOptions = {
         prop: 'imageinfo',
         iiprop: 'url',
@@ -262,17 +263,25 @@ function retrieveImageURL(fileName){
             if(imageContent.success){
                 // no errors
                 
-                // display image result
-                displayImage(imageContent.imageSrc);
+                // // display image result
+                // displayImage(imageContent.imageSrc);
+
+                // return the object with success and parsed imageURL
+                console.log('image')
+                return imageContent;
 
                 // displayResults(character);
             }else{
                 // display the error message
+                return
                 displayError(imageContent.errorMessage);
             }
         },
         error: function (errorMessage) {
             // need to return something in case there is an error
+            imageContent = {
+                success: false
+            }
         }
     });
 }
@@ -298,7 +307,7 @@ function parseRealName(result){
     }else{
         // call was successful
         content = result.query.pages[key].revisions[0]['*'];
-        
+
         // off for now
         // console.log('content: ', content);
 
@@ -345,29 +354,48 @@ function parseRealName(result){
                 return realNameObj;
             }else{
                 // page is a true disambiguation page
-                // New Header1 denotes a character
+                console.log(content);
                 realNameObj.success = false;
                 realNameObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
-                // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
-                var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;
-                console.log(content);
+                // New Header1 denotes a character
+                // var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;      //working
+                var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    //with images??
 
-                // gather all names in disambiguation page
-                var characterArr = null;
-                realNameObj.charList = [];
-                while( (characterArr = pattern.exec(content)) !== null){
-                    realNameObj.charList.push(characterArr[1]);
-                }
+                // gather all names and image titles in disambiguation page
+                realNameObj.pages = parseDisambiguation(pattern, content);
+                
+                // var characterArr = null;
+                // realNameObj.charList = [];
+                // while( (characterArr = pattern.exec(content)) !== null){
+                //     realNameObj.charList.push(characterArr[1]);
+                // }
 
-                console.log('charList: ', realNameObj.charList);
+                // console.log('charList: ', realNameObj.charList);
                 
                 return realNameObj;
             }
-            
+    
         }
     }
 }
 
+/**
+ * returns an array of objects holding information on disambiguation pages including title and image
+ * @param {*} pattern - regex pattern to test
+ * @param {string} content - content to check against regex pattern
+ */
+function parseDisambiguation(pattern, content){
+    var tempMatchArr = null;
+    matchArr = [];
+    while( (tempMatchArr = pattern.exec(content)) !== null){
+        tempObj = {};
+        tempObj.page = tempMatchArr[1];
+        tempObj.img = tempMatchArr[2];
+        matchArr.push(tempObj);
+    }
+    // console.log('matchArr: ', matchArr);
+    return matchArr;
+}
 
 /**
  * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
@@ -461,35 +489,37 @@ function parseImageTitle(result){
             return comicObj;
         }else{
             // page is a disambiguation page
-            // New Header2 denotes a comic or comic volume
             comicObj.success = false;
             comicObj.errorMessage = 'Disambiguation page reached. Choose one of these comics.';
+            // New Header2 denotes a comic or comic volume
             // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
             // var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;  // working
             var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;
             // console.log(content);
 
             // gather all names in disambiguation page
-            var comicArr = null;
-            // comicObj.charList = [];
-            comicObj.comicArr = [];
-            while( (comicArr = pattern.exec(content)) !== null){
-                tempArr = [];
-                tempArr.push(comicArr[1], comicArr[2])
-                // comicObj.comicArr.push(comicArr[1], comicArr[2]);
-                comicObj.comicArr.push(tempArr);
-            }
+            comicObj.pages = parseDisambiguation(pattern, content);
+            console.log('pages: ', comicObj.pages)
+            // var pages = parseDisambiguation(pattern, content);
 
-            content = [];
-            for(var i = 0; i < comicObj.comicArr.length; i++){
-                retrieveImageURL(comicObj.comicArr[i][1]);
+            // content = [];
+            // for(var i = 0; i < comicObj.comicArr.length; i++){
+            for(var i = 0; i < comicObj.pages.length; i++){
+                // for each page represented in disambiguation page, display image and title of page
+                var $div = $('<div>').addClass('comic');
+                // var $img = $('<img>').attr('src', retrieveImageURL(comicObj.pages[i].img));
+                retrieveImageURL($img, comicObj.pages[i].img)
+                var $title = $('<p>').text(comicObj.pages[i].page);
+                // retrieveImageURL(comicObj.comicArr[i][1]);
+                // retrieveImageURL(comicObj.pages[i].img);
                 // assignImageSrc();
+                $div.append($img, $title);
+                $('#debut').append($div);
                 
                 // content.push(retrieveImageURL(comicObj.comicArr[i][1]));
             }
 
-
-            console.log('comicList: ', comicObj.comicArr);
+            // console.log('comicList: ', comicObj.comicArr);
             
             return comicObj;
         }
