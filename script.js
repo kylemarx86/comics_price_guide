@@ -190,7 +190,7 @@ function retrieveDebutComicFileName(character){
             var comicContent = parseImageTitle(data);
             if(comicContent.success){
                 // no errors
-                var imageFileName = comicContent.comic;
+                var imageFileName = comicContent.imageTitle;
                 retrieveDebutComicImageURL(character, imageFileName);
             }else{
                 // // display the error message
@@ -256,7 +256,6 @@ function retrieveImageURL(image, fileName){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            
             // //parser should return success or failure upon determining if correct
             //     //information was retrieved
             var imageContent = parseImageURL(data);
@@ -472,45 +471,33 @@ function parseImageTitle(result){
         // console.log('content: ', content);
 
         var pattern = /\| Image\s*=\s(.*)/g;
-        // comicObj.comic = pattern.exec(content)[1];
-        var imageTitle = content.match(pattern);
+        var matchResults = pattern.exec(content);
 
-        if(imageTitle !== null){
+        if(matchResults !== null){
             comicObj.success = true;
-            comicObj.imageTitle = imageTitle;
+            comicObj.imageTitle = matchResults[1];
             return comicObj;
         }else{
             // page is a disambiguation page
             comicObj.success = false;
             comicObj.errorMessage = 'Disambiguation page reached. Choose one of these comics.';
             // New Header2 denotes a comic or comic volume
-            // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
             // var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;  // working
             var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;
             // console.log(content);
 
             // gather all names in disambiguation page
             comicObj.pages = parseDisambiguation(pattern, content);
-            // console.log('pages: ', comicObj.pages)
 
             for(var i = 0; i < comicObj.pages.length; i++){
                 // for each page represented in disambiguation page, display image and title of page
                 var $div = $('<div>').addClass('comic');
                 var $img = $('<img>');
-                // var $img = $('<img>').attr('src', retrieveImageURL(comicObj.pages[i].img));
                 retrieveImageURL($img, comicObj.pages[i].img)
                 var $title = $('<p>').text(comicObj.pages[i].page);
-                // retrieveImageURL(comicObj.comicArr[i][1]);
-                // retrieveImageURL(comicObj.pages[i].img);
-                // assignImageSrc();
                 $div.append($img, $title);
                 $('#debut').append($div);
-                
-                // content.push(retrieveImageURL(comicObj.comicArr[i][1]));
             }
-
-            // console.log('comicList: ', comicObj.comicArr);
-            
             return comicObj;
         }
     }
