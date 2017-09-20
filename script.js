@@ -46,6 +46,7 @@ function applyEventHandlers(){
 
 function submitForm(){
     // console.log('submit');
+    clearResultsAndStatus();
     var charName = $("#charName").val();
     gatherInfo(charName);
 }
