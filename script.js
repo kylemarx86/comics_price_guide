@@ -115,7 +115,7 @@ function retrieveRealName(character){
                 // an error occured
 
                 // display the error message
-                displayError(realNameObj.errorMessage);
+                // displayError(realNameObj.errorMessage);
             }
             
         },
@@ -355,13 +355,15 @@ function parseRealName(result){
                 // gather all names and image titles in disambiguation page
                 realNameObj.pages = parseDisambiguation(pattern, content);
                 
-                // var characterArr = null;
-                // realNameObj.charList = [];
-                // while( (characterArr = pattern.exec(content)) !== null){
-                //     realNameObj.charList.push(characterArr[1]);
-                // }
-
-                // console.log('charList: ', realNameObj.charList);
+                for(var i = 0; i < realNameObj.pages.length; i++){
+                    // for each page represented in disambiguation page, display image and title of page
+                    var $div = $('<div>').addClass('character');
+                    var $img = $('<img>');
+                    retrieveImageURL($img, realNameObj.pages[i].img)
+                    var $title = $('<p>').text(realNameObj.pages[i].page);
+                    $div.append($img, $title);
+                    $('#identity').append($div);
+                }
                 
                 return realNameObj;
             }
