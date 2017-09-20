@@ -30,7 +30,21 @@ Character.prototype.getDebutImg = function(){
  * @param {string} str - string to change to special uppercase
  */
 function toTitleCase(str){
-    return str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    // return str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});    
+    
+    // convert all words to have uppercase first letter
+    var allWordsCaps = str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    // array of words that should not be capitalized
+    var lowerCaseWordsArr = ['The', 'Of', 'And'];
+    // convert words that are not to be capitalized into lowercase
+    for(var i = 0; i < lowerCaseWordsArr.length; i++){
+        allWordsCaps = allWordsCaps.replace(lowerCaseWordsArr[i], lowerCaseWordsArr[i].toLowerCase());
+        console.log('title string: ', allWordsCaps);
+    }
+    // // recapitalize first letter
+    // allWordsCaps = allWordsCaps.charAt(0).toUpperCase() + allWordsCaps.substr(1);
+    // console.log('title string: ', allWordsCaps);
+    return allWordsCaps;
 }
 
 $(document).ready(function(){
@@ -89,6 +103,7 @@ function constructQueryString(titlesValue, extraDataOptions){
     return queryString;
 }
 
+
  /**
   * retrieveRealName
   * searches Marvel wiki for mantle and will retrieve information on the character from which their real identity will be extracted
@@ -100,13 +115,15 @@ function retrieveRealName(character){
         rvprop: 'content',
         rvsection: '0',
     };
-    var queryString = constructQueryString(character.getName(), extraDataOptions);
+    // first parameter will change
+    var queryString = constructQueryString(character.getName(), extraDataOptions);  
 
     $.ajax({
         type: "GET",
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
+            console.log('data: ', data);
             var realNameObj = parseRealName(data);
             if(realNameObj.success){
                 // no errors - single character retrieved
@@ -315,14 +332,16 @@ function parseRealName(result){
             // page is not a disambiguation page
             // character found
             realNameObj.success = true;
-            
             var realName = matchResults[1];
+
+
             // check to ensure real name is from main universe (Earth-616)
             var searchStr = " (Earth-616)";
             if(realName.indexOf(searchStr) < 0){
                 // if not found concatenate searchStr to realName
                 realName += searchStr;
             }
+            
             realNameObj.realName = realName;
             return realNameObj;
         }else{
@@ -342,6 +361,7 @@ function parseRealName(result){
                     // if not found concatenate searchStr to realName
                     realName += searchStr;
                 }
+
                 realNameObj.realName = realName;
                 return realNameObj;
             }else{
