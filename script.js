@@ -39,11 +39,9 @@ function toTitleCase(str){
     // convert words that are not to be capitalized into lowercase
     for(var i = 0; i < lowerCaseWordsArr.length; i++){
         allWordsCaps = allWordsCaps.replace(lowerCaseWordsArr[i], lowerCaseWordsArr[i].toLowerCase());
-        console.log('title string: ', allWordsCaps);
     }
     // // recapitalize first letter
     // allWordsCaps = allWordsCaps.charAt(0).toUpperCase() + allWordsCaps.substr(1);
-    // console.log('title string: ', allWordsCaps);
     return allWordsCaps;
 }
 
@@ -100,6 +98,7 @@ function constructQueryString(titlesValue, extraDataOptions){
     }
     // remove final ampersand from end of query string
     queryString = queryString.substring(0, queryString.length - 1);
+    // console.log('queryString: ', queryString);
     return queryString;
 }
 
@@ -123,7 +122,7 @@ function retrieveRealName(character){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            console.log('data: ', data);
+            // console.log('data: ', data);
             var realNameObj = parseRealName(data);
             if(realNameObj.success){
                 // no errors - single character retrieved
@@ -169,7 +168,7 @@ function retrieveDebutComics(character){
             if(debutContent.success){
                 // no errors
                 character.setDebutArr(debutContent.debutList);
-                console.log('character: ', character);
+                // console.log('character: ', character);
                 retrieveDebutComicFileName(character);
                 // displayResults(character);
             }else{
@@ -190,7 +189,7 @@ function retrieveDebutComics(character){
 function retrieveDebutComicFileName(character){
     // remove any # signs for correct formatting when parsed
     var debutFormatted = character.getDebutArr()[0].replace("#", "");
-    console.log('debutFormatted: ', debutFormatted);
+    // console.log('debutFormatted: ', debutFormatted);
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -366,7 +365,7 @@ function parseRealName(result){
                 return realNameObj;
             }else{
                 // page is a true disambiguation page
-                console.log(content);
+                // console.log(content);
                 realNameObj.success = false;
                 realNameObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
                 // New Header1 denotes a character
