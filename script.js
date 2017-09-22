@@ -240,17 +240,35 @@ function retrieveRealName(character){
                 console.log('pageFormatObj: ', pageFormatObj);
 
                 if(pageFormatObj.success){
-                    // for each of these options, gather image sources and display info and images
-                    // then
-
-                    // if its a template page
+                    if(pageFormatObj.type === 'template'){
+                        // if its a template page
+                        // get image title
                         // get debut issues
+                        // display image, name, debut
+                        $('#status').text('Search for ...');
+                        var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
+                        $('#info').append($type);
 
-                    // if character disambig
-                        // run again to get debut issues
+                    }else if(pageFormatObj.type === 'charDisambiguation'){
+                        // if character disambig
+                            // run again to get debut issues
+                    }else{
+                        // if general disambig
+                        // display given info
+                        $('#status').text('Search for ...');
 
-                    // if general disambig
+                        for(var i = 0; i < pageFormatObj.pages.length; i++){
+                            $div = $('<div>');
+                            // var $span = $('<span>');
+                            var $page = $('<p>').text(pageFormatObj.pages[i].page);
+                            var $imgTxt = $('<p>').text(pageFormatObj.pages[i].imgTitle);
+                            $div.append($page, $imgTxt);
+                            $('#info').append($div);
+                        }
                         // await user response to determine how search will proceed
+                    }
+
+                    
                 }else{
                     // display error in status bar
                 }
@@ -553,7 +571,7 @@ function parseRealName(result){
                     retrieveImageURL($img, realNameObj.pages[i].img)
                     var $title = $('<p>').text(realNameObj.pages[i].page);
                     $div.append($img, $title);
-                    $('#identity').append($div);
+                    $('#info').append($div);
                 }
                 return realNameObj;
             }
@@ -748,21 +766,20 @@ function determinePageFormat(content){
 
     }else{
         // check if content is of type character disambiguation
-        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]; (.*)/g;   // with image title
+        // var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]; (.*)/g;   // with image title
+        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g;   // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
             formatObj.character = character[1];
-            formatObj.imageTitle = character[2];
+            // formatObj.imageTitle = character[2];
         }else{
             // check if content is of type general disambiguation
             var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title
-            // var disambiguation = pattern.exec(content);
             var disambiguation = parseDisambiguation(pattern, content);
             if(disambiguation !== null){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
-                // formatObj.pages = parseDisambiguation(pattern, content);
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
@@ -777,14 +794,14 @@ function determinePageFormat(content){
 
 
 function clearResultsAndStatus(){
-    $('#identity').empty();
+    $('#info').empty();
     $('#debut').empty();
     $('#status').empty();
 }
 
 function displayResults(character){
     clearResultsAndStatus();
-    $('#identity').append(character.getRealName());
+    $('#info').append(character.getRealName());
     var debutComics = character.getDebutArr();
     var img = $('<img>').attr('src', character.getDebutImg());
     $('#debut').append(img);
