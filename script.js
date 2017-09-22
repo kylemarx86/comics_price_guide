@@ -234,14 +234,36 @@ function retrieveRealName(character){
             data = generalParser(data);
             if(data.success){
                 var content = data.content;
-                console.log('content: ', content);
+                // console.log('content: ', content);
+
+                var pageFormatObj = determinePageFormat(content);
+                console.log('pageFormatObj: ', pageFormatObj);
+
+                if(pageFormatObj.success){
+                    // for each of these options, gather image sources and display info and images
+                    // then
+
+                    // if its a template page
+                        // get debut issues
+
+                    // if character disambig
+                        // run again to get debut issues
+
+                    // if general disambig
+                        // await user response to determine how search will proceed
+                }else{
+                    // display error in status bar
+                }
 
                 // differentiate between different templates
                 // check if content is of a template format
+                // if(checkForTemplate())
+                
+                // else check if content is of type character disambiguation
 
-                // else check if content is of general disambiguation
+                // else content is of type general disambiguation
 
-                // else content is of type character disambiguation
+                
 
             }else{
                 console.log('error: ', data.errorMessage);
@@ -483,6 +505,7 @@ function parseRealName(result){
 
 
             // check to ensure real name is from main universe (Earth-616)
+            // NOTE: change to be " (Earth-" to account for other realities
             var searchStr = " (Earth-616)";
             if(realName.indexOf(searchStr) < 0){
                 // if not found concatenate searchStr to realName
@@ -550,7 +573,8 @@ function parseDisambiguation(pattern, content){
     while( (tempMatchArr = pattern.exec(content)) !== null){
         tempObj = {};
         tempObj.page = tempMatchArr[1];
-        tempObj.img = tempMatchArr[2];
+        // tempObj.img = tempMatchArr[2];
+        tempObj.imgTitle = tempMatchArr[2];
         matchArr.push(tempObj);
     }
     // console.log('matchArr: ', matchArr);
@@ -695,6 +719,62 @@ function parseImageURL(result){
         return imageObj;
     }
 }
+
+
+/**
+ * takes content from a wiki page and determines if it is a template page, a character disambiguation
+ *   page, or a general disambiguation page. 
+ * @param {string} content - all the content from the wiki for a given page
+ */
+function determinePageFormat(content){
+    formatObj = {
+        success: true,
+        pageType: null
+    }
+    // check if content is of a template format
+    var pattern = /Marvel Database:\s?(.*) Template/g;
+    var template = pattern.exec(content);
+    if(template !== null){
+        formatObj.pageType = 'template';
+        formatObj.templateType = template[1];
+        // NOTE: should grab image title too since others do
+        pattern = /\| Image\s*=\s(.*)/g;
+        var image = pattern.exec(content);
+        if(image !== null){
+            formatObj.imageTitle = image[1];
+        }else{
+            formatObj.imageTitle = null;
+        }
+
+    }else{
+        // check if content is of type character disambiguation
+        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]; (.*)/g;   // with image title
+        var character = pattern.exec(content);
+        if(character !== null){
+            formatObj.pageType = 'charDisambiguation';
+            formatObj.character = character[1];
+            formatObj.imageTitle = character[2];
+        }else{
+            // check if content is of type general disambiguation
+            var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title
+            // var disambiguation = pattern.exec(content);
+            var disambiguation = parseDisambiguation(pattern, content);
+            if(disambiguation !== null){
+                formatObj.pageType = 'genDisambiguation';
+                formatObj.pages = disambiguation;
+                // formatObj.pages = parseDisambiguation(pattern, content);
+            }else{
+                // in case there is something that doesn't fit these patterns or page templates change
+                formatObj.success = false;
+            }
+        }
+    }
+    return formatObj;
+}
+
+
+
+
 
 function clearResultsAndStatus(){
     $('#identity').empty();
