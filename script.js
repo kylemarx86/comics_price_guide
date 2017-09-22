@@ -45,6 +45,7 @@ Character.prototype.getDebutImg = function(){
  */
 function Search(title) {
     this.title = toTitleCase(title);
+    // this.title = title;
     this.properName = null;
     this.type = null;
     this.reality = null;
@@ -102,10 +103,8 @@ function Debut(comic, year, img, sig){
  * @param {string} str - string to change to special uppercase
  */
 function toTitleCase(str){
-    // return str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});    
-    
     // convert all words to have uppercase first letter
-    var allWordsCaps = str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    var allWordsCaps = str.replace(/[^\s-\(\)]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     // array of words that should not be capitalized
     var lowerCaseWordsArr = ['The', 'Of', 'And'];
     // convert words that are not to be capitalized into lowercase
@@ -114,7 +113,7 @@ function toTitleCase(str){
     }
     // // recapitalize first letter
     // allWordsCaps = allWordsCaps.charAt(0).toUpperCase() + allWordsCaps.substr(1);
-    console.log('title searched: ', allWordsCaps);
+    // console.log('title searched: ', allWordsCaps);
     return allWordsCaps;
 }
 
