@@ -46,12 +46,16 @@ Character.prototype.getDebutImg = function(){
 function Search(title) {
     this.title = toTitleCase(title);
     this.properName = null;
+    this.type = null;
     this.reality = null;
     this.debutArr = [];
 }
 // setter functions
 Search.prototype.setProperName = function(properName){
     this.properName = properName;
+}
+Search.prototype.setType = function(type){
+    this.type = type;
 }
 Search.prototype.setReality = function(reality){
     this.reality = reality;
@@ -68,6 +72,9 @@ Search.prototype.getTitle = function(){
 }
 Search.prototype.getProperName = function(){
     return this.properName;
+}
+Search.prototype.getType = function(){
+    return this.type;
 }
 Search.prototype.setReality = function(reality){
     this.reality = reality;
