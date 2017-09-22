@@ -30,7 +30,19 @@ Character.prototype.getDebutImg = function(){
  * @param {string} str - string to change to special uppercase
  */
 function toTitleCase(str){
-    return str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    // return str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});    
+    
+    // convert all words to have uppercase first letter
+    var allWordsCaps = str.replace(/[^\s-]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    // array of words that should not be capitalized
+    var lowerCaseWordsArr = ['The', 'Of', 'And'];
+    // convert words that are not to be capitalized into lowercase
+    for(var i = 0; i < lowerCaseWordsArr.length; i++){
+        allWordsCaps = allWordsCaps.replace(lowerCaseWordsArr[i], lowerCaseWordsArr[i].toLowerCase());
+    }
+    // // recapitalize first letter
+    // allWordsCaps = allWordsCaps.charAt(0).toUpperCase() + allWordsCaps.substr(1);
+    return allWordsCaps;
 }
 
 $(document).ready(function(){
@@ -46,6 +58,7 @@ function applyEventHandlers(){
 
 function submitForm(){
     // console.log('submit');
+    clearResultsAndStatus();
     var charName = $("#charName").val();
     gatherInfo(charName);
 }
@@ -85,8 +98,10 @@ function constructQueryString(titlesValue, extraDataOptions){
     }
     // remove final ampersand from end of query string
     queryString = queryString.substring(0, queryString.length - 1);
+    // console.log('queryString: ', queryString);
     return queryString;
 }
+
 
  /**
   * retrieveRealName
@@ -99,13 +114,15 @@ function retrieveRealName(character){
         rvprop: 'content',
         rvsection: '0',
     };
-    var queryString = constructQueryString(character.getName(), extraDataOptions);
+    // first parameter will change
+    var queryString = constructQueryString(character.getName(), extraDataOptions);  
 
     $.ajax({
         type: "GET",
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
+            // console.log('data: ', data);
             var realNameObj = parseRealName(data);
             if(realNameObj.success){
                 // no errors - single character retrieved
@@ -115,7 +132,7 @@ function retrieveRealName(character){
                 // an error occured
 
                 // display the error message
-                displayError(realNameObj.errorMessage);
+                // displayError(realNameObj.errorMessage);
             }
             
         },
@@ -151,7 +168,7 @@ function retrieveDebutComics(character){
             if(debutContent.success){
                 // no errors
                 character.setDebutArr(debutContent.debutList);
-                console.log('character: ', character);
+                // console.log('character: ', character);
                 retrieveDebutComicFileName(character);
                 // displayResults(character);
             }else{
@@ -167,12 +184,12 @@ function retrieveDebutComics(character){
 
 /**
  * 
- * @param {*} character 
+ * @param {object} character 
  */
 function retrieveDebutComicFileName(character){
     // remove any # signs for correct formatting when parsed
     var debutFormatted = character.getDebutArr()[0].replace("#", "");
-    console.log('debutFormatted: ', debutFormatted);
+    // console.log('debutFormatted: ', debutFormatted);
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -190,11 +207,11 @@ function retrieveDebutComicFileName(character){
             var comicContent = parseImageTitle(data);
             if(comicContent.success){
                 // no errors
-                var imageFileName = comicContent.comic;
+                var imageFileName = comicContent.imageTitle;
                 retrieveDebutComicImageURL(character, imageFileName);
             }else{
-                // display the error message
-                displayError(comicContent.errorMessage);
+                // // display the error message
+                // displayError(comicContent.errorMessage);
             }            
         },
         error: function (errorMessage) {
@@ -205,8 +222,9 @@ function retrieveDebutComicFileName(character){
 
 /**
  * will find the complete path to the image for the first of the debut comics
- * @param {*} fileName 
- */
+ * @param {object} character - 
+ * @param {string} fileName - 
+ * */
 function retrieveDebutComicImageURL(character, fileName){
     var extraDataOptions = {
         prop: 'imageinfo',
@@ -237,6 +255,45 @@ function retrieveDebutComicImageURL(character, fileName){
     });
 }
 
+
+/**
+ * will find the complete path to the image for the first of the debut comics
+ * @param {*} image - location on DOM that will have its source attribute replaced
+ * @param {string} fileName - name of file to search the wiki for
+ */
+function retrieveImageURL(image, fileName){
+    var extraDataOptions = {
+        prop: 'imageinfo',
+        iiprop: 'url',
+    };
+    var queryString = constructQueryString("File:"+fileName, extraDataOptions);
+
+    $.ajax({
+        type: "GET",
+        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            // //parser should return success or failure upon determining if correct
+            //     //information was retrieved
+            var imageContent = parseImageURL(data);
+            if(imageContent.success){
+                // no errors - update image source
+                image.attr('src', imageContent.imageSrc);
+            }else{
+                // display the error message and updated image source
+                image.attr('src', '/resources/image_not_found.png');
+                // displayError(imageContent.errorMessage);
+            }
+        },
+        error: function (errorMessage) {
+            // need to return something in case there is an error
+            imageContent = {
+                success: false
+            }
+        }
+    });
+}
+
 /**
  * extracts the real name of the most relavant character from the disambiguation page of the wiki
  * @param {*} result - json object from wikia API containing disambiguation on characters
@@ -258,7 +315,7 @@ function parseRealName(result){
     }else{
         // call was successful
         content = result.query.pages[key].revisions[0]['*'];
-        
+
         // off for now
         // console.log('content: ', content);
 
@@ -274,14 +331,16 @@ function parseRealName(result){
             // page is not a disambiguation page
             // character found
             realNameObj.success = true;
-            
             var realName = matchResults[1];
+
+
             // check to ensure real name is from main universe (Earth-616)
             var searchStr = " (Earth-616)";
             if(realName.indexOf(searchStr) < 0){
                 // if not found concatenate searchStr to realName
                 realName += searchStr;
             }
+            
             realNameObj.realName = realName;
             return realNameObj;
         }else{
@@ -301,33 +360,55 @@ function parseRealName(result){
                     // if not found concatenate searchStr to realName
                     realName += searchStr;
                 }
+
                 realNameObj.realName = realName;
                 return realNameObj;
             }else{
                 // page is a true disambiguation page
-                // New Header1 denotes a character
+                // console.log(content);
                 realNameObj.success = false;
                 realNameObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
-                // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
-                var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;
-                console.log(content);
+                // New Header1 denotes a character
+                // var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;      //working
+                var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    //with images??
 
-                // gather all names in disambiguation page
-                var characterArr = null;
-                realNameObj.charList = [];
-                while( (characterArr = pattern.exec(content)) !== null){
-                    realNameObj.charList.push(characterArr[1]);
+                // gather all names and image titles in disambiguation page
+                realNameObj.pages = parseDisambiguation(pattern, content);
+                
+                for(var i = 0; i < realNameObj.pages.length; i++){
+                    // for each page represented in disambiguation page, display image and title of page
+                    var $div = $('<div>').addClass('character');
+                    var $img = $('<img>');
+                    retrieveImageURL($img, realNameObj.pages[i].img)
+                    var $title = $('<p>').text(realNameObj.pages[i].page);
+                    $div.append($img, $title);
+                    $('#identity').append($div);
                 }
-
-                console.log('charList: ', realNameObj.charList);
                 
                 return realNameObj;
             }
-            
+    
         }
     }
 }
 
+/**
+ * returns an array of objects holding information on disambiguation pages including title and image
+ * @param {*} pattern - regex pattern to test
+ * @param {string} content - content to check against regex pattern
+ */
+function parseDisambiguation(pattern, content){
+    var tempMatchArr = null;
+    matchArr = [];
+    while( (tempMatchArr = pattern.exec(content)) !== null){
+        tempObj = {};
+        tempObj.page = tempMatchArr[1];
+        tempObj.img = tempMatchArr[2];
+        matchArr.push(tempObj);
+    }
+    // console.log('matchArr: ', matchArr);
+    return matchArr;
+}
 
 /**
  * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
@@ -381,25 +462,7 @@ function parseDebutComics(result){
             }
             return debutObj;
         }else{
-            // this may not go here
-            // // page is a disambiguation page
-            // // New Header2 denotes a comic or comic volume
-            // debutObj.success = false;
-            // debutObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
-            // // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
-            // var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;
-            // console.log(content);
-
-            // // gather all names in disambiguation page
-            // var comicArr = null;
-            // debutObj.charList = [];
-            // while( (comicArr = pattern.exec(content)) !== null){
-            //     debutObj.comicArr.push(comicArr[1]);
-            // }
-
-            // console.log('comicList: ', debutObj.comicArr);
-            
-            // return debutObj;
+            // what does it mean if there is no first appearance listed???
         }
     }
 }
@@ -430,32 +493,33 @@ function parseImageTitle(result){
         // console.log('content: ', content);
 
         var pattern = /\| Image\s*=\s(.*)/g;
-        // comicObj.comic = pattern.exec(content)[1];
-        var imageTitle = content.match(pattern);
+        var matchResults = pattern.exec(content);
 
-        if(imageTitle !== null){
+        if(matchResults !== null){
             comicObj.success = true;
-            comicObj.imageTitle = imageTitle;
+            comicObj.imageTitle = matchResults[1];
             return comicObj;
         }else{
             // page is a disambiguation page
-            // New Header2 denotes a comic or comic volume
             comicObj.success = false;
-            comicObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
-            // var pattern = /New Header1_[\d]*\s*=\s\[\[([^\|]*)\|?.*\]\]/g;  //old
-            var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;
-            console.log(content);
+            comicObj.errorMessage = 'Disambiguation page reached. Choose one of these comics.';
+            // New Header2 denotes a comic or comic volume
+            // var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;  // working
+            var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;
+            // console.log(content);
 
             // gather all names in disambiguation page
-            var comicArr = null;
-            // comicObj.charList = [];
-            comicObj.comicArr = [];
-            while( (comicArr = pattern.exec(content)) !== null){
-                comicObj.comicArr.push(comicArr[1]);
-            }
+            comicObj.pages = parseDisambiguation(pattern, content);
 
-            console.log('comicList: ', comicObj.comicArr);
-            
+            for(var i = 0; i < comicObj.pages.length; i++){
+                // for each page represented in disambiguation page, display image and title of page
+                var $div = $('<div>').addClass('comic');
+                var $img = $('<img>');
+                retrieveImageURL($img, comicObj.pages[i].img)
+                var $title = $('<p>').text(comicObj.pages[i].page);
+                $div.append($img, $title);
+                $('#debut').append($div);
+            }
             return comicObj;
         }
     }
@@ -503,6 +567,11 @@ function displayResults(character){
         $('#debut').append(comic);
     }
     
+}
+
+function displayImage(imageSource){
+    var img = $('<img>').attr('src', imageSource);
+    $('#debut').append(img);
 }
 
 function displayError(errorMessage){
