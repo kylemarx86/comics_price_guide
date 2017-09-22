@@ -223,7 +223,7 @@ function retrieveRealName(character){
         rvprop: 'content',
         rvsection: '0',
     };
-    // first parameter will change
+    // NOTE: first parameter will change
     var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);  
 
     $.ajax({
@@ -231,8 +231,24 @@ function retrieveRealName(character){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            var content = generalParser(data);
-            console.log('content: ', content);
+            data = generalParser(data);
+            if(data.success){
+                var content = data.content;
+                console.log('content: ', content);
+
+                // differentiate between different templates
+                // check if content is of a template format
+
+                // else check if content is of general disambiguation
+
+                // else content is of type character disambiguation
+
+            }else{
+                console.log('error: ', data.errorMessage);
+            }
+            
+
+            
             
             // var realNameObj = parseRealName(data);
             // if(realNameObj.success){
@@ -252,22 +268,29 @@ function retrieveRealName(character){
     });
 }
 
-
+// NOTE: pass another argument in, the term searched for so error message can contain it
 function generalParser(response){
     var key = 0;
+    var data = {
+        success: false
+    }
     
     for(i in response.query.pages)
     key = i;
-    console.log('page key: ', key)
+    console.log('page key: ', key);
     
     if(key < 0){
         // call was unsuccessful
-        return 'Could not find page for search term';
+        data.errorMessage = 'Could not find page for search term';
     }else{
         // call was successful
-        return response.query.pages[key].revisions[0]['*'];
+        data.success = true;
+        data.content = response.query.pages[key].revisions[0]['*'];
     }
+    return data;
 }
+
+
 
  /**
   * retrieveDebut
