@@ -114,6 +114,7 @@ function toTitleCase(str){
     }
     // // recapitalize first letter
     // allWordsCaps = allWordsCaps.charAt(0).toUpperCase() + allWordsCaps.substr(1);
+    console.log('title searched: ', allWordsCaps);
     return allWordsCaps;
 }
 
@@ -127,16 +128,18 @@ function applyEventHandlers(){
 
 function submitForm(){
     clearResultsAndStatus();
-    var charName = $("#charName").val();
-    gatherInfo(charName);
+    var searchTerm = $("#searchTerm").val();
+    gatherInfo(searchTerm);
 }
 
 /**
- * @param {string} characterName - name of character
+ * starts chain of 
+ * @param {string} searchTerm - term to be searched in the wiki
  */
-function gatherInfo(characterName){
-    var character = new Character(characterName);
-    retrieveRealName(character);
+function gatherInfo(searchTerm){
+    var searchObj = new Search(searchTerm);
+    // retrieveRealName(searchObj);
+    initialWikiQuery(searchObj);
 }
 
 /**
@@ -200,13 +203,71 @@ function retrieveRealName(character){
                 // an error occured
 
                 // display the error message
-                // displayError(realNameObj.errorMessage);
+                displayError(realNameObj.errorMessage);
             }
             
         },
         error: function (errorMessage) {
         }
     });
+}
+
+
+ /**
+  * initialWikiQuery
+  * searches Marvel wiki for term and will call another function to parse information returned
+  * @param {object} searchObj - search object containing name of term to be looked up
+  */
+  function initialWikiQuery(searchObj){
+    var extraDataOptions = {
+        prop: 'revisions',
+        rvprop: 'content',
+        rvsection: '0',
+    };
+    // first parameter will change
+    var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);  
+
+    $.ajax({
+        type: "GET",
+        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            var content = generalParser(data);
+            console.log('content: ', content);
+            
+            // var realNameObj = parseRealName(data);
+            // if(realNameObj.success){
+            //     // no errors - single character retrieved
+            //     character.setRealName(realNameObj.realName);
+            //     retrieveDebutComics(character);
+            // }else{
+            //     // an error occured
+
+            //     // display the error message
+            //     displayError(realNameObj.errorMessage);
+            // }
+            
+        },
+        error: function (errorMessage) {
+        }
+    });
+}
+
+
+function generalParser(response){
+    var key = 0;
+    
+    for(i in response.query.pages)
+    key = i;
+    console.log('page key: ', key)
+    
+    if(key < 0){
+        // call was unsuccessful
+        return 'Could not find page for search term';
+    }else{
+        // call was successful
+        return response.query.pages[key].revisions[0]['*'];
+    }
 }
 
  /**
@@ -278,7 +339,7 @@ function retrieveDebutComicFileName(character){
                 retrieveDebutComicImageURL(character, imageFileName);
             }else{
                 // // display the error message
-                // displayError(comicContent.errorMessage);
+                displayError(comicContent.errorMessage);
             }            
         },
         error: function (errorMessage) {
@@ -349,7 +410,7 @@ function retrieveImageURL(image, fileName){
             }else{
                 // display the error message and updated image source
                 image.attr('src', '/resources/image_not_found.png');
-                // displayError(imageContent.errorMessage);
+                displayError(imageContent.errorMessage);
             }
         },
         error: function (errorMessage) {
@@ -381,7 +442,7 @@ function parseRealName(result){
         return realNameObj;
     }else{
         // call was successful
-        content = result.query.pages[key].revisions[0]['*'];
+        var content = result.query.pages[key].revisions[0]['*'];
         // console.log('content: ', content);
 
         // when searching for most characters there will be a disambiguation page the character in alternate realities (it's a comics thing)
@@ -637,7 +698,10 @@ function displayImage(imageSource){
     $('#debut').append(img);
 }
 
+/**
+ * clear the status area and display the new error message
+ * @param {string} errorMessage - message describing the error
+ */
 function displayError(errorMessage){
-    clearResultsAndStatus();
-    $('#status').append(errorMessage);
+    $('#status').text(errorMessage);
 }
