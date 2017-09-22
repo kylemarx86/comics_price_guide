@@ -118,9 +118,6 @@ function toTitleCase(str){
 }
 
 $(document).ready(function(){
-    // gatherInfo("Thing");
-    // gatherInfo("Venom");
-    // gatherInfo("Spider-Man");
     applyEventHandlers();
 });
 
@@ -129,7 +126,6 @@ function applyEventHandlers(){
 }
 
 function submitForm(){
-    // console.log('submit');
     clearResultsAndStatus();
     var charName = $("#charName").val();
     gatherInfo(charName);
@@ -240,7 +236,6 @@ function retrieveDebutComics(character){
             if(debutContent.success){
                 // no errors
                 character.setDebutArr(debutContent.debutList);
-                // console.log('character: ', character);
                 retrieveDebutComicFileName(character);
                 // displayResults(character);
             }else{
@@ -387,8 +382,6 @@ function parseRealName(result){
     }else{
         // call was successful
         content = result.query.pages[key].revisions[0]['*'];
-
-        // off for now
         // console.log('content: ', content);
 
         // when searching for most characters there will be a disambiguation page the character in alternate realities (it's a comics thing)
@@ -456,7 +449,6 @@ function parseRealName(result){
                     $div.append($img, $title);
                     $('#identity').append($div);
                 }
-                
                 return realNameObj;
             }
     
@@ -576,7 +568,6 @@ function parseImageTitle(result){
             comicObj.success = false;
             comicObj.errorMessage = 'Disambiguation page reached. Choose one of these comics.';
             // New Header2 denotes a comic or comic volume
-            // var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;  // working
             var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;
             // console.log(content);
 
