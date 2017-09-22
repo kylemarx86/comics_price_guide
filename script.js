@@ -26,6 +26,71 @@ Character.prototype.getDebutImg = function(){
 }
 
 /**
+ * Search object is based on the fact that there are multiple templates in the marvel wiki
+ * Available templates from wiki: comic, character, team, gallery, organization, location, vehicle,
+ *  item, race, reality, event, storyline, television episode, marvel staff, image, novel, user page
+ * The scope of this project will focus on and make use of the following templates: comic, character, 
+ *  team, gallery, organization, location, vehicle, item, race, event, storyline, image
+ * All searchable things will have a properName related to the page devoted to it on the wiki.
+ * (not sure yet) All searchable things will also have a reality associated for them to aide in keeping track of pages. 
+ *  Since the scope of this project relates to comic books, different realities for stories may exist so it
+ *  will be important to keep track of these to ensure we get correct data in the end.
+ * All searches will also all have a debutArr which will contain an array of objects each representing a debeut
+ *  Since the scope of this project relates to comic books, characters can carry different mantles, teams 
+ *  can have different iterations, etc. Thus, an array of debuts is possible despite the usual conotations of the 
+ *  word meaning first. For the purposes of this project I will keep track of as many of these debuts as possible,
+ *  keeping track of associated information like debut comic, its significance, and its image.
+ *   
+ * @param {string} title - title of the thing to be searched on the wiki
+ */
+function Search(title) {
+    this.title = toTitleCase(title);
+    this.properName = null;
+    this.reality = null;
+    this.debutArr = [];
+}
+// setter functions
+Search.prototype.setProperName = function(properName){
+    this.properName = properName;
+}
+Search.prototype.setReality = function(reality){
+    this.reality = reality;
+}
+Search.prototype.setDebutArr = function(debutArr){
+    this.debutArr = debutArr;
+}
+// Search.prototype.setDebutImg = function(debutImg){
+//     this.debutImg = debutImg;
+// }
+// getter functions
+Search.prototype.getTitle = function(){
+    return this.title;
+}
+Search.prototype.getProperName = function(){
+    return this.properName;
+}
+Search.prototype.setReality = function(reality){
+    this.reality = reality;
+}
+Search.prototype.getDebutArr = function(){
+    return this.debutArr;
+}
+// Search.prototype.getDebutImg = function(){
+//     return this.debutImg;
+// }
+
+
+
+function Debut(comic, year, img, sig){
+    this.comic = comic;
+    this.year = year;
+    this.img = img;
+    this.sig = sig;
+}
+
+
+
+/**
  * special uppercasing function to capitalize beginnings of words and words that start after hyphen
  * @param {string} str - string to change to special uppercase
  */
