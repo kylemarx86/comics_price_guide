@@ -207,17 +207,28 @@ function retrieveRealName(character){
                 // console.log('content: ', content);
 
                 var pageFormatObj = determinePageFormat(content);
-                console.log('pageFormatObj: ', pageFormatObj);
+                // console.log('pageFormatObj: ', pageFormatObj);
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // if its a template page
                         // get image title
-                        var imageTitle = parseImageTitle(content);
                         var $img = $('<img>');
-                        
+                        var imageTitle = parseImageTitle(content);
+                        if(imageTitle !== null){
+                            retrieveImageURL($img, imageTitle);
+                        }else{
+                            $img.attr('src', './resources/image_not_found.png');
+                        }
+
                         // get debut issues
-                        var debutArr = parseDebut(content);
+                        var debutInfo = parseDebut(content);
+                        if(debutInfo.success){
+                            for(var i = 0; i < debutInfo.debutList.length; i++){
+                                var $debut = $('<div>').addClass('debutEntry').text(debutInfo.debutList[i]);
+                                $('#debut').append($debut);
+                            }
+                        }
                         // display image, name, debut
 
                         $('#status').text('Search for ...');
@@ -226,7 +237,7 @@ function retrieveRealName(character){
 
                         $('#info').append($type, $img);
 
-                        retrieveImageURL($img, imageTitle);
+                        
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
                         // if character disambig
                             // run again to get debut issues
@@ -243,11 +254,9 @@ function retrieveRealName(character){
 
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
                             $div = $('<div>');
-                            // var $span = $('<span>');
                             var $page = $('<p>').text(pageFormatObj.pages[i].page);
                             var $img = $('<img>');
-                            var $imgTxt = $('<p>').text(pageFormatObj.pages[i].imgTitle);
-                            $div.append($page, $img, $imgTxt);
+                            $div.append($page, $img);
                             retrieveImageURL($img, pageFormatObj.pages[i].imgTitle);
                             $('#info').append($div);
 
@@ -276,8 +285,7 @@ function generalParser(response){
     
     for(i in response.query.pages)
     key = i;
-    console.log('page key: ', key);
-    
+
     if(key < 0){
         // call was unsuccessful
         data.errorMessage = 'Could not find page for search term';
@@ -405,11 +413,45 @@ function retrieveDebutComicImageURL(character, fileName){
 }
 
 /**
+ * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
  * 
+ * COMMENTS: comics are weird in that there can be multiple first appearances/debuts for a character
+ * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
+ * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
+ *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
  * @param {string} content - string of content from the wiki
  */
 function parseDebut(content){
-    
+    var debutObj = {
+        success: false,
+        debutList: []
+    }
+    var pattern = /\| First.*=\s(.*)/g;
+    var debut = content.match(pattern);
+    if(debut !== null){
+        debutObj.success = true;
+        // format first debut
+        var delimiter = '= ';
+        var startIndex = debut[0].indexOf(delimiter);
+        debutObj.debutList.push(debut[0].substring(startIndex + delimiter.length));
+        
+        // check to see if there is more than one debut
+        if(debut.length > 1){
+            // extract further debuts
+            // pattern: {{cid|"text to grab"}}("more text to grab")
+            var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
+            var extraDebuts = null;
+        
+            while( (extraDebuts = pattern.exec(debut[1])) !== null){
+                debutObj.debutList.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+            }
+        }
+        // console.log('debut: ', debutObj.debutList);
+    }else{
+        // no debuts could be found
+        debutObj.errorMessage = 'Debut could not be retrieved';
+    }
+    return debutObj;
 }
 
 /**
