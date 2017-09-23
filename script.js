@@ -213,18 +213,27 @@ function retrieveRealName(character){
                     if(pageFormatObj.pageType === 'template'){
                         // if its a template page
                         // get image title
+                        var imageTitle = parseImageTitle(content);
+                        var $img = $('<img>');
+                        
+
                         // get debut issues
+                        // var debutArr = parseDebut(content);
                         // display image, name, debut
+                        
                         $('#status').text('Search for ...');
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
-                        $('#info').append($type);
+                        
 
+                        $('#info').append($type, $img);
+
+                        retrieveImageURL($img, imageTitle);
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
                         // if character disambig
                             // run again to get debut issues
-                        // IDEA: create a temp search obj complete rest of searches
-                            // return the values of the temp search to original search obj
-                            // then display values
+                        // create a temp search obj
+                            // this object will run through a second time and return with an content from of a template pageType
+                            // and will gather the rest of the desired information                         
                         var tempSearchObj = new Search(pageFormatObj.character);
                         initialWikiQuery(tempSearchObj);
                         // console.log('temp character: ', tempSearchObj.character);
@@ -246,42 +255,13 @@ function retrieveRealName(character){
                         }
                         // await user response to determine how search will proceed
                     }
-
-                    
                 }else{
                     // display error in status bar
                 }
-
-                // differentiate between different templates
-                // check if content is of a template format
-                // if(checkForTemplate())
-                
-                // else check if content is of type character disambiguation
-
-                // else content is of type general disambiguation
-
-                
-
             }else{
                 console.log('error: ', data.errorMessage);
             }
-            
-
-            
-            
-            // var realNameObj = parseRealName(data);
-            // if(realNameObj.success){
-            //     // no errors - single character retrieved
-            //     character.setRealName(realNameObj.realName);
-            //     retrieveDebutComics(character);
-            // }else{
-            //     // an error occured
-
-            //     // display the error message
-            //     displayError(realNameObj.errorMessage);
-            // }
-            
-        },
+        },  // end of success
         error: function (errorMessage) {
         }
     });
@@ -424,6 +404,21 @@ function retrieveDebutComicImageURL(character, fileName){
     });
 }
 
+/**
+ * 
+ * @param {string} content - string of content from the wiki
+ */
+function parseImageTitle(content){
+
+}
+
+/**
+ * 
+ * @param {string} content - string of content from the wiki
+ */
+function parseDebut(content){
+    
+}
 
 /**
  * will find the complete path to the image for the first of the debut comics
@@ -639,7 +634,7 @@ function parseDebutComics(result){
  * 
  * @param {object} result - json object
  */
-function parseImageTitle(result){
+function parseImageTitleOrig(result){
     // console.log('result: ', result);
 
     var key = 0;
@@ -691,6 +686,18 @@ function parseImageTitle(result){
         }
     }
 }
+
+function parseImageTitle(content){
+    var pattern = /\| Image\s*=\s(.*)/g;
+    var matchResults = pattern.exec(content);
+    var imageTitle = null;
+
+    if(matchResults !== null){
+        imageTitle = matchResults[1];
+    }
+    return imageTitle;
+}
+
 
 function parseImageURL(result){
     // console.log('result: ', result);
