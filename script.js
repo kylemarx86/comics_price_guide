@@ -51,6 +51,7 @@ function Search(title) {
     this.reality = null;
     this.debutArr = [];
 }
+// NOTE: need another constructor that will not turn title to title case
 // setter functions
 Search.prototype.setProperName = function(properName){
     this.properName = properName;
@@ -252,6 +253,12 @@ function retrieveRealName(character){
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
                         // if character disambig
                             // run again to get debut issues
+                        // IDEA: create a temp search obj complete rest of searches
+                            // return the values of the temp search to original search obj
+                            // then display values
+                        var tempSearchObj = new Search(pageFormatObj.character);
+                        initialWikiQuery(tempSearchObj);
+                        // console.log('temp character: ', tempSearchObj.character);
                     }else{
                         // if general disambig
                         // display given info
@@ -261,9 +268,12 @@ function retrieveRealName(character){
                             $div = $('<div>');
                             // var $span = $('<span>');
                             var $page = $('<p>').text(pageFormatObj.pages[i].page);
+                            var $img = $('<img>');
                             var $imgTxt = $('<p>').text(pageFormatObj.pages[i].imgTitle);
-                            $div.append($page, $imgTxt);
+                            $div.append($page, $img, $imgTxt);
+                            retrieveImageURL($img, pageFormatObj.pages[i].imgTitle);
                             $('#info').append($div);
+
                         }
                         // await user response to determine how search will proceed
                     }
@@ -745,7 +755,7 @@ function parseImageURL(result){
  * @param {string} content - all the content from the wiki for a given page
  */
 function determinePageFormat(content){
-    formatObj = {
+    var formatObj = {
         success: true,
         pageType: null
     }
