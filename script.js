@@ -216,11 +216,10 @@ function retrieveRealName(character){
                         var imageTitle = parseImageTitle(content);
                         var $img = $('<img>');
                         
-
                         // get debut issues
-                        // var debutArr = parseDebut(content);
+                        var debutArr = parseDebut(content);
                         // display image, name, debut
-                        
+
                         $('#status').text('Search for ...');
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
                         
@@ -259,7 +258,8 @@ function retrieveRealName(character){
                     // display error in status bar
                 }
             }else{
-                console.log('error: ', data.errorMessage);
+                $('#status').text(data.errorMessage);
+                // console.log('error: ', data.errorMessage);
             }
         },  // end of success
         error: function (errorMessage) {
@@ -402,14 +402,6 @@ function retrieveDebutComicImageURL(character, fileName){
             // need to return something in case there is an error
         }
     });
-}
-
-/**
- * 
- * @param {string} content - string of content from the wiki
- */
-function parseImageTitle(content){
-
 }
 
 /**
