@@ -208,6 +208,7 @@ function retrieveRealName(character){
 
                 var pageFormatObj = determinePageFormat(content);
                 // console.log('pageFormatObj: ', pageFormatObj);
+                $('#status').text(`Search for ${searchObj.getTitle()}`);
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
@@ -231,7 +232,7 @@ function retrieveRealName(character){
                         }
                         // display image, name, debut
 
-                        $('#status').text('Search for ...');
+                        // $('#status').text(`Search for ${searchObj.getTitle()}`);
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
                         
 
@@ -250,7 +251,7 @@ function retrieveRealName(character){
                     }else{
                         // if general disambig
                         // display given info
-                        $('#status').text('Search for ...');
+                        // $('#status').text('Search for ...');
 
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
                             $div = $('<div>');
