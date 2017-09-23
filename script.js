@@ -44,12 +44,24 @@ Character.prototype.getDebutImg = function(){
  * @param {string} title - title of the thing to be searched on the wiki
  */
 function Search(title) {
-    this.title = toTitleCase(title);
-    // this.title = title;
+    // this.title = toTitleCase(title);
+    this.title = title;
     this.properName = null;
     this.type = null;
     this.reality = null;
     this.debutArr = [];
+}
+Search.prototype.toTitleCase = function(){
+    var str = this.title;
+    // convert all words to have uppercase first letter
+    var allWordsCaps = str.replace(/[^\s-\(\)]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    // array of words that should not be capitalized
+    var lowerCaseWordsArr = ['The', 'Of', 'And'];
+    // convert words that are not to be capitalized into lowercase
+    for(var i = 0; i < lowerCaseWordsArr.length; i++){
+        allWordsCaps = allWordsCaps.replace(lowerCaseWordsArr[i], lowerCaseWordsArr[i].toLowerCase());
+    }
+    this.title = allWordsCaps;
 }
 // NOTE: need another constructor that will not turn title to title case
 // setter functions
@@ -138,6 +150,7 @@ function submitForm(){
  */
 function gatherInfo(searchTerm){
     var searchObj = new Search(searchTerm);
+    searchObj.toTitleCase();
     // retrieveRealName(searchObj);
     initialWikiQuery(searchObj);
 }
