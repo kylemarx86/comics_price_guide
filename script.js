@@ -212,7 +212,10 @@ function retrieveRealName(character){
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
-                        // if its a template page
+                        // content is for a template page
+                        
+                        // get type of page/search
+                        var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
                         // get image title
                         var $img = $('<img>');
                         var imageTitle = parseImageTitle(content);
@@ -221,26 +224,21 @@ function retrieveRealName(character){
                         }else{
                             $img.attr('src', './resources/image_not_found.png');
                         }
+                        // add type and image to the DOM
+                        $('#info').append($type, $img);
 
-                        // get debut issues
+                        // get debut issues and display them
                         var debutInfo = parseDebut(content);
                         if(debutInfo.success){
+                            $('#debut').text('Debut:');
                             for(var i = 0; i < debutInfo.debutList.length; i++){
                                 var $debut = $('<div>').addClass('debutEntry').text(debutInfo.debutList[i]);
                                 $('#debut').append($debut);
                             }
                         }
-                        // display image, name, debut
-
-                        // $('#status').text(`Search for ${searchObj.getTitle()}`);
-                        var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
-                        
-
-                        $('#info').append($type, $img);
-
                         
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
-                        // if character disambig
+                        // content is for a character disambig
                             // run again to get debut issues
                         // create a temp search obj
                             // this object will run through a second time and return with an content from of a template pageType
@@ -249,10 +247,8 @@ function retrieveRealName(character){
                         initialWikiQuery(tempSearchObj);
                         // console.log('temp character: ', tempSearchObj.character);
                     }else{
-                        // if general disambig
-                        // display given info
-                        // $('#status').text('Search for ...');
-
+                        // content is for a general disambig
+                        // add the page titles and images to the DOM
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
                             $div = $('<div>');
                             var $page = $('<p>').text(pageFormatObj.pages[i].page);
@@ -260,12 +256,13 @@ function retrieveRealName(character){
                             $div.append($page, $img);
                             retrieveImageURL($img, pageFormatObj.pages[i].imgTitle);
                             $('#info').append($div);
-
                         }
                         // await user response to determine how search will proceed
                     }
                 }else{
+                    // unable to determine type of page content came from
                     // display error in status bar
+                    $("#status").text('Unable to determine format of conent.');
                 }
             }else{
                 $('#status').text(data.errorMessage);
