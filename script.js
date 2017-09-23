@@ -1,30 +1,3 @@
-function Character(name) {
-    this.name = toTitleCase(name);
-    this.realName = null;
-    this.debutArr = [];
-}
-Character.prototype.setRealName = function(realName){
-    this.realName = realName;
-}
-Character.prototype.setDebutArr = function(debutArr){
-    this.debutArr = debutArr;
-}
-Character.prototype.setDebutImg = function(debutImg){
-    this.debutImg = debutImg;
-}
-Character.prototype.getName = function(){
-    return this.name;
-}
-Character.prototype.getRealName = function(){
-    return this.realName;
-}
-Character.prototype.getDebutArr = function(){
-    return this.debutArr;
-}
-Character.prototype.getDebutImg = function(){
-    return this.debutImg;
-}
-
 /**
  * Search object is based on the fact that there are multiple templates in the marvel wiki
  * Available templates from wiki: comic, character, team, gallery, organization, location, vehicle,
@@ -44,13 +17,18 @@ Character.prototype.getDebutImg = function(){
  * @param {string} title - title of the thing to be searched on the wiki
  */
 function Search(title) {
-    // this.title = toTitleCase(title);
     this.title = title;
     this.properName = null;
     this.type = null;
     this.reality = null;
     this.debutArr = [];
 }
+
+/**
+ * Special uppercasing function to capitalize beginnings of words and words that start after hyphen
+ * Only to be used on titles coming from the user and NOT on information coming from the wiki itself,
+ *   as this can affect the proper calls going to the wiki on further iterations.
+ */
 Search.prototype.toTitleCase = function(){
     var str = this.title;
     // convert all words to have uppercase first letter
@@ -63,7 +41,6 @@ Search.prototype.toTitleCase = function(){
     }
     this.title = allWordsCaps;
 }
-// NOTE: need another constructor that will not turn title to title case
 // setter functions
 Search.prototype.setProperName = function(properName){
     this.properName = properName;
@@ -110,26 +87,6 @@ function Debut(comic, year, img, sig){
 }
 
 
-
-/**
- * special uppercasing function to capitalize beginnings of words and words that start after hyphen
- * @param {string} str - string to change to special uppercase
- */
-function toTitleCase(str){
-    // convert all words to have uppercase first letter
-    var allWordsCaps = str.replace(/[^\s-\(\)]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-    // array of words that should not be capitalized
-    var lowerCaseWordsArr = ['The', 'Of', 'And'];
-    // convert words that are not to be capitalized into lowercase
-    for(var i = 0; i < lowerCaseWordsArr.length; i++){
-        allWordsCaps = allWordsCaps.replace(lowerCaseWordsArr[i], lowerCaseWordsArr[i].toLowerCase());
-    }
-    // // recapitalize first letter
-    // allWordsCaps = allWordsCaps.charAt(0).toUpperCase() + allWordsCaps.substr(1);
-    // console.log('title searched: ', allWordsCaps);
-    return allWordsCaps;
-}
-
 $(document).ready(function(){
     applyEventHandlers();
 });
@@ -151,7 +108,6 @@ function submitForm(){
 function gatherInfo(searchTerm){
     var searchObj = new Search(searchTerm);
     searchObj.toTitleCase();
-    // retrieveRealName(searchObj);
     initialWikiQuery(searchObj);
 }
 
