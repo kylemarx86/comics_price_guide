@@ -240,7 +240,7 @@ function retrieveRealName(character){
                 console.log('pageFormatObj: ', pageFormatObj);
 
                 if(pageFormatObj.success){
-                    if(pageFormatObj.type === 'template'){
+                    if(pageFormatObj.pageType === 'template'){
                         // if its a template page
                         // get image title
                         // get debut issues
@@ -249,7 +249,7 @@ function retrieveRealName(character){
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
                         $('#info').append($type);
 
-                    }else if(pageFormatObj.type === 'charDisambiguation'){
+                    }else if(pageFormatObj.pageType === 'charDisambiguation'){
                         // if character disambig
                             // run again to get debut issues
                     }else{
