@@ -430,35 +430,61 @@ function retrieveDebutComicImageURL(character, fileName){
  * @param {string} content - string of content from the wiki
  */
 function parseDebut(content){
+    // console.log('content: ', content)
     var debutObj = {
         success: false,
         debutList: []
     }
-    var pattern = /\| First.*=\s(.*)/g;
-    var debut = content.match(pattern);
-    if(debut !== null){
+
+    // first of two possible groupings to check for debuts 
+    var placeHolder = null;
+    var debutsTemp = [];    // temporary holder for information from regex tests 
+    var pattern = /\| First\d?.*=\s(.*)/g;
+    while( (placeHolder = pattern.exec(content)) !== null){
+        debutsTemp.push(placeHolder[1]);
+    }
+    // check for how many debuts exist
+    if(debutsTemp.length > 0){
+        // only one debut found
         debutObj.success = true;
-        // format first debut
-        var delimiter = '= ';
-        var startIndex = debut[0].indexOf(delimiter);
-        debutObj.debutList.push(debut[0].substring(startIndex + delimiter.length));
-        
-        // check to see if there is more than one debut
-        if(debut.length > 1){
-            // extract further debuts
-            // pattern: {{cid|"text to grab"}}("more text to grab")
-            var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
+        // push the first and only grouping of the pattern found
+        var debut = {
+            issue: debutsTemp[0]
+        }
+        debutObj.debutList.push(debut);
+        if(debutsTemp.length > 1){
+            // multiple debuts found
+            // decipher second grouping
+
+            // add first mantle to first object in debutList in debutObj
+            var pattern = /\((?:aS )?(.*?)\)/i;
+            var mantle = pattern.exec(debutsTemp[1]);
+            if(mantle !== null){
+                debutObj.debutList[0].mantle = mantle[1];
+            }
+
+            // extract further debuts and add them to debutList in debutObj
+            // pattern: {{cid|"issue to grab"}}(as? "mantle to grab")
+            // pretty sure I encountered some cases where the "as" was omitted in this pattern. 
+            // NOTE: important to have "as" case-insensitive, hence the i-flag
+            pattern = /\{\{cid\|(.*?)\}\}\((?:as )?(.*?)\)/gi;
             var extraDebuts = null;
         
-            while( (extraDebuts = pattern.exec(debut[1])) !== null){
-                debutObj.debutList.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
+            while( (extraDebuts = pattern.exec(debutsTemp[1])) !== null){
+                var debut = {
+                    issue: extraDebuts[1],
+                    mantle: extraDebuts[2]
+                }
+                debutObj.debutList.push(debut);
             }
-        }
-        // console.log('debut: ', debutObj.debutList);
+        }   // end multiple debuts
     }else{
-        // no debuts could be found
-        debutObj.errorMessage = 'Debut could not be retrieved';
+        // no firsts found
+        // error / null object
+        debutObj.errorMessage = 'No debuts found';
     }
+    console.log('debutObj', debutObj);
+
     return debutObj;
 }
 
