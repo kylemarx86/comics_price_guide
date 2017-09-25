@@ -235,9 +235,15 @@ function retrieveRealName(character){
                             $('#debut').text('Debut:');
                             for(var i = 0; i < debutInfo.debutList.length; i++){
                                 // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                var $debut = $('<div>').addClass('debutEntry').text(debutInfo.debutList[i]);
+                                var $debut = $('<div>').addClass('debutEntry')
+                                var $issue = $('<div>').text(debutInfo.debutList[i].issue);
+                                if(debutInfo.debutList[i].mantle !== null){
+                                    var $mantle = $('<div>').text(debutInfo.debutList[i].mantle);
+                                    $debut.append($mantle);
+                                }
+                                $debut.append($issue);
                                 $('#debut').append($debut);
-                                searchWikiForComic(debutInfo.debutList[i]);
+                                searchWikiForComic(debutInfo.debutList[i].issue);
                             }
                         }
                         
@@ -483,8 +489,6 @@ function parseDebut(content){
         // error / null object
         debutObj.errorMessage = 'No debuts found';
     }
-    console.log('debutObj', debutObj);
-
     return debutObj;
 }
 
