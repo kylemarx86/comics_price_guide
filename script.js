@@ -276,6 +276,7 @@ function searchWikiForComic(image, comicTitle){
         rvprop: 'content',
         rvsection: '0',
     };
+    comicTitle = comicTitle.replace('#', '');
     var queryString = constructQueryString(comicTitle, extraDataOptions);
 
     $.ajax({
