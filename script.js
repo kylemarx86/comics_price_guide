@@ -144,45 +144,6 @@ function constructQueryString(titlesValue, extraDataOptions){
 
 
  /**
-  * retrieveRealName
-  * searches Marvel wiki for mantle and will retrieve information on the character from which their real identity will be extracted
-  * @param {object} character - character object containing name of character to be looked up
-  */
-function retrieveRealName(character){
-    var extraDataOptions = {
-        prop: 'revisions',
-        rvprop: 'content',
-        rvsection: '0',
-    };
-    // first parameter will change
-    var queryString = constructQueryString(character.getName(), extraDataOptions);  
-
-    $.ajax({
-        type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
-        dataType: "json",
-        success: function (data, textStatus, jqXHR) {
-            // console.log('data: ', data);
-            var realNameObj = parseRealName(data);
-            if(realNameObj.success){
-                // no errors - single character retrieved
-                character.setRealName(realNameObj.realName);
-                retrieveDebutComics(character);
-            }else{
-                // an error occured
-
-                // display the error message
-                displayError(realNameObj.errorMessage);
-            }
-            
-        },
-        error: function (errorMessage) {
-        }
-    });
-}
-
-
- /**
   * initialWikiQuery
   * searches Marvel wiki for term and will call another function to parse information returned
   * @param {object} searchObj - search object containing name of term to be looked up
@@ -210,7 +171,6 @@ function retrieveRealName(character){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        console.log('content', data.content);
                         
                         // get type of page/search
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
@@ -345,79 +305,6 @@ function searchWikiForComic(image, comicTitle){
 }
 
 /**
- * 
- * @param {object} character 
- */
-function retrieveDebutComicFileName(character){
-    // remove any # signs for correct formatting when parsed
-    var debutFormatted = character.getDebutArr()[0].replace("#", "");
-    // console.log('debutFormatted: ', debutFormatted);
-    var extraDataOptions = {
-        prop: 'revisions',
-        rvprop: 'content',
-        rvsection: '0',
-    };
-    var queryString = constructQueryString(debutFormatted, extraDataOptions);
-
-    $.ajax({
-        type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
-        dataType: "json",
-        success: function (data, textStatus, jqXHR) {
-            //parser should return success or failure upon determining if correct
-                //information was retrieved
-            var comicContent = parseImageTitle(data);
-            if(comicContent.success){
-                // no errors
-                var imageFileName = comicContent.imageTitle;
-                retrieveDebutComicImageURL(character, imageFileName);
-            }else{
-                // // display the error message
-                displayError(comicContent.errorMessage);
-            }            
-        },
-        error: function (errorMessage) {
-            // need to return something in case there is an error
-        }
-    });
-}
-
-/**
- * will find the complete path to the image for the first of the debut comics
- * @param {object} character - 
- * @param {string} fileName - 
- * */
-function retrieveDebutComicImageURL(character, fileName){
-    var extraDataOptions = {
-        prop: 'imageinfo',
-        iiprop: 'url',
-    };
-    var queryString = constructQueryString("File:"+fileName, extraDataOptions);
-
-    $.ajax({
-        type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
-        dataType: "json",
-        success: function (data, textStatus, jqXHR) {
-            //parser should return success or failure upon determining if correct
-                //information was retrieved
-            var imageContent = parseImageURL(data);
-            if(imageContent.success){
-                // no errors
-                character.setDebutImg(imageContent.imageSrc);
-                displayResults(character);
-            }else{
-                // display the error message
-                displayError(imageContent.errorMessage);
-            }            
-        },
-        error: function (errorMessage) {
-            // need to return something in case there is an error
-        }
-    });
-}
-
-/**
  * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
  * 
  * COMMENTS: comics are weird in that there can be multiple first appearances/debuts for a character
@@ -521,235 +408,6 @@ function retrieveImageURL(image, fileName){
     });
 }
 
-/**
- * extracts the real name of the most relavant character from the disambiguation page of the wiki
- * @param {*} result - json object from wikia API containing disambiguation on characters
- */
-function parseRealName(result){
-    // console.log('result: ', result);
-    var key = 0;
-    var realNameObj = {
-        success: false,
-    };
-    for(i in result.query.pages)
-    key = i;
-    
-    if(key === "-1"){
-        // call was unsuccessful
-        realNameObj.success = false;
-        realNameObj.errorMessage = 'Could not find page for character';
-        return realNameObj;
-    }else{
-        // call was successful
-        var content = result.query.pages[key].revisions[0]['*'];
-        // console.log('content: ', content);
-
-        // when searching for most characters there will be a disambiguation page the character in alternate realities (it's a comics thing)
-        // we wish to find the character in the most relevant reality (it's a comics thing)
-        // for most pages this will be found under the section Main Character (see )
-        // others will list this under RealName (see R'tee), (I don't know how often this case comes up but I am accounting for it)
-        // if these tests fail, but there is still info to work with, it will be a true disambiguation page with many different characters (see Meteor)
-
-        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]/g;
-        var matchResults = pattern.exec(content);
-        if(matchResults !== null){
-            // page is not a disambiguation page
-            // character found
-            realNameObj.success = true;
-            var realName = matchResults[1];
-
-
-            // check to ensure real name is from main universe (Earth-616)
-            // NOTE: change to be " (Earth-" to account for other realities
-            var searchStr = " (Earth-616)";
-            if(realName.indexOf(searchStr) < 0){
-                // if not found concatenate searchStr to realName
-                realName += searchStr;
-            }
-            
-            realNameObj.realName = realName;
-            return realNameObj;
-        }else{
-            // patter for some character's real name
-            var pattern = /RealName\s*=\s(.*)/g;
-            var matchResults = pattern.exec(content);
-
-            if(matchResults !== null){
-                // page is not a disambiguation page but is of second pattern
-                // character found
-                realNameObj.success = true;
-
-                var realName = matchResults[1];
-                // check to ensure real name is from main universe (Earth-616)
-                var searchStr = " (Earth-616)";
-                if(realName.indexOf(searchStr) < 0){
-                    // if not found concatenate searchStr to realName
-                    realName += searchStr;
-                }
-
-                realNameObj.realName = realName;
-                return realNameObj;
-            }else{
-                // page is a true disambiguation page
-                // console.log(content);
-                realNameObj.success = false;
-                realNameObj.errorMessage = 'Disambiguation page reached. Choose one of these characters.';
-                // New Header1 denotes a character
-                // var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]/g;      //working
-                var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    //with images??
-
-                // gather all names and image titles in disambiguation page
-                realNameObj.pages = parseDisambiguation(pattern, content);
-                
-                for(var i = 0; i < realNameObj.pages.length; i++){
-                    // for each page represented in disambiguation page, display image and title of page
-                    var $div = $('<div>').addClass('character');
-                    var $img = $('<img>');
-                    retrieveImageURL($img, realNameObj.pages[i].img)
-                    var $title = $('<p>').text(realNameObj.pages[i].page);
-                    $div.append($img, $title);
-                    $('#info').append($div);
-                }
-                return realNameObj;
-            }
-    
-        }
-    }
-}
-
-/**
- * returns an array of objects holding information on disambiguation pages including title and image
- * @param {*} pattern - regex pattern to test
- * @param {string} content - content to check against regex pattern
- */
-function parseDisambiguation(pattern, content){
-    var tempMatchArr = null;
-    matchArr = [];
-    while( (tempMatchArr = pattern.exec(content)) !== null){
-        tempObj = {};
-        tempObj.page = tempMatchArr[1];
-        // tempObj.img = tempMatchArr[2];
-        tempObj.imgTitle = tempMatchArr[2];
-        matchArr.push(tempObj);
-    }
-    // console.log('matchArr: ', matchArr);
-    return matchArr;
-}
-
-/**
- * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
- * 
- * comments: comics are weird in that there can be multiple first appearances/debuts for a character
- * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
- * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
- *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
- * @param {*} result - json object from wikia API containing character information
- */
-function parseDebutComics(result){
-    // console.log('result: ', result);
-    var key = 0;
-    var debutObj = {
-        success: false,
-    };
-
-    for(i in result.query.pages)
-    key = i;
-    
-    if(key === "-1"){
-        // call was unsuccessful
-        debutObj.success = false;
-        debutObj.errorMessage = 'Could not find debut comics';
-        return debutObj;
-    }else{
-        // call was successful
-        debutObj.debutList = [];
-        var content = result.query.pages[key].revisions[0]['*'];
-        // console.log('content: ', content);
-
-        var debut = content.match(/\| First.*=\s(.*)/g);
-        if(debut !== null){
-            debutObj.success = true;
-            // console.log(debut);
-            // format first debut
-            var delimiter = '= ';
-            var startIndex = debut[0].indexOf(delimiter);
-            debutObj.debutList.push(debut[0].substring(startIndex + delimiter.length));
-            
-            // check to see if there is more than one debut
-            if(debut.length > 1){
-                // extract further debuts
-                // pattern: {{cid|"text to grab"}}("more text to grab")
-                var pattern = /\{\{cid\|(.*?)\}\}(\(.*?\))/g;
-                var extraDebuts = null;
-            
-                while( (extraDebuts = pattern.exec(debut[1])) !== null){
-                    debutObj.debutList.push(`${extraDebuts[1]} ${extraDebuts[2]}`);
-                }
-            }
-            return debutObj;
-        }else{
-            // what does it mean if there is no first appearance listed???
-        }
-    }
-}
-
-/**
- * 
- * @param {object} result - json object
- */
-function parseImageTitleOrig(result){
-    // console.log('result: ', result);
-
-    var key = 0;
-    var comicObj = {
-        success: false,
-    };
-    for(i in result.query.pages)
-    key = i;
-    
-    if(key === "-1"){
-        // call was unsuccessful
-        comicObj.success = false;
-        comicObj.errorMessage = 'Could not find image.';
-        return comicObj;
-    }else{
-        // call was successful
-        comicObj.success = true;
-        content = result.query.pages[key].revisions[0]['*'];
-        // console.log('content: ', content);
-
-        var pattern = /\| Image\s*=\s(.*)/g;
-        var matchResults = pattern.exec(content);
-
-        if(matchResults !== null){
-            comicObj.success = true;
-            comicObj.imageTitle = matchResults[1];
-            return comicObj;
-        }else{
-            // page is a disambiguation page
-            comicObj.success = false;
-            comicObj.errorMessage = 'Disambiguation page reached. Choose one of these comics.';
-            // New Header2 denotes a comic or comic volume
-            var pattern = /New Header2_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;
-            // console.log(content);
-
-            // gather all names in disambiguation page
-            comicObj.pages = parseDisambiguation(pattern, content);
-
-            for(var i = 0; i < comicObj.pages.length; i++){
-                // for each page represented in disambiguation page, display image and title of page
-                var $div = $('<div>').addClass('comic');
-                var $img = $('<img>');
-                retrieveImageURL($img, comicObj.pages[i].img)
-                var $title = $('<p>').text(comicObj.pages[i].page);
-                $div.append($img, $title);
-                $('#debut').append($div);
-            }
-            return comicObj;
-        }
-    }
-}
-
 function parseImageTitle(content){
     var pattern = /\| Image\s*=\s(.*)/g;
     var matchResults = pattern.exec(content);
@@ -760,7 +418,6 @@ function parseImageTitle(content){
     }
     return imageTitle;
 }
-
 
 function parseImageURL(result){
     // console.log('result: ', result);
@@ -786,7 +443,6 @@ function parseImageURL(result){
         return imageObj;
     }
 }
-
 
 /**
  * takes content from a wiki page and determines if it is a template page, a character disambiguation
@@ -838,32 +494,10 @@ function determinePageFormat(content){
     return formatObj;
 }
 
-
-
-
-
 function clearResultsAndStatus(){
     $('#info').empty();
     $('#debut').empty();
     $('#status').empty();
-}
-
-function displayResults(character){
-    clearResultsAndStatus();
-    $('#info').append(character.getRealName());
-    var debutComics = character.getDebutArr();
-    var img = $('<img>').attr('src', character.getDebutImg());
-    $('#debut').append(img);
-    for(var i = 0; i < debutComics.length; i++){
-        var comic = $('<p>').text(debutComics[i]);
-        $('#debut').append(comic);
-    }
-    
-}
-
-function displayImage(imageSource){
-    var img = $('<img>').attr('src', imageSource);
-    $('#debut').append(img);
 }
 
 /**
@@ -873,3 +507,13 @@ function displayImage(imageSource){
 function displayError(errorMessage){
     $('#status').text(errorMessage);
 }
+
+
+/**
+ * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
+ * 
+ * comments: comics are weird in that there can be multiple first appearances/debuts for a character
+ * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
+ * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
+ *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
+ */
