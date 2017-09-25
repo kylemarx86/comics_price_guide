@@ -8,7 +8,7 @@
  * (not sure yet) All searchable things will also have a reality associated for them to aide in keeping track of pages. 
  *  Since the scope of this project relates to comic books, different realities for stories may exist so it
  *  will be important to keep track of these to ensure we get correct data in the end.
- * All searches will also all have a debutArr which will contain an array of objects each representing a debeut
+ * All searches will also all have a debutArr which will contain an array of objects each representing a debut
  *  Since the scope of this project relates to comic books, characters can carry different mantles, teams 
  *  can have different iterations, etc. Thus, an array of debuts is possible despite the usual conotations of the 
  *  word meaning first. For the purposes of this project I will keep track of as many of these debuts as possible,
@@ -227,13 +227,17 @@ function retrieveRealName(character){
                         // add type and image to the DOM
                         $('#info').append($type, $img);
 
+                        // make handlers to controll different template page types
+                        // make exception to not do the rest if template is for a comic
                         // get debut issues and display them
                         var debutInfo = parseDebut(content);
                         if(debutInfo.success){
                             $('#debut').text('Debut:');
                             for(var i = 0; i < debutInfo.debutList.length; i++){
+                                // for each debut add already gathered info to screen and search wiki for images of debut comic
                                 var $debut = $('<div>').addClass('debutEntry').text(debutInfo.debutList[i]);
                                 $('#debut').append($debut);
+                                searchWikiForComic(debutInfo.debutList[i]);
                             }
                         }
                         
@@ -296,40 +300,46 @@ function generalParser(response){
 }
 
 
-
+// WORKING ON / START HERE
  /**
-  * retrieveDebut
-  * searches the Marvel wiki for a character name (based on their true identity) and will retrieve
-  *     information on the character from which their first appearance/debut comic will be extracted.
-  * @param {object} character - character object that contains realName that will be used to
-  *     retrieve debuts
-//   * @returns {array} an array of comics that the character debuts in
+  * searches the Marvel wiki for a specific comic to receive information on it.
+  * @param {object} searchObj - search object that contains debutArr property that will be used to search wiki
   */
-function retrieveDebutComics(character){
+function searchWikiForComic(comicTitle){
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
         rvsection: '0',
     };
-    var queryString = constructQueryString(character.getRealName(), extraDataOptions);
+    // var tempComic = searchObj.getDebutArr()[0];
+    var queryString = constructQueryString(comicTitle, extraDataOptions);
 
     $.ajax({
         type: "GET",
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            //parser should return success or failure upon determining if correct
-                //information was retrieved
-            var debutContent = parseDebutComics(data);
-            if(debutContent.success){
-                // no errors
-                character.setDebutArr(debutContent.debutList);
-                retrieveDebutComicFileName(character);
-                // displayResults(character);
+            //parser should return success or failure upon determining if correct information was retrieved
+            var comicInfo = generalParser(data);
+            if(comicInfo.success){
+                // we received page information
+
+                // get image for comic
+                var $img = $('<img>');
+                // parse out the image title for the comic
+                var imageTitle = parseImageTitle(comicInfo.content);
+                if(imageTitle !== null){
+                    retrieveImageURL($img, imageTitle);
+                }else{
+                    $img.attr('src', './resources/image_not_found.png');
+                }
+                
+                $('#debut').append($img);
+                // make call to the wiki for the location of the image with that title
             }else{
                 // display the error message
-                displayError(debutContent.errorMessage);
-            }            
+                displayError(comicInfo.errorMessage);
+            }
         },
         error: function (errorMessage) {
             // need to return something in case there is an error
