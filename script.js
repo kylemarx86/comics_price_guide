@@ -204,15 +204,13 @@ function retrieveRealName(character){
             data = generalParser(data);
             if(data.success){
                 var content = data.content;
-                // console.log('content: ', content);
-
                 var pageFormatObj = determinePageFormat(content);
-                // console.log('pageFormatObj: ', pageFormatObj);
                 $('#status').text(`Search for ${searchObj.getTitle()}`);
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
+                        console.log('content', data.content);
                         
                         // get type of page/search
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
@@ -227,7 +225,7 @@ function retrieveRealName(character){
                         // add type and image to the DOM
                         $('#info').append($type, $img);
 
-                        // make handlers to controll different template page types
+                        // make handlers to control different template page types
                         // make exception to not do the rest if template is for a comic
                         // get debut issues and display them
                         var debutInfo = parseDebut(content);
@@ -237,13 +235,14 @@ function retrieveRealName(character){
                                 // for each debut add already gathered info to screen and search wiki for images of debut comic
                                 var $debut = $('<div>').addClass('debutEntry')
                                 var $issue = $('<div>').text(debutInfo.debutList[i].issue);
+                                var $img = $('<img>');
                                 if(debutInfo.debutList[i].mantle !== null){
                                     var $mantle = $('<div>').text(debutInfo.debutList[i].mantle);
                                     $debut.append($mantle);
                                 }
-                                $debut.append($issue);
+                                $debut.append($issue, $img);
                                 $('#debut').append($debut);
-                                searchWikiForComic(debutInfo.debutList[i].issue);
+                                searchWikiForComic($img, debutInfo.debutList[i].issue);
                             }
                         }
                         
@@ -306,18 +305,17 @@ function generalParser(response){
 }
 
 
-// WORKING ON / START HERE
  /**
   * searches the Marvel wiki for a specific comic to receive information on it.
-  * @param {object} searchObj - search object that contains debutArr property that will be used to search wiki
+  * @param {object} image - DOM object to update the source of once image URL is received from wiki
+  * @param {object} comicTitle - title of the issue we are searching for on the wiki
   */
-function searchWikiForComic(comicTitle){
+function searchWikiForComic(image, comicTitle){
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
         rvsection: '0',
     };
-    // var tempComic = searchObj.getDebutArr()[0];
     var queryString = constructQueryString(comicTitle, extraDataOptions);
 
     $.ajax({
@@ -328,20 +326,13 @@ function searchWikiForComic(comicTitle){
             //parser should return success or failure upon determining if correct information was retrieved
             var comicInfo = generalParser(data);
             if(comicInfo.success){
-                // we received page information
-
-                // get image for comic
-                var $img = $('<img>');
-                // parse out the image title for the comic
+                // page information was received
                 var imageTitle = parseImageTitle(comicInfo.content);
                 if(imageTitle !== null){
-                    retrieveImageURL($img, imageTitle);
+                    retrieveImageURL(image, imageTitle);
                 }else{
-                    $img.attr('src', './resources/image_not_found.png');
+                    image.attr('src', './resources/image_not_found.png');
                 }
-                
-                $('#debut').append($img);
-                // make call to the wiki for the location of the image with that title
             }else{
                 // display the error message
                 displayError(comicInfo.errorMessage);
