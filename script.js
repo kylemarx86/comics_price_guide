@@ -222,7 +222,7 @@ function constructQueryString(titlesValue, extraDataOptions){
                             var $page = $('<p>').text(pageFormatObj.pages[i].page);
                             var $img = $('<img>');
                             $div.append($page, $img);
-                            retrieveImageURL($img, pageFormatObj.pages[i].imgTitle);
+                            retrieveImageURL($img, pageFormatObj.pages[i].img);     // final part should be imgTitle not img for clarity
                             $('#info').append($div);
                         }
                         // await user response to determine how search will proceed
@@ -394,7 +394,7 @@ function retrieveImageURL(image, fileName){
                 image.attr('src', imageContent.imageSrc);
             }else{
                 // display the error message and updated image source
-                image.attr('src', '/resources/image_not_found.png');
+                image.attr('src', './resources/image_not_found.png');
                 displayError(imageContent.errorMessage);
             }
         },
@@ -457,13 +457,16 @@ function determinePageFormat(content){
         formatObj.pageType = 'template';
         formatObj.templateType = template[1];
         // NOTE: should grab image title too since others do
-        pattern = /\| Image\s*=\s(.*)/g;
-        var image = pattern.exec(content);
-        if(image !== null){
-            formatObj.imageTitle = image[1];
-        }else{
-            formatObj.imageTitle = null;
-        }
+        formatObj.imageTitle = parseImageTitle(content);
+
+
+        // pattern = /\| Image\s*=\s(.*)/g;
+        // var image = pattern.exec(content);
+        // if(image !== null){
+        //     formatObj.imageTitle = image[1];
+        // }else{
+        //     formatObj.imageTitle = null;
+        // }
 
     }else{
         // check if content is of type character disambiguation
@@ -481,6 +484,15 @@ function determinePageFormat(content){
             if(disambiguation !== null){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
+                console.log('disambiguation', disambiguation);
+                // var imageTitle = disambiguation[]
+                var $div = $('<div>').addClass('disambig');
+                var $img = $('<img>');
+                // retrieveImageURL
+
+
+                // add images and titles to screen
+
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
@@ -503,6 +515,29 @@ function clearResultsAndStatus(){
 function displayError(errorMessage){
     $('#status').text(errorMessage);
 }
+
+
+/**
+ * returns an array of objects holding information on disambiguation pages including title and image
+ * @param {*} pattern - regex pattern to test
+ * @param {string} content - content to check against regex pattern
+ */
+function parseDisambiguation(pattern, content){
+    console.log('content', content)
+    var tempMatchArr = null;
+    matchArr = [];
+    while( (tempMatchArr = pattern.exec(content)) !== null){
+        tempObj = {};
+        tempObj.page = tempMatchArr[1];
+        tempObj.img = tempMatchArr[2];
+        matchArr.push(tempObj);
+    }
+    // console.log('matchArr: ', matchArr);
+    return matchArr;
+}
+
+
+
 
 
 /**
