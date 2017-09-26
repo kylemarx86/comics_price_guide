@@ -185,25 +185,29 @@ function constructQueryString(titlesValue, extraDataOptions){
                         // add type and image to the DOM
                         $('#info').append($type, $img);
 
-                        // make handlers to control different template page types
-                        // make exception to not do the rest if template is for a comic
-                        // get debut issues and display them
-                        var debutInfo = parseDebut(content);
-                        if(debutInfo.success){
-                            $('#debut').text('Debut:');
-                            for(var i = 0; i < debutInfo.debutList.length; i++){
-                                // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                var $debut = $('<div>').addClass('debutEntry')
-                                var $issue = $('<div>').text(debutInfo.debutList[i].issue);
-                                var $img = $('<img>');
-                                if(debutInfo.debutList[i].mantle !== null){
-                                    var $mantle = $('<div>').text(debutInfo.debutList[i].mantle);
-                                    $debut.append($mantle);
+                        // check to see if we can parse out debut issues based on the type of template the page used
+                        //   since not all page templates have information on first appearances
+                        if( pageCanRunDebutCheck(pageFormatObj.templateType) ){
+                            // get debut issues and display them
+                            var debutInfo = parseDebut(content);
+                            if(debutInfo.success){
+                                $('#debut').text('Debut:');
+                                for(var i = 0; i < debutInfo.debutList.length; i++){
+                                    // for each debut add already gathered info to screen and search wiki for images of debut comic
+                                    var $debut = $('<div>').addClass('debutEntry')
+                                    var $issue = $('<div>').text(debutInfo.debutList[i].issue);
+                                    var $img = $('<img>');
+                                    if(debutInfo.debutList[i].mantle !== null){
+                                        var $mantle = $('<div>').text(debutInfo.debutList[i].mantle);
+                                        $debut.append($mantle);
+                                    }
+                                    $debut.append($issue, $img);
+                                    $('#debut').append($debut);
+                                    searchWikiForComic($img, debutInfo.debutList[i].issue);
                                 }
-                                $debut.append($issue, $img);
-                                $('#debut').append($debut);
-                                searchWikiForComic($img, debutInfo.debutList[i].issue);
                             }
+                        }else{
+                            console.log("This type of page does not typically have debuts")
                         }
                         
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
@@ -239,6 +243,33 @@ function constructQueryString(titlesValue, extraDataOptions){
         error: function (errorMessage) {
         }
     });
+}
+
+/**
+ * Determines if a page can run a check for a debut comic based on the type of template the page is.
+ * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
+ *   Organization, Location, Vehicle, Item, Race, Reality, Event, and Storyline
+ * Unexceptable types of templates are Comic, Television Episode, Marvel Staff, Image, Novel, and User Page
+ * If further page templates are created this will need to be edited.
+ * @param {string} templateType - type of 
+ * @return {boolean} 
+ */
+function pageCanRunDebutCheck(templateType){
+    if(templateType == 'Character' 
+        || templateType == 'Team' 
+        || templateType == 'Organization' 
+        || templateType == 'Location' 
+        || templateType == 'Vehicle' 
+        || templateType == 'Item' 
+        || templateType == 'Race' 
+        || templateType == 'Reality' 
+        || templateType == 'Event' 
+        || templateType == 'Storyline' 
+    ){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 // NOTE: pass another argument in, the term searched for so error message can contain it
@@ -478,13 +509,14 @@ function determinePageFormat(content){
             formatObj.character = character[1];
             // formatObj.imageTitle = character[2];
         }else{
+            // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
             var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title
             var disambiguation = parseDisambiguation(pattern, content);
             if(disambiguation !== null){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
-                console.log('disambiguation', disambiguation);
+                // console.log('disambiguation', disambiguation);
                 // var imageTitle = disambiguation[]
                 var $div = $('<div>').addClass('disambig');
                 var $img = $('<img>');
@@ -523,7 +555,6 @@ function displayError(errorMessage){
  * @param {string} content - content to check against regex pattern
  */
 function parseDisambiguation(pattern, content){
-    console.log('content', content)
     var tempMatchArr = null;
     matchArr = [];
     while( (tempMatchArr = pattern.exec(content)) !== null){
