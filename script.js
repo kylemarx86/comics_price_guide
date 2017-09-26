@@ -346,20 +346,27 @@ function searchWikiForComic(image, comicTitle){
 function parseDebut(content){
     var debutObj = {
         success: false,
-        debutList: []
+        debutList: null
     }
 
     // first of two possible groupings to check for debuts 
     var placeHolder = null;
     var debutsTemp = [];    // temporary holder for information from regex tests 
     var pattern = /\| First\d?.*=\s(.*)/g;
+    // capture debut issue
     while( (placeHolder = pattern.exec(content)) !== null){
-        debutsTemp.push(placeHolder[1]);
+        // prevent the pushing of empty strings to debuts
+        if(placeHolder[1] !== ""){
+            debutsTemp.push(placeHolder[1]);
+        }
+        // NOTE: consider creating exception if this second check fails 
     }
     // check for how many debuts exist
     if(debutsTemp.length > 0){
-        // only one debut found
+        // at least one debut found
         debutObj.success = true;
+        debutObj.debutList = [];
+
         // push the first and only grouping of the pattern found
         var debut = {
             issue: debutsTemp[0]
@@ -443,8 +450,13 @@ function parseImageTitle(content){
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
+    // if there are result
     if(matchResults !== null){
-        imageTitle = matchResults[1];
+        // prevent the pushing of empty strings to images
+        if(matchResults[1] !== ""){
+            imageTitle = matchResults[1];
+        }
+        // NOTE: consider creating exception if this second check fails 
     }
     return imageTitle;
 }
