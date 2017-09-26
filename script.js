@@ -408,7 +408,7 @@ function retrieveImageURL(image, fileName){
 }
 
 function parseImageTitle(content){
-    var pattern = /\| Image\s*=\s(.*)/g;
+    var pattern = /\| Image\s*=\s?(.*)/g;
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
