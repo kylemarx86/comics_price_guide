@@ -138,7 +138,6 @@ function constructQueryString(titlesValue, extraDataOptions){
     }
     // remove final ampersand from end of query string
     queryString = queryString.substring(0, queryString.length - 1);
-    // console.log('queryString: ', queryString);
     return queryString;
 }
 
@@ -171,7 +170,7 @@ function constructQueryString(titlesValue, extraDataOptions){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        console.log('content: ', content);
+                        // console.log('content: ', content);
                         
                         // get type of page/search
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
@@ -215,7 +214,6 @@ function constructQueryString(titlesValue, extraDataOptions){
                             // and will gather the rest of the desired information                         
                         var tempSearchObj = new Search(pageFormatObj.character);
                         initialWikiQuery(tempSearchObj);
-                        // console.log('temp character: ', tempSearchObj.character);
                     }else{
                         // content is for a general disambig
                         // add the page titles and images to the DOM
@@ -236,7 +234,6 @@ function constructQueryString(titlesValue, extraDataOptions){
                 }
             }else{
                 $('#status').text(data.errorMessage);
-                // console.log('error: ', data.errorMessage);
             }
         },  // end of success
         error: function (errorMessage) {
@@ -316,7 +313,6 @@ function searchWikiForComic(image, comicTitle){
  * @param {string} content - string of content from the wiki
  */
 function parseDebut(content){
-    // console.log('content: ', content)
     var debutObj = {
         success: false,
         debutList: []
@@ -329,7 +325,6 @@ function parseDebut(content){
     while( (placeHolder = pattern.exec(content)) !== null){
         debutsTemp.push(placeHolder[1]);
     }
-    console.log('debutsTemp', debutsTemp);
     // check for how many debuts exist
     if(debutsTemp.length > 0){
         // only one debut found
@@ -355,7 +350,7 @@ function parseDebut(content){
             // pattern: {{cid|"issue to grab"}} "{{|g" or "(" as? "mantle to grab" "}}" or ")"
             // pretty sure I encountered some cases where the "as" was omitted in this pattern. 
             // NOTE: important to have "as" case-insensitive, hence the i-flag
-            pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(.*?)(?:\}\}|\))/gi;     // pattern combining cases
+            pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/gi;     // pattern combining cases
             var extraDebuts = null;
         
             while( (extraDebuts = pattern.exec(debutsTemp[1])) !== null){
@@ -365,7 +360,6 @@ function parseDebut(content){
                 }
                 debutObj.debutList.push(debut);
             }
-            console.log('debutObj', debutObj);
         }   // end multiple debuts
     }else{
         // no firsts found
@@ -425,8 +419,6 @@ function parseImageTitle(content){
 }
 
 function parseImageURL(result){
-    // console.log('result: ', result);
-
     var key = 0;
     var imageObj = {
         success: false,
@@ -444,7 +436,6 @@ function parseImageURL(result){
         imageObj.success = true;
         imageObj.imageSrc = result.query.pages[key].imageinfo[0].url;
 
-        // console.log('imageObj.imageSrc: ', imageObj.imageSrc);
         return imageObj;
     }
 }
