@@ -489,16 +489,6 @@ function determinePageFormat(content){
         formatObj.templateType = template[1];
         // NOTE: should grab image title too since others do
         formatObj.imageTitle = parseImageTitle(content);
-
-
-        // pattern = /\| Image\s*=\s(.*)/g;
-        // var image = pattern.exec(content);
-        // if(image !== null){
-        //     formatObj.imageTitle = image[1];
-        // }else{
-        //     formatObj.imageTitle = null;
-        // }
-
     }else{
         // check if content is of type character disambiguation
         // var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]; (.*)/g;   // with image title
@@ -522,9 +512,7 @@ function determinePageFormat(content){
                 var $img = $('<img>');
                 // retrieveImageURL
 
-
                 // add images and titles to screen
-
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
@@ -563,12 +551,8 @@ function parseDisambiguation(pattern, content){
         tempObj.img = tempMatchArr[2];
         matchArr.push(tempObj);
     }
-    // console.log('matchArr: ', matchArr);
     return matchArr;
 }
-
-
-
 
 
 /**
