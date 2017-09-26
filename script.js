@@ -171,6 +171,7 @@ function constructQueryString(titlesValue, extraDataOptions){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
+                        console.log('content: ', content);
                         
                         // get type of page/search
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
@@ -328,6 +329,7 @@ function parseDebut(content){
     while( (placeHolder = pattern.exec(content)) !== null){
         debutsTemp.push(placeHolder[1]);
     }
+    console.log('debutsTemp', debutsTemp);
     // check for how many debuts exist
     if(debutsTemp.length > 0){
         // only one debut found
@@ -342,17 +344,18 @@ function parseDebut(content){
             // decipher second grouping
 
             // add first mantle to first object in debutList in debutObj
-            var pattern = /\((?:aS )?(.*?)\)/i;
+            var pattern = /(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/i     // pattern for working with parentheses and braces cases
+            
             var mantle = pattern.exec(debutsTemp[1]);
             if(mantle !== null){
                 debutObj.debutList[0].mantle = mantle[1];
             }
 
             // extract further debuts and add them to debutList in debutObj
-            // pattern: {{cid|"issue to grab"}}(as? "mantle to grab")
+            // pattern: {{cid|"issue to grab"}} "{{|g" or "(" as? "mantle to grab" "}}" or ")"
             // pretty sure I encountered some cases where the "as" was omitted in this pattern. 
             // NOTE: important to have "as" case-insensitive, hence the i-flag
-            pattern = /\{\{cid\|(.*?)\}\}\((?:as )?(.*?)\)/gi;
+            pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(.*?)(?:\}\}|\))/gi;     // pattern combining cases
             var extraDebuts = null;
         
             while( (extraDebuts = pattern.exec(debutsTemp[1])) !== null){
@@ -362,6 +365,7 @@ function parseDebut(content){
                 }
                 debutObj.debutList.push(debut);
             }
+            console.log('debutObj', debutObj);
         }   // end multiple debuts
     }else{
         // no firsts found
