@@ -1,3 +1,15 @@
+
+
+/**
+ * GENERAL NOTES ON PROJECT
+ * 
+ * comments: comics are weird in that there can be multiple first appearances/debuts for a character
+ * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
+ * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
+ *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
+ */
+
+
 /**
  * Search object is based on the fact that there are multiple templates in the marvel wiki
  * Available templates from wiki: comic, character, team, gallery, organization, location, vehicle,
@@ -111,36 +123,8 @@ function gatherInfo(searchTerm){
     initialWikiQuery(searchObj);
 }
 
-/**
- * parse together data options to create query string for calls to wikia API
- * @param {string} titlesValue - title of the page to be searched for
- * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
- */
-function constructQueryString(titlesValue, extraDataOptions){
-    // base data incorporated in all calls to wikia API
-    var data = {
-        format: 'json',
-        action: 'query',
-        callback: '?',
-        titles: encodeURIComponent(titlesValue),
-        redirects: ''
-    };
-    // add extra key value pairs into data object
-    for(var key in extraDataOptions){
-        if(extraDataOptions.hasOwnProperty(key)){
-            data[key] = extraDataOptions[key];
-        }
-    }
-    // construct query string from data object's key value pairs
-    var queryString = "";
-    for(var i = 0; i < Object.keys(data).length; i++){
-        queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
-    }
-    // remove final ampersand from end of query string
-    queryString = queryString.substring(0, queryString.length - 1);
-    return queryString;
-}
 
+// WIKI QUERY METHODS
 
  /**
   * initialWikiQuery
@@ -246,60 +230,11 @@ function constructQueryString(titlesValue, extraDataOptions){
 }
 
 /**
- * Determines if a page can run a check for a debut comic based on the type of template the page is.
- * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
- *   Organization, Location, Vehicle, Item, Race, Reality, Event, and Storyline
- * Unexceptable types of templates are Comic, Television Episode, Marvel Staff, Image, Novel, and User Page
- * If further page templates are created this will need to be edited.
- * @param {string} templateType - type of 
- * @return {boolean} 
- */
-function pageCanRunDebutCheck(templateType){
-    if(templateType == 'Character' 
-        || templateType == 'Team' 
-        || templateType == 'Organization' 
-        || templateType == 'Location' 
-        || templateType == 'Vehicle' 
-        || templateType == 'Item' 
-        || templateType == 'Race' 
-        || templateType == 'Reality' 
-        || templateType == 'Event' 
-        || templateType == 'Storyline' 
-    ){
-        return true;
-    }else{
-        return false;
-    }
-}
-
-// NOTE: pass another argument in, the term searched for so error message can contain it
-function generalParser(response){
-    var key = 0;
-    var data = {
-        success: false
-    }
-    
-    for(i in response.query.pages)
-    key = i;
-
-    if(key < 0){
-        // call was unsuccessful
-        data.errorMessage = 'Could not find page for search term';
-    }else{
-        // call was successful
-        data.success = true;
-        data.content = response.query.pages[key].revisions[0]['*'];
-    }
-    return data;
-}
-
-
- /**
   * searches the Marvel wiki for a specific comic to receive information on it.
   * @param {object} image - DOM object to update the source of once image URL is received from wiki
   * @param {object} comicTitle - title of the issue we are searching for on the wiki
   */
-function searchWikiForComic(image, comicTitle){
+  function searchWikiForComic(image, comicTitle){
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -342,6 +277,85 @@ function searchWikiForComic(image, comicTitle){
             image.attr('src', './resources/image_not_found.png');
         }
     });
+}
+
+/**
+ * will find the complete path to an image on the wiki based on its title
+ * @param {object} image - DOM object to update the source of once image URL is received from wiki
+ * @param {string} fileName - name of file to search the wiki for
+ */
+function retrieveImageURL(image, fileName){
+    var extraDataOptions = {
+        prop: 'imageinfo',
+        iiprop: 'url',
+    };
+    var queryString = constructQueryString("File:"+fileName, extraDataOptions);
+
+    $.ajax({
+        type: "GET",
+        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            // //parser should return success or failure upon determining if correct
+            //     //information was retrieved
+            var imageContent = parseImageURL(data);
+            if(imageContent.success){
+                // no errors - update image source
+                image.attr('src', imageContent.imageSrc);
+            }else{
+                // display the error message and updated image source
+                image.attr('src', './resources/image_not_found.png');
+                displayError(imageContent.errorMessage);
+            }
+        },
+        error: function (errorMessage) {
+            // need to return something in case there is an error
+            imageContent = {
+                success: false
+            }
+        }
+    });
+}
+
+// METHODS FOR PARSING
+
+// NOTE: pass another argument in, the term searched for so error message can contain it
+function generalParser(response){
+    var key = 0;
+    var data = {
+        success: false
+    }
+    
+    for(i in response.query.pages)
+    key = i;
+
+    if(key < 0){
+        // call was unsuccessful
+        data.errorMessage = 'Could not find page for search term';
+    }else{
+        // call was successful
+        data.success = true;
+        data.content = response.query.pages[key].revisions[0]['*'];
+    }
+    return data;
+}
+
+
+/**
+ * returns an array of objects holding information on disambiguation pages including title and image
+ * @param {object} pattern - regex pattern object to test
+ * @param {string} content - content to check against regex pattern
+ */
+function parseDisambiguation(pattern, content){
+    var tempMatchArr = null;
+    matchArr = [];
+    while( (tempMatchArr = pattern.exec(content)) !== null){
+        tempObj = {};
+        tempObj.page = tempMatchArr[1];
+        tempObj.img = tempMatchArr[2];
+        matchArr.push(tempObj);
+    }
+    return matchArr;
 }
 
 /**
@@ -418,44 +432,6 @@ function parseDebut(content){
 }
 
 /**
- * will find the complete path to the image for the first of the debut comics
- * @param {*} image - location on DOM that will have its source attribute replaced
- * @param {string} fileName - name of file to search the wiki for
- */
-function retrieveImageURL(image, fileName){
-    var extraDataOptions = {
-        prop: 'imageinfo',
-        iiprop: 'url',
-    };
-    var queryString = constructQueryString("File:"+fileName, extraDataOptions);
-
-    $.ajax({
-        type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
-        dataType: "json",
-        success: function (data, textStatus, jqXHR) {
-            // //parser should return success or failure upon determining if correct
-            //     //information was retrieved
-            var imageContent = parseImageURL(data);
-            if(imageContent.success){
-                // no errors - update image source
-                image.attr('src', imageContent.imageSrc);
-            }else{
-                // display the error message and updated image source
-                image.attr('src', './resources/image_not_found.png');
-                displayError(imageContent.errorMessage);
-            }
-        },
-        error: function (errorMessage) {
-            // need to return something in case there is an error
-            imageContent = {
-                success: false
-            }
-        }
-    });
-}
-
-/**
  * Extract the title of an image from the page content returned from the wiki.
  * @param {string} content - revision content from the wiki
  */
@@ -501,6 +477,38 @@ function parseImageURL(result){
     }
 }
 
+// HELPER METHODS
+
+/**
+ * parse together data options to create query string for calls to wikia API
+ * @param {string} titlesValue - title of the page to be searched for
+ * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
+ */
+function constructQueryString(titlesValue, extraDataOptions){
+    // base data incorporated in all calls to wikia API
+    var data = {
+        format: 'json',
+        action: 'query',
+        callback: '?',
+        titles: encodeURIComponent(titlesValue),
+        redirects: ''
+    };
+    // add extra key value pairs into data object
+    for(var key in extraDataOptions){
+        if(extraDataOptions.hasOwnProperty(key)){
+            data[key] = extraDataOptions[key];
+        }
+    }
+    // construct query string from data object's key value pairs
+    var queryString = "";
+    for(var i = 0; i < Object.keys(data).length; i++){
+        queryString += Object.keys(data)[i] + "=" + data[Object.keys(data)[i]] + "&";
+    }
+    // remove final ampersand from end of query string
+    queryString = queryString.substring(0, queryString.length - 1);
+    return queryString;
+}
+
 /**
  * Takes content from a wiki page and determines if it is a template page, a character disambiguation
  *   page, or a general disambiguation page.
@@ -518,11 +526,9 @@ function determinePageFormat(content){
     if(template !== null){
         formatObj.pageType = 'template';
         formatObj.templateType = template[1];
-        // NOTE: should grab image title too since others do
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        // var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]; (.*)/g;   // with image title
         var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g;   // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
@@ -537,13 +543,10 @@ function determinePageFormat(content){
             if(disambiguation !== null){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
-                // console.log('disambiguation', disambiguation);
-                // var imageTitle = disambiguation[]
                 var $div = $('<div>').addClass('disambig');
                 var $img = $('<img>');
-                // retrieveImageURL
 
-                // add images and titles to screen
+                // add images and titles to screen ???
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
@@ -554,38 +557,30 @@ function determinePageFormat(content){
 }
 
 /**
- * Empties previus results and statuses from the DOM
+ * Determines if a page can run a check for a debut comic based on the type of template the page is.
+ * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
+ *   Organization, Location, Vehicle, Item, Race, Reality, Event, and Storyline
+ * Unexceptable types of templates are Comic, Television Episode, Marvel Staff, Image, Novel, and User Page
+ * If further page templates are created this will need to be edited.
+ * @param {string} templateType - type of 
+ * @return {boolean} 
  */
-function clearResultsAndStatus(){
-    $('#info').empty();
-    $('#debut').empty();
-    $('#status').empty();
-}
-
-/**
- * Clear the status area and display the new error message
- * @param {string} errorMessage - message describing the error
- */
-function displayError(errorMessage){
-    $('#status').text(errorMessage);
-}
-
-
-/**
- * returns an array of objects holding information on disambiguation pages including title and image
- * @param {object} pattern - regex pattern object to test
- * @param {string} content - content to check against regex pattern
- */
-function parseDisambiguation(pattern, content){
-    var tempMatchArr = null;
-    matchArr = [];
-    while( (tempMatchArr = pattern.exec(content)) !== null){
-        tempObj = {};
-        tempObj.page = tempMatchArr[1];
-        tempObj.img = tempMatchArr[2];
-        matchArr.push(tempObj);
+function pageCanRunDebutCheck(templateType){
+    if(templateType == 'Character' 
+        || templateType == 'Team' 
+        || templateType == 'Organization' 
+        || templateType == 'Location' 
+        || templateType == 'Vehicle' 
+        || templateType == 'Item' 
+        || templateType == 'Race' 
+        || templateType == 'Reality' 
+        || templateType == 'Event' 
+        || templateType == 'Storyline' 
+    ){
+        return true;
+    }else{
+        return false;
     }
-    return matchArr;
 }
 
 /**
@@ -604,20 +599,4 @@ function addVolumeToIssue(title){
     }else{
         return null;
     }
-    // return title;
-    // while( (placeHolder = pattern.exec(title)) !== null){
-
-    // }
 }
-
-
-
-
-/**
- * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
- * 
- * comments: comics are weird in that there can be multiple first appearances/debuts for a character
- * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
- * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
- *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
- */
