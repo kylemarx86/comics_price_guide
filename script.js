@@ -326,10 +326,14 @@ function searchWikiForComic(image, comicTitle){
             }else{
                 // display the error message
                 displayError(comicInfo.errorMessage);
+                // if page for comic is not found than neither is the image for it
+                image.attr('src', './resources/image_not_found.png');
             }
         },
         error: function (errorMessage) {
             // need to return something in case there is an error
+            // if page for comic is not found than neither is the image for it
+            image.attr('src', './resources/image_not_found.png');
         }
     });
 }
