@@ -328,6 +328,12 @@ function searchWikiForComic(image, comicTitle){
                 displayError(comicInfo.errorMessage);
                 // if page for comic is not found than neither is the image for it
                 image.attr('src', './resources/image_not_found.png');
+                // attempt again with different call (namely with a volume inserted). 
+                // NOTE: This volume isn't necessarily the correct volume. The funciton always inserts volume 1
+                var newTitle = addVolumeToIssue(comicTitle);
+                if(newTitle !== null){
+                    searchWikiForComic(image, newTitle);
+                }
             }
         },
         error: function (errorMessage) {
@@ -581,6 +587,30 @@ function parseDisambiguation(pattern, content){
     }
     return matchArr;
 }
+
+/**
+ * attempt to insert a volume number (1) into the title string
+ * returns null if it cannot find the pattern
+ * NOTE: This method could be problematic because it always assumes a missing volume number implies volume 1
+ * @param {string} title 
+ */
+function addVolumeToIssue(title){
+    var pattern = /(.*) (\d+$)/g;
+    // var placeHolder = null;
+    var temp = pattern.exec(title);
+
+    if(temp !== null){
+        return `${temp[1]} Vol 1 ${temp[2]}`;
+    }else{
+        return null;
+    }
+    // return title;
+    // while( (placeHolder = pattern.exec(title)) !== null){
+
+    // }
+}
+
+
 
 
 /**
