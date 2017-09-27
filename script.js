@@ -353,7 +353,7 @@ function parseDebut(content){
     var placeHolder = null;
     var debutsTemp = [];    // temporary holder for information from regex tests 
     var pattern = /\| First\d?.*=\s(.*)/g;
-    // capture debut issue
+    // capture text related to debut issues
     while( (placeHolder = pattern.exec(content)) !== null){
         // prevent the pushing of empty strings to debuts
         if(placeHolder[1] !== ""){
@@ -386,7 +386,7 @@ function parseDebut(content){
 
             // extract further debuts and add them to debutList in debutObj
             // pattern: {{cid|"issue to grab"}} "{{|g" or "(" as? "mantle to grab" "}}" or ")"
-            // pretty sure I encountered some cases where the "as" was omitted in this pattern. 
+            // pretty sure there are some cases where the "as" was omitted in this pattern. 
             // NOTE: important to have "as" case-insensitive, hence the i-flag
             pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/gi;     // pattern combining cases
             var extraDebuts = null;
@@ -445,6 +445,10 @@ function retrieveImageURL(image, fileName){
     });
 }
 
+/**
+ * Extract the title of an image from the page content returned from the wiki.
+ * @param {string} content - revision content from the wiki
+ */
 function parseImageTitle(content){
     var pattern = /\| Image\s*=\s?(.*)/g;
     var matchResults = pattern.exec(content);
@@ -461,6 +465,10 @@ function parseImageTitle(content){
     return imageTitle;
 }
 
+/**
+ * Extract the URL source of an image featured on the wiki based on the results of a call to the wiki
+ * @param {object} result - JSON object returned from the wiki based on a call for an image
+ */
 function parseImageURL(result){
     var key = 0;
     var imageObj = {
@@ -484,9 +492,10 @@ function parseImageURL(result){
 }
 
 /**
- * takes content from a wiki page and determines if it is a template page, a character disambiguation
- *   page, or a general disambiguation page. 
- * @param {string} content - all the content from the wiki for a given page
+ * Takes content from a wiki page and determines if it is a template page, a character disambiguation
+ *   page, or a general disambiguation page.
+ * Possible further options for page types exist.
+ * @param {string} content - revision content from the wiki
  */
 function determinePageFormat(content){
     var formatObj = {
@@ -534,6 +543,9 @@ function determinePageFormat(content){
     return formatObj;
 }
 
+/**
+ * Empties previus results and statuses from the DOM
+ */
 function clearResultsAndStatus(){
     $('#info').empty();
     $('#debut').empty();
@@ -541,7 +553,7 @@ function clearResultsAndStatus(){
 }
 
 /**
- * clear the status area and display the new error message
+ * Clear the status area and display the new error message
  * @param {string} errorMessage - message describing the error
  */
 function displayError(errorMessage){
@@ -551,7 +563,7 @@ function displayError(errorMessage){
 
 /**
  * returns an array of objects holding information on disambiguation pages including title and image
- * @param {*} pattern - regex pattern to test
+ * @param {object} pattern - regex pattern object to test
  * @param {string} content - content to check against regex pattern
  */
 function parseDisambiguation(pattern, content){
