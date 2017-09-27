@@ -138,7 +138,6 @@ function constructQueryString(titlesValue, extraDataOptions){
     }
     // remove final ampersand from end of query string
     queryString = queryString.substring(0, queryString.length - 1);
-    // console.log('queryString: ', queryString);
     return queryString;
 }
 
@@ -171,6 +170,7 @@ function constructQueryString(titlesValue, extraDataOptions){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
+                        // console.log('content: ', content);
                         
                         // get type of page/search
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
@@ -185,25 +185,29 @@ function constructQueryString(titlesValue, extraDataOptions){
                         // add type and image to the DOM
                         $('#info').append($type, $img);
 
-                        // make handlers to control different template page types
-                        // make exception to not do the rest if template is for a comic
-                        // get debut issues and display them
-                        var debutInfo = parseDebut(content);
-                        if(debutInfo.success){
-                            $('#debut').text('Debut:');
-                            for(var i = 0; i < debutInfo.debutList.length; i++){
-                                // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                var $debut = $('<div>').addClass('debutEntry')
-                                var $issue = $('<div>').text(debutInfo.debutList[i].issue);
-                                var $img = $('<img>');
-                                if(debutInfo.debutList[i].mantle !== null){
-                                    var $mantle = $('<div>').text(debutInfo.debutList[i].mantle);
-                                    $debut.append($mantle);
+                        // check to see if we can parse out debut issues based on the type of template the page used
+                        //   since not all page templates have information on first appearances
+                        if( pageCanRunDebutCheck(pageFormatObj.templateType) ){
+                            // get debut issues and display them
+                            var debutInfo = parseDebut(content);
+                            if(debutInfo.success){
+                                $('#debut').text('Debut:');
+                                for(var i = 0; i < debutInfo.debutList.length; i++){
+                                    // for each debut add already gathered info to screen and search wiki for images of debut comic
+                                    var $debut = $('<div>').addClass('debutEntry')
+                                    var $issue = $('<div>').text(debutInfo.debutList[i].issue);
+                                    var $img = $('<img>');
+                                    if(debutInfo.debutList[i].mantle !== null){
+                                        var $mantle = $('<div>').text(debutInfo.debutList[i].mantle);
+                                        $debut.append($mantle);
+                                    }
+                                    $debut.append($issue, $img);
+                                    $('#debut').append($debut);
+                                    searchWikiForComic($img, debutInfo.debutList[i].issue);
                                 }
-                                $debut.append($issue, $img);
-                                $('#debut').append($debut);
-                                searchWikiForComic($img, debutInfo.debutList[i].issue);
                             }
+                        }else{
+                            console.log("This type of page does not typically have debuts")
                         }
                         
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
@@ -214,7 +218,6 @@ function constructQueryString(titlesValue, extraDataOptions){
                             // and will gather the rest of the desired information                         
                         var tempSearchObj = new Search(pageFormatObj.character);
                         initialWikiQuery(tempSearchObj);
-                        // console.log('temp character: ', tempSearchObj.character);
                     }else{
                         // content is for a general disambig
                         // add the page titles and images to the DOM
@@ -223,7 +226,7 @@ function constructQueryString(titlesValue, extraDataOptions){
                             var $page = $('<p>').text(pageFormatObj.pages[i].page);
                             var $img = $('<img>');
                             $div.append($page, $img);
-                            retrieveImageURL($img, pageFormatObj.pages[i].imgTitle);
+                            retrieveImageURL($img, pageFormatObj.pages[i].img);     // final part should be imgTitle not img for clarity
                             $('#info').append($div);
                         }
                         // await user response to determine how search will proceed
@@ -235,12 +238,38 @@ function constructQueryString(titlesValue, extraDataOptions){
                 }
             }else{
                 $('#status').text(data.errorMessage);
-                // console.log('error: ', data.errorMessage);
             }
         },  // end of success
         error: function (errorMessage) {
         }
     });
+}
+
+/**
+ * Determines if a page can run a check for a debut comic based on the type of template the page is.
+ * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
+ *   Organization, Location, Vehicle, Item, Race, Reality, Event, and Storyline
+ * Unexceptable types of templates are Comic, Television Episode, Marvel Staff, Image, Novel, and User Page
+ * If further page templates are created this will need to be edited.
+ * @param {string} templateType - type of 
+ * @return {boolean} 
+ */
+function pageCanRunDebutCheck(templateType){
+    if(templateType == 'Character' 
+        || templateType == 'Team' 
+        || templateType == 'Organization' 
+        || templateType == 'Location' 
+        || templateType == 'Vehicle' 
+        || templateType == 'Item' 
+        || templateType == 'Race' 
+        || templateType == 'Reality' 
+        || templateType == 'Event' 
+        || templateType == 'Storyline' 
+    ){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 // NOTE: pass another argument in, the term searched for so error message can contain it
@@ -276,6 +305,7 @@ function searchWikiForComic(image, comicTitle){
         rvprop: 'content',
         rvsection: '0',
     };
+    comicTitle = comicTitle.replace('#', '');
     var queryString = constructQueryString(comicTitle, extraDataOptions);
 
     $.ajax({
@@ -296,10 +326,20 @@ function searchWikiForComic(image, comicTitle){
             }else{
                 // display the error message
                 displayError(comicInfo.errorMessage);
+                // if page for comic is not found than neither is the image for it
+                image.attr('src', './resources/image_not_found.png');
+                // attempt again with different call (namely with a volume inserted). 
+                // NOTE: This volume isn't necessarily the correct volume. The funciton always inserts volume 1
+                var newTitle = addVolumeToIssue(comicTitle);
+                if(newTitle !== null){
+                    searchWikiForComic(image, newTitle);
+                }
             }
         },
         error: function (errorMessage) {
             // need to return something in case there is an error
+            // if page for comic is not found than neither is the image for it
+            image.attr('src', './resources/image_not_found.png');
         }
     });
 }
@@ -314,23 +354,29 @@ function searchWikiForComic(image, comicTitle){
  * @param {string} content - string of content from the wiki
  */
 function parseDebut(content){
-    // console.log('content: ', content)
     var debutObj = {
         success: false,
-        debutList: []
+        debutList: null
     }
 
     // first of two possible groupings to check for debuts 
     var placeHolder = null;
     var debutsTemp = [];    // temporary holder for information from regex tests 
     var pattern = /\| First\d?.*=\s(.*)/g;
+    // capture text related to debut issues
     while( (placeHolder = pattern.exec(content)) !== null){
-        debutsTemp.push(placeHolder[1]);
+        // prevent the pushing of empty strings to debuts
+        if(placeHolder[1] !== ""){
+            debutsTemp.push(placeHolder[1]);
+        }
+        // NOTE: consider creating exception if this second check fails 
     }
     // check for how many debuts exist
     if(debutsTemp.length > 0){
-        // only one debut found
+        // at least one debut found
         debutObj.success = true;
+        debutObj.debutList = [];
+
         // push the first and only grouping of the pattern found
         var debut = {
             issue: debutsTemp[0]
@@ -341,17 +387,18 @@ function parseDebut(content){
             // decipher second grouping
 
             // add first mantle to first object in debutList in debutObj
-            var pattern = /\((?:aS )?(.*?)\)/i;
+            var pattern = /(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/i     // pattern for working with parentheses and braces cases
+            
             var mantle = pattern.exec(debutsTemp[1]);
             if(mantle !== null){
                 debutObj.debutList[0].mantle = mantle[1];
             }
 
             // extract further debuts and add them to debutList in debutObj
-            // pattern: {{cid|"issue to grab"}}(as? "mantle to grab")
-            // pretty sure I encountered some cases where the "as" was omitted in this pattern. 
+            // pattern: {{cid|"issue to grab"}} "{{|g" or "(" as? "mantle to grab" "}}" or ")"
+            // pretty sure there are some cases where the "as" was omitted in this pattern. 
             // NOTE: important to have "as" case-insensitive, hence the i-flag
-            pattern = /\{\{cid\|(.*?)\}\}\((?:as )?(.*?)\)/gi;
+            pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/gi;     // pattern combining cases
             var extraDebuts = null;
         
             while( (extraDebuts = pattern.exec(debutsTemp[1])) !== null){
@@ -395,7 +442,7 @@ function retrieveImageURL(image, fileName){
                 image.attr('src', imageContent.imageSrc);
             }else{
                 // display the error message and updated image source
-                image.attr('src', '/resources/image_not_found.png');
+                image.attr('src', './resources/image_not_found.png');
                 displayError(imageContent.errorMessage);
             }
         },
@@ -408,20 +455,31 @@ function retrieveImageURL(image, fileName){
     });
 }
 
+/**
+ * Extract the title of an image from the page content returned from the wiki.
+ * @param {string} content - revision content from the wiki
+ */
 function parseImageTitle(content){
-    var pattern = /\| Image\s*=\s(.*)/g;
+    var pattern = /\| Image\s*=\s?(.*)/g;
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
+    // if there are result
     if(matchResults !== null){
-        imageTitle = matchResults[1];
+        // prevent the pushing of empty strings to images
+        if(matchResults[1] !== ""){
+            imageTitle = matchResults[1];
+        }
+        // NOTE: consider creating exception if this second check fails 
     }
     return imageTitle;
 }
 
+/**
+ * Extract the URL source of an image featured on the wiki based on the results of a call to the wiki
+ * @param {object} result - JSON object returned from the wiki based on a call for an image
+ */
 function parseImageURL(result){
-    // console.log('result: ', result);
-
     var key = 0;
     var imageObj = {
         success: false,
@@ -439,15 +497,15 @@ function parseImageURL(result){
         imageObj.success = true;
         imageObj.imageSrc = result.query.pages[key].imageinfo[0].url;
 
-        // console.log('imageObj.imageSrc: ', imageObj.imageSrc);
         return imageObj;
     }
 }
 
 /**
- * takes content from a wiki page and determines if it is a template page, a character disambiguation
- *   page, or a general disambiguation page. 
- * @param {string} content - all the content from the wiki for a given page
+ * Takes content from a wiki page and determines if it is a template page, a character disambiguation
+ *   page, or a general disambiguation page.
+ * Possible further options for page types exist.
+ * @param {string} content - revision content from the wiki
  */
 function determinePageFormat(content){
     var formatObj = {
@@ -461,14 +519,7 @@ function determinePageFormat(content){
         formatObj.pageType = 'template';
         formatObj.templateType = template[1];
         // NOTE: should grab image title too since others do
-        pattern = /\| Image\s*=\s(.*)/g;
-        var image = pattern.exec(content);
-        if(image !== null){
-            formatObj.imageTitle = image[1];
-        }else{
-            formatObj.imageTitle = null;
-        }
-
+        formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
         // var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\]; (.*)/g;   // with image title
@@ -479,12 +530,20 @@ function determinePageFormat(content){
             formatObj.character = character[1];
             // formatObj.imageTitle = character[2];
         }else{
+            // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
             var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title
             var disambiguation = parseDisambiguation(pattern, content);
             if(disambiguation !== null){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
+                // console.log('disambiguation', disambiguation);
+                // var imageTitle = disambiguation[]
+                var $div = $('<div>').addClass('disambig');
+                var $img = $('<img>');
+                // retrieveImageURL
+
+                // add images and titles to screen
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
@@ -494,6 +553,9 @@ function determinePageFormat(content){
     return formatObj;
 }
 
+/**
+ * Empties previus results and statuses from the DOM
+ */
 function clearResultsAndStatus(){
     $('#info').empty();
     $('#debut').empty();
@@ -501,12 +563,54 @@ function clearResultsAndStatus(){
 }
 
 /**
- * clear the status area and display the new error message
+ * Clear the status area and display the new error message
  * @param {string} errorMessage - message describing the error
  */
 function displayError(errorMessage){
     $('#status').text(errorMessage);
 }
+
+
+/**
+ * returns an array of objects holding information on disambiguation pages including title and image
+ * @param {object} pattern - regex pattern object to test
+ * @param {string} content - content to check against regex pattern
+ */
+function parseDisambiguation(pattern, content){
+    var tempMatchArr = null;
+    matchArr = [];
+    while( (tempMatchArr = pattern.exec(content)) !== null){
+        tempObj = {};
+        tempObj.page = tempMatchArr[1];
+        tempObj.img = tempMatchArr[2];
+        matchArr.push(tempObj);
+    }
+    return matchArr;
+}
+
+/**
+ * attempt to insert a volume number (1) into the title string
+ * returns null if it cannot find the pattern
+ * NOTE: This method could be problematic because it always assumes a missing volume number implies volume 1
+ * @param {string} title 
+ */
+function addVolumeToIssue(title){
+    var pattern = /(.*) (\d+$)/g;
+    // var placeHolder = null;
+    var temp = pattern.exec(title);
+
+    if(temp !== null){
+        return `${temp[1]} Vol 1 ${temp[2]}`;
+    }else{
+        return null;
+    }
+    // return title;
+    // while( (placeHolder = pattern.exec(title)) !== null){
+
+    // }
+}
+
+
 
 
 /**
