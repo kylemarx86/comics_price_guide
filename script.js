@@ -145,19 +145,18 @@ function gatherInfo(searchTerm){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            data = generalParser(data);
-            console.log('data', data);
             // returns with object with success and other things
+            data = generalParser(data);
             // console.log('data', data)
             if(data.success){
-                var content = getRevisions(data.content);
+                // var content = getRevisions(data.content);
+                var content = data.content.revisions[0]['*'];
                 var pageFormatObj = determinePageFormat(content);
                 $('#status').text(`Search for ${searchObj.getTitle()}`);
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        // console.log('content: ', content);
                         
                         // get type of page/search
                         var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
@@ -192,6 +191,8 @@ function gatherInfo(searchTerm){
                                     $('#debut').append($debut);
                                     searchWikiForComic($img, debutInfo.debutList[i].issue);
                                 }
+                            }else{
+                                // what to do if there are no debuts ???
                             }
                         }else{
                             console.log("This type of page does not typically have debuts")
@@ -255,7 +256,8 @@ function gatherInfo(searchTerm){
             var comicInfo = generalParser(data);
             if(comicInfo.success){
                 // page information was received
-                var content = getRevisions(comicInfo.content);
+                // var content = getRevisions(comicInfo.content);
+                var content  = comicInfo.content.revisions[0]['*'];
                 var imageTitle = parseImageTitle(content);
                 if(imageTitle !== null){
                     retrieveImageURL(image, imageTitle);
@@ -303,17 +305,12 @@ function retrieveImageURL(image, fileName){
             // //parser should return success or failure upon determining if correct
             //     //information was retrieved
             var imageContent = parseImageURL(data);
-            // var imageContent = generalParser(data);
+            // console.log('imageContent:', imageContent);
             
-            // something out of place here
-            // getImageURL
-            
-            if(imageContent.success){
-                // no errors - update image source
-                image.attr('src', imageContent.imageSrc);
-            }else{
-                // display the error message and updated image source
-                image.attr('src', './resources/image_not_found.png');
+            // imageContent.imageSrc will always contain correct src for image
+            image.attr('src', imageContent.imageSrc);
+            if(!imageContent.success){
+                // display the error message 
                 displayError(imageContent.errorMessage);
             }
         },
@@ -334,7 +331,6 @@ function generalParser(response){
     var data = {
         success: false
     }
-    
     for(i in response.query.pages)
     key = i;
 
@@ -344,18 +340,9 @@ function generalParser(response){
     }else{
         // call was successful
         data.success = true;
-        // data.content = response.query.pages[key].revisions[0]['*'];
         data.content = response.query.pages[key];
     }
-    // console.log('data.content', data.content);
     return data;
-}
-
-function getRevisions(page){
-    return page.revisions[0]['*'];
-}
-function getImageURL(page){
-    return page.imageinfo[0].url;
 }
 
 /**
@@ -419,7 +406,6 @@ function parseDebut(content){
 
             // add first mantle to first object in debutList in debutObj
             var pattern = /(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/i     // pattern for working with parentheses and braces cases
-            
             var mantle = pattern.exec(debutsTemp[1]);
             if(mantle !== null){
                 debutObj.debutList[0].mantle = mantle[1];
@@ -474,19 +460,14 @@ function parseImageTitle(content){
  */
 function parseImageURL(response){
     var data = generalParser(response);
-    // var src = getImageURL(data).imageinfo[0].url;
-    console.log('data from image', data)
+    // console.log('data from image', data)
     var imageObj = {
         success: data.success,
     };
         
     if(imageObj.success){
         // call was successful
-        console.log('data in pareimageURL', data)
-        // imageObj.imageSrc = getImageURL(data.content).imageinfo[0].url;
-        imageObj.imageSrc = getImageURL(data.content);
-        // imageObj.imageSrc = data.content.imageinfo[0].url;
-        // imageObj.imageSrc = result.query.pages[key].imageinfo[0].url;
+        imageObj.imageSrc = data.content.imageinfo[0].url;
     }else{
         // call was unsuccessful
         imageObj.errorMessage = 'Could not find image.';
