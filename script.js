@@ -146,8 +146,11 @@ function gatherInfo(searchTerm){
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             data = generalParser(data);
+            console.log('data', data);
+            // returns with object with success and other things
+            // console.log('data', data)
             if(data.success){
-                var content = data.content;
+                var content = getRevisions(data.content);
                 var pageFormatObj = determinePageFormat(content);
                 $('#status').text(`Search for ${searchObj.getTitle()}`);
 
@@ -252,7 +255,8 @@ function gatherInfo(searchTerm){
             var comicInfo = generalParser(data);
             if(comicInfo.success){
                 // page information was received
-                var imageTitle = parseImageTitle(comicInfo.content);
+                var content = getRevisions(comicInfo.content);
+                var imageTitle = parseImageTitle(content);
                 if(imageTitle !== null){
                     retrieveImageURL(image, imageTitle);
                 }else{
@@ -299,6 +303,11 @@ function retrieveImageURL(image, fileName){
             // //parser should return success or failure upon determining if correct
             //     //information was retrieved
             var imageContent = parseImageURL(data);
+            // var imageContent = generalParser(data);
+            
+            // something out of place here
+            // getImageURL
+            
             if(imageContent.success){
                 // no errors - update image source
                 image.attr('src', imageContent.imageSrc);
@@ -335,11 +344,19 @@ function generalParser(response){
     }else{
         // call was successful
         data.success = true;
-        data.content = response.query.pages[key].revisions[0]['*'];
+        // data.content = response.query.pages[key].revisions[0]['*'];
+        data.content = response.query.pages[key];
     }
+    // console.log('data.content', data.content);
     return data;
 }
 
+function getRevisions(page){
+    return page.revisions[0]['*'];
+}
+function getImageURL(page){
+    return page.imageinfo[0].url;
+}
 
 /**
  * returns an array of objects holding information on disambiguation pages including title and image
@@ -455,26 +472,27 @@ function parseImageTitle(content){
  * Extract the URL source of an image featured on the wiki based on the results of a call to the wiki
  * @param {object} result - JSON object returned from the wiki based on a call for an image
  */
-function parseImageURL(result){
-    var key = 0;
+function parseImageURL(response){
+    var data = generalParser(response);
+    // var src = getImageURL(data).imageinfo[0].url;
+    console.log('data from image', data)
     var imageObj = {
-        success: false,
+        success: data.success,
     };
-    for(i in result.query.pages)
-    key = i;
-    
-    if(key === "-1"){
-        // call was unsuccessful
-        imageObj.success = false;
-        imageObj.errorMessage = 'Could not find image.';
-        return imageObj;
-    }else{
+        
+    if(imageObj.success){
         // call was successful
-        imageObj.success = true;
-        imageObj.imageSrc = result.query.pages[key].imageinfo[0].url;
-
-        return imageObj;
+        console.log('data in pareimageURL', data)
+        // imageObj.imageSrc = getImageURL(data.content).imageinfo[0].url;
+        imageObj.imageSrc = getImageURL(data.content);
+        // imageObj.imageSrc = data.content.imageinfo[0].url;
+        // imageObj.imageSrc = result.query.pages[key].imageinfo[0].url;
+    }else{
+        // call was unsuccessful
+        imageObj.errorMessage = 'Could not find image.';
+        imageObj.imageSrc = './resources/image_not_found.png';
     }
+    return imageObj;
 }
 
 // HELPER METHODS
@@ -599,4 +617,15 @@ function addVolumeToIssue(title){
     }else{
         return null;
     }
+}
+
+function clearResultsAndStatus(){
+    $('#info').empty();
+    $('#debut').empty();
+    $('#status').empty();
+}
+
+function displayError(message){
+    var $text = $('<p>').text(message);
+    $('#status').append($text);
 }
