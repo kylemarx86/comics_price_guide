@@ -44,7 +44,7 @@ function Search(title) {
 Search.prototype.toTitleCase = function(){
     var str = this.title;
     // convert all words to have uppercase first letter
-    var allWordsCaps = str.replace(/[^\s-\(\)]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    var allWordsCaps = str.replace(/[^\s-\(\).]*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     // array of words that should not be capitalized
     var lowerCaseWordsArr = ['The', 'Of', 'And'];
     // convert words that are not to be capitalized into lowercase
@@ -523,7 +523,8 @@ function determinePageFormat(content){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g;   // no image title because second call will capture it
+        // var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g;   // no image title because second call will capture it
+        var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
