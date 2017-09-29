@@ -364,11 +364,6 @@ function parseDisambiguation(pattern, content){
 
 /**
  * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
- * 
- * COMMENTS: comics are weird in that there can be multiple first appearances/debuts for a character
- * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
- * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
- *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
  * @param {string} content - string of content from the wiki
  */
 function parseDebut(content){
