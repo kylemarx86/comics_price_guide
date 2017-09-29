@@ -389,18 +389,33 @@ function parseDebut(content){
         // at least one debut found
         debutObj.success = true;
         debutObj.debutList = [];
-
-        // push the first and only grouping of the pattern found
-        var debut = {
-            issue: debutsTemp[0]
+        
+        // check for complex pattern within first grouping
+        // pattern: {{cid|"issue to grab"}} "{{|g" or "(" as? "mantle to grab" "}}" or ")"
+        pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/g;
+        var extraDebuts = null;
+        while( (extraDebuts = pattern.exec(debutsTemp[0])) !== null){
+            var debut = {
+                issue: extraDebuts[1],
+                mantle: extraDebuts[2]
+            }
+            debutObj.debutList.push(debut);
         }
-        debutObj.debutList.push(debut);
+
+        if(debutObj.debutList.length === 0){
+            // push the first and only grouping of the pattern found
+            var debut = {
+                issue: debutsTemp[0]
+            }
+            debutObj.debutList.push(debut);
+        }
+
         if(debutsTemp.length > 1){
             // multiple debuts found
             // decipher second grouping
 
             // add first mantle to first object in debutList in debutObj
-            var pattern = /(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/i     // pattern for working with parentheses and braces cases
+            pattern = /(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/i     // pattern for working with parentheses and braces cases
             var mantle = pattern.exec(debutsTemp[1]);
             if(mantle !== null){
                 debutObj.debutList[0].mantle = mantle[1];
