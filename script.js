@@ -1,15 +1,3 @@
-
-
-/**
- * GENERAL NOTES ON PROJECT
- * 
- * comments: comics are weird in that there can be multiple first appearances/debuts for a character
- * A character can appear with a cameo in an early comic, then appear later in full (for instance Venom)
- * Also a character can take different mantle or identity (for instance, Falcon (Sam Wilson) has
- *      has taken up the mantle of Captain America, traditionally Steve Rogers, at times)
- */
-
-
 /**
  * Search object is based on the fact that there are multiple templates in the marvel wiki
  * Available templates from wiki: comic, character, team, gallery, organization, location, vehicle,
