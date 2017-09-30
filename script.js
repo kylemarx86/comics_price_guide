@@ -202,7 +202,7 @@ function gatherInfo(searchTerm){
                             var $page = $('<p>').text(pageFormatObj.pages[i].page);
                             var $img = $('<img>');
                             $div.append($page, $img);
-                            retrieveImageURL($img, pageFormatObj.pages[i].img);     // final part should be imgTitle not img for clarity
+                            retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);     // final part should be imgTitle not img for clarity
                             $('#info').append($div);
                         }
                         // await user response to determine how search will proceed
@@ -344,7 +344,7 @@ function parseDisambiguation(pattern, content){
     while( (tempMatchArr = pattern.exec(content)) !== null){
         tempObj = {};
         tempObj.page = tempMatchArr[1];
-        tempObj.img = tempMatchArr[2];
+        tempObj.imageTitle = tempMatchArr[2];
         matchArr.push(tempObj);
     }
     return matchArr;
