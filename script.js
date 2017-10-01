@@ -191,7 +191,7 @@ function gatherInfo(searchTerm){
                                     searchWikiForComic($img, debutInfo.debutList[i].issue);
                                 }
                             }else{
-                                // what to do if there are no debuts ??? the parseDebut object should be returning an error message. I can use that
+                                displayError(debutInfo.errorMessage);
                             }
                         }else{
                             console.log("This type of page does not typically have debuts")
@@ -221,7 +221,7 @@ function gatherInfo(searchTerm){
                 }else{
                     // unable to determine type of page content came from
                     // display error in status bar
-                    $("#status").text('Unable to determine format of conent.');
+                    displayError('Unable to determine format of conent.');
                 }
             }else{
                 displayError(data.errorMessage);
