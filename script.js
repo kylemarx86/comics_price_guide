@@ -15,12 +15,17 @@
  *  keeping track of associated information like debut comic, its significance, and its image.
  *   
  * @param {string} title - title of the thing to be searched on the wiki
+ * @property {string} title - 
+ * * @property {string} properName - 
+ * * @property {string} type - 
+ * * @property {string} reality - 
+ * * @property {string} debutArr - 
  */
 function Search(title) {
     this.title = title;
-    this.properName = null;
-    this.type = null;
-    this.reality = null;
+    this.properName = null;     // unused so far
+    this.type = null;           // unused so far
+    this.reality = null;        // unused so far
     this.debutArr = [];
 }
 
@@ -67,8 +72,8 @@ Search.prototype.getProperName = function(){
 Search.prototype.getType = function(){
     return this.type;
 }
-Search.prototype.setReality = function(reality){
-    this.reality = reality;
+Search.prototype.getReality = function(reality){
+    return this.reality;
 }
 Search.prototype.getDebutArr = function(){
     return this.debutArr;
@@ -137,7 +142,6 @@ function gatherInfo(searchTerm){
             data = generalParser(data);
             // console.log('data', data)
             if(data.success){
-                // var content = getRevisions(data.content);
                 var content = data.content.revisions[0]['*'];
                 var pageFormatObj = determinePageFormat(content);
                 $('#status').text(`Search for ${searchObj.getTitle()}`);
@@ -180,7 +184,7 @@ function gatherInfo(searchTerm){
                                     searchWikiForComic($img, debutInfo.debutList[i].issue);
                                 }
                             }else{
-                                // what to do if there are no debuts ???
+                                // what to do if there are no debuts ??? the parseDebut object should be returning an error message. I can use that
                             }
                         }else{
                             console.log("This type of page does not typically have debuts")
@@ -244,7 +248,6 @@ function gatherInfo(searchTerm){
             var comicInfo = generalParser(data);
             if(comicInfo.success){
                 // page information was received
-                // var content = getRevisions(comicInfo.content);
                 var content  = comicInfo.content.revisions[0]['*'];
                 var imageTitle = parseImageTitle(content);
                 if(imageTitle !== null){
@@ -258,7 +261,7 @@ function gatherInfo(searchTerm){
                 // if page for comic is not found than neither is the image for it
                 image.attr('src', './resources/image_not_found.png');
                 // attempt again with different call (namely with a volume inserted). 
-                // NOTE: This volume isn't necessarily the correct volume. The funciton always inserts volume 1
+                // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                 var newTitle = addVolumeToIssue(comicTitle);
                 if(newTitle !== null){
                     searchWikiForComic(image, newTitle);
@@ -290,11 +293,8 @@ function retrieveImageURL(image, fileName){
         url: 'https://marvel.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
-            // //parser should return success or failure upon determining if correct
-            //     //information was retrieved
+            // parser will return object with a link to the appropriate image to use: image from wiki for success and default image_not_found for failures
             var imageContent = parseImageURL(data);
-            // console.log('imageContent:', imageContent);
-            
             // imageContent.imageSrc will always contain correct src for image
             image.attr('src', imageContent.imageSrc);
             if(!imageContent.success){
@@ -314,6 +314,14 @@ function retrieveImageURL(image, fileName){
 // METHODS FOR PARSING
 
 // NOTE: pass another argument in, the term searched for so error message can contain it
+/**
+ * 
+ * @param {object} response - JSON response object from wiki
+ * @returns {object} object with properties:
+ *          {boolean} success - description of the call
+ *          {string} content - content of the page queried from the wiki
+ *          {string} errorMessage - message if query was unsuccessful
+ */
 function generalParser(response){
     var key = 0;
     var data = {
@@ -336,7 +344,8 @@ function generalParser(response){
 /**
  * returns an array of objects holding information on disambiguation pages including title and image
  * @param {object} pattern - regex pattern object to test
- * @param {string} content - content to check against regex pattern
+ * @param {string} content - content from the wiki to check against regex pattern
+ * @returns {array} array of objects containing titles of the pages found and the titles of the images associated with them
  */
 function parseDisambiguation(pattern, content){
     var tempMatchArr = null;
@@ -352,7 +361,11 @@ function parseDisambiguation(pattern, content){
 
 /**
  * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
- * @param {string} content - string of content from the wiki
+ * @param {string} content - revision content from the wiki
+ * @returns {object} object with properties:
+ *          {boolean} success - description of the success of the parsing
+ *          {array} debutList - array of debut comic objects with each with properties issue and mantle
+ *          {string} errorMessage - message if the patterns were not found in the content
  */
 function parseDebut(content){
     var debutObj = {
@@ -435,6 +448,7 @@ function parseDebut(content){
 /**
  * Extract the title of an image from the page content returned from the wiki.
  * @param {string} content - revision content from the wiki
+ * @returns {string} imageTitle - title of the image being retrieved, or null if pattern not found
  */
 function parseImageTitle(content){
     var pattern = /\| Image\s*=\s?(.*)/g;
@@ -454,11 +468,14 @@ function parseImageTitle(content){
 
 /**
  * Extract the URL source of an image featured on the wiki based on the results of a call to the wiki
- * @param {object} result - JSON object returned from the wiki based on a call for an image
+ * @param {object} response - JSON object returned from the wiki based on a query for an image
+ * @returns {object} object with properties:
+ *          {boolean} success - description of the call
+ *          {string} imageSrc - URL of the image
+ *          {string} errorMessage - message if call was unsuccessful
  */
 function parseImageURL(response){
     var data = generalParser(response);
-    // console.log('data from image', data)
     var imageObj = {
         success: data.success,
     };
@@ -480,6 +497,7 @@ function parseImageURL(response){
  * parse together data options to create query string for calls to wikia API
  * @param {string} titlesValue - title of the page to be searched for
  * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
+ * @returns {string} query string to send to the wiki
  */
 function constructQueryString(titlesValue, extraDataOptions){
     // base data incorporated in all calls to wikia API
@@ -511,6 +529,14 @@ function constructQueryString(titlesValue, extraDataOptions){
  *   page, or a general disambiguation page.
  * Possible further options for page types exist.
  * @param {string} content - revision content from the wiki
+ * @returns {object} object with properties:
+ *          {boolean} success - description of the whether the page's format could be discerned
+ *          {string} pageType - type of page formatting either 'template', 'charDisambiguation' (character disambiguation), or 'genDisambiguation' (general disambiguation)            // look more into jsdocs to how to format this
+ *          {string} templateType - used when pageType = 'template', describes the wiki's template that was used to create the page
+ *          {string} imageTitle - used when pageType = 'template', title of the main image for the page
+ *          {string} character - used when pageType = 'charDisambiguation', the name of the main character found
+ *          {array} pages - used when pageType = 'genDisambiguation', array of objects (defined in the parseDisambiguation method)
+ *          {string} errorMessage - message if call was unsuccessful
  */
 function determinePageFormat(content){
     var formatObj = {
@@ -526,23 +552,21 @@ function determinePageFormat(content){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        // var pattern = /Main Character\s*=\s\[\[([^\|]*)\|?.*\]\];/g;   // no image title because second call will capture it
         var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
             formatObj.character = character[1];
-            // formatObj.imageTitle = character[2];
         }else{
             // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
-            var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title
+            var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title capture group
             var disambiguation = parseDisambiguation(pattern, content);
             if(disambiguation !== null){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
-                var $div = $('<div>').addClass('disambig');
-                var $img = $('<img>');
+                var $div = $('<div>').addClass('disambig');     // necessary???
+                var $img = $('<img>');      // necessary???
 
                 // add images and titles to screen ???
             }else{
@@ -561,7 +585,7 @@ function determinePageFormat(content){
  * Unexceptable types of templates are Comic, Television Episode, Marvel Staff, Image, Novel, and User Page
  * If further page templates are created this will need to be edited.
  * @param {string} templateType - type of 
- * @return {boolean} 
+ * @return {boolean} a Boolean description of whether we should run a check to find a debut comic
  */
 function pageCanRunDebutCheck(templateType){
     if(templateType == 'Character' 
@@ -585,7 +609,8 @@ function pageCanRunDebutCheck(templateType){
  * attempt to insert a volume number (1) into the title string
  * returns null if it cannot find the pattern
  * NOTE: This method could be problematic because it always assumes a missing volume number implies volume 1
- * @param {string} title 
+ * @param {string} title - original title of the issue checked
+ * @returns {string} title of the issue with extra text related to volume number, or returns null
  */
 function addVolumeToIssue(title){
     var pattern = /(.*) (\d+$)/g;
