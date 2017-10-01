@@ -194,7 +194,8 @@ function gatherInfo(searchTerm){
                                 displayError(debutInfo.errorMessage);
                             }
                         }else{
-                            console.log("This type of page does not typically have debuts")
+                            displayError("This type of page does not typically have debuts");
+                            // ensure image is displayed
                         }
                         
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
@@ -463,7 +464,8 @@ function parseDebut(content){
  * @returns {string} imageTitle - title of the image being retrieved, or null if pattern not found
  */
 function parseImageTitle(content){
-    var pattern = /\| Image\s*=\s?(.*)/g;
+    // var pattern = /\| Image\s*=\s?(.*)/g;
+    var pattern = /Image\d?\s*=\s?(.*)/g;
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
@@ -608,7 +610,7 @@ function pageCanRunDebutCheck(templateType){
         || templateType == 'Item' 
         || templateType == 'Race' 
         || templateType == 'Reality' 
-        || templateType == 'Event' 
+        // || templateType == 'Event' 
         || templateType == 'Storyline' 
     ){
         return true;
