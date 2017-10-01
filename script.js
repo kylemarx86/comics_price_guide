@@ -150,7 +150,8 @@ function gatherInfo(searchTerm){
             if(data.success){
                 var content = data.content.revisions[0]['*'];
                 var pageFormatObj = determinePageFormat(content);
-                $('#status').text(`Search for ${searchObj.getTitle()}`);
+                // $('#status').text(`Search for ${searchObj.getTitle()}`);
+                $('#status').append(`<p>Search for ${searchObj.getTitle()}</p>`);
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
@@ -223,7 +224,7 @@ function gatherInfo(searchTerm){
                     $("#status").text('Unable to determine format of conent.');
                 }
             }else{
-                $('#status').text(data.errorMessage);
+                displayError(data.errorMessage);
             }
         },  // end of success
         error: function (errorMessage) {
