@@ -123,8 +123,14 @@ function gatherInfo(searchTerm){
   * initialWikiQuery
   * searches Marvel wiki for term and will call another function to parse information returned
   * @param {object} searchObj - search object containing name of term to be looked up
+  * @param {string} [origSearchTerm] - term searched in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
-  function initialWikiQuery(searchObj){
+  function initialWikiQuery(searchObj, origSearchTerm){
+    // for testing
+    if(origSearchTerm !== undefined){
+        console.log('origSearchTerm', origSearchTerm)
+    }
+
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -197,7 +203,7 @@ function gatherInfo(searchTerm){
                             // this object will run through a second time and return with an content from of a template pageType
                             // and will gather the rest of the desired information                         
                         var tempSearchObj = new Search(pageFormatObj.character);
-                        initialWikiQuery(tempSearchObj);
+                        initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
                         // add the page titles and images to the DOM
@@ -229,8 +235,13 @@ function gatherInfo(searchTerm){
   * searches the Marvel wiki for a specific comic to receive information on it.
   * @param {object} image - DOM object to update the source of once image URL is received from wiki
   * @param {object} comicTitle - title of the issue we are searching for on the wiki
+  * @param {string} [origTitle] - title of comic in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
-  function searchWikiForComic(image, comicTitle){
+  function searchWikiForComic(image, comicTitle, origTitle){
+    // for testing
+    if(origTitle !== undefined){
+        console.log('origTitle', origTitle)
+    }
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -264,7 +275,7 @@ function gatherInfo(searchTerm){
                 // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                 var newTitle = addVolumeToIssue(comicTitle);
                 if(newTitle !== null){
-                    searchWikiForComic(image, newTitle);
+                    searchWikiForComic(image, newTitle, comicTitle);
                 }
             }
         },
