@@ -150,7 +150,6 @@ function gatherInfo(searchTerm){
             if(data.success){
                 var content = data.content.revisions[0]['*'];
                 var pageFormatObj = determinePageFormat(content);
-                // $('#status').text(`Search for ${searchObj.getTitle()}`);
                 $('#status').append(`<p>Search for ${searchObj.getTitle()}</p>`);
 
                 if(pageFormatObj.success){
@@ -158,7 +157,7 @@ function gatherInfo(searchTerm){
                         // content is for a template page
                         
                         // get type of page/search
-                        var $type = $('<p>').text(`Type: ${pageFormatObj.templateType}`);
+                        var $type = $('<p>').text(`Page type: ${pageFormatObj.templateType}`);
                         // get image title
                         var $img = $('<img>');
                         var imageTitle = parseImageTitle(content);
