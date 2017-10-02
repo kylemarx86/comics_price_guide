@@ -567,8 +567,8 @@ function determinePageFormat(content){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
-        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
+        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
+        var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
@@ -581,10 +581,6 @@ function determinePageFormat(content){
             if(disambiguation.length !== 0){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
-                var $div = $('<div>').addClass('disambig');     // necessary???
-                var $img = $('<img>');      // necessary???
-
-                // add images and titles to screen ???
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
