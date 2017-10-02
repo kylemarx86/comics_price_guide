@@ -145,7 +145,7 @@ function gatherInfo(searchTerm){
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             // returns with object with success and other things
-            data = generalParser(data);
+            data = generalParser(data, searchObj.getTitle());
             // console.log('data', data)
             if(data.success){
                 var content = data.content.revisions[0]['*'];
