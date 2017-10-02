@@ -123,8 +123,14 @@ function gatherInfo(searchTerm){
   * initialWikiQuery
   * searches Marvel wiki for term and will call another function to parse information returned
   * @param {object} searchObj - search object containing name of term to be looked up
+  * @param {string} [origSearchTerm] - term searched in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
-  function initialWikiQuery(searchObj){
+  function initialWikiQuery(searchObj, origSearchTerm){
+    // for testing
+    if(origSearchTerm !== undefined){
+        console.log('origSearchTerm', origSearchTerm)
+    }
+
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -144,7 +150,8 @@ function gatherInfo(searchTerm){
             if(data.success){
                 var content = data.content.revisions[0]['*'];
                 var pageFormatObj = determinePageFormat(content);
-                $('#status').text(`Search for ${searchObj.getTitle()}`);
+                // $('#status').text(`Search for ${searchObj.getTitle()}`);
+                $('#status').append(`<p>Search for ${searchObj.getTitle()}</p>`);
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
@@ -184,10 +191,11 @@ function gatherInfo(searchTerm){
                                     searchWikiForComic($img, debutInfo.debutList[i].issue);
                                 }
                             }else{
-                                // what to do if there are no debuts ??? the parseDebut object should be returning an error message. I can use that
+                                displayError(debutInfo.errorMessage);
                             }
                         }else{
-                            console.log("This type of page does not typically have debuts")
+                            displayError("This type of page does not typically have debuts");
+                            // ensure image is displayed
                         }
                         
                     }else if(pageFormatObj.pageType === 'charDisambiguation'){
@@ -197,7 +205,7 @@ function gatherInfo(searchTerm){
                             // this object will run through a second time and return with an content from of a template pageType
                             // and will gather the rest of the desired information                         
                         var tempSearchObj = new Search(pageFormatObj.character);
-                        initialWikiQuery(tempSearchObj);
+                        initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
                         // add the page titles and images to the DOM
@@ -214,10 +222,10 @@ function gatherInfo(searchTerm){
                 }else{
                     // unable to determine type of page content came from
                     // display error in status bar
-                    $("#status").text('Unable to determine format of conent.');
+                    displayError(pageFormatObj.errorMessage);
                 }
             }else{
-                $('#status').text(data.errorMessage);
+                displayError(data.errorMessage);
             }
         },  // end of success
         error: function (errorMessage) {
@@ -229,8 +237,13 @@ function gatherInfo(searchTerm){
   * searches the Marvel wiki for a specific comic to receive information on it.
   * @param {object} image - DOM object to update the source of once image URL is received from wiki
   * @param {object} comicTitle - title of the issue we are searching for on the wiki
+  * @param {string} [origTitle] - title of comic in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
-  function searchWikiForComic(image, comicTitle){
+  function searchWikiForComic(image, comicTitle, origTitle){
+    // for testing
+    if(origTitle !== undefined){
+        console.log('origTitle', origTitle)
+    }
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -245,7 +258,7 @@ function gatherInfo(searchTerm){
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
-            var comicInfo = generalParser(data);
+            var comicInfo = generalParser(data, comicTitle);
             if(comicInfo.success){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
@@ -255,6 +268,11 @@ function gatherInfo(searchTerm){
                 }else{
                     image.attr('src', './resources/image_not_found.png');
                 }
+                // remove old error message from status bar relating to not finding page for old search term, if any
+                if(origTitle !== undefined){
+                    $( `#status p:contains('Could not find page for search term: ${origTitle}')` ).remove();
+                }
+                
             }else{
                 // display the error message
                 displayError(comicInfo.errorMessage);
@@ -264,7 +282,7 @@ function gatherInfo(searchTerm){
                 // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                 var newTitle = addVolumeToIssue(comicTitle);
                 if(newTitle !== null){
-                    searchWikiForComic(image, newTitle);
+                    searchWikiForComic(image, newTitle, comicTitle);
                 }
             }
         },
@@ -317,12 +335,13 @@ function retrieveImageURL(image, fileName){
 /**
  * 
  * @param {object} response - JSON response object from wiki
+ * @param {object} searchTerm - Term searched in query to the wiki. Important for error messages
  * @returns {object} object with properties:
  *          {boolean} success - description of the call
  *          {string} content - content of the page queried from the wiki
  *          {string} errorMessage - message if query was unsuccessful
  */
-function generalParser(response){
+function generalParser(response, searchTerm){
     var key = 0;
     var data = {
         success: false
@@ -332,7 +351,7 @@ function generalParser(response){
 
     if(key < 0){
         // call was unsuccessful
-        data.errorMessage = 'Could not find page for search term';
+        data.errorMessage = `Could not find page for search term: ${searchTerm}`;
     }else{
         // call was successful
         data.success = true;
@@ -346,6 +365,7 @@ function generalParser(response){
  * @param {object} pattern - regex pattern object to test
  * @param {string} content - content from the wiki to check against regex pattern
  * @returns {array} array of objects containing titles of the pages found and the titles of the images associated with them
+ *                  NOTE: if no matches of pattern caught, method will return an empty array.
  */
 function parseDisambiguation(pattern, content){
     var tempMatchArr = null;
@@ -451,7 +471,8 @@ function parseDebut(content){
  * @returns {string} imageTitle - title of the image being retrieved, or null if pattern not found
  */
 function parseImageTitle(content){
-    var pattern = /\| Image\s*=\s?(.*)/g;
+    // var pattern = /\| Image\s*=\s?(.*)/g;
+    var pattern = /Image\d?\s*=\s?(.*)/g;
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
@@ -552,7 +573,8 @@ function determinePageFormat(content){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
+        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
+        var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
@@ -561,17 +583,14 @@ function determinePageFormat(content){
             // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
             var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title capture group
-            var disambiguation = parseDisambiguation(pattern, content);
-            if(disambiguation !== null){
+            var disambiguation = parseDisambiguation(pattern, content);         // method should always be returning an array
+            if(disambiguation.length !== 0){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
-                var $div = $('<div>').addClass('disambig');     // necessary???
-                var $img = $('<img>');      // necessary???
-
-                // add images and titles to screen ???
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
+                formatObj.errorMessage = 'Could not recognize page formatting';
             }
         }
     }
@@ -581,8 +600,8 @@ function determinePageFormat(content){
 /**
  * Determines if a page can run a check for a debut comic based on the type of template the page is.
  * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
- *   Organization, Location, Vehicle, Item, Race, Reality, Event, and Storyline
- * Unexceptable types of templates are Comic, Television Episode, Marvel Staff, Image, Novel, and User Page
+ *   Organization, Location, Vehicle, Item, Race, Reality, and Storyline
+ * Unexceptable types of templates are Comic, Event (because of different formatting), Television Episode, Marvel Staff, Image, Novel, and User Page
  * If further page templates are created this will need to be edited.
  * @param {string} templateType - type of 
  * @return {boolean} a Boolean description of whether we should run a check to find a debut comic
@@ -596,7 +615,6 @@ function pageCanRunDebutCheck(templateType){
         || templateType == 'Item' 
         || templateType == 'Race' 
         || templateType == 'Reality' 
-        || templateType == 'Event' 
         || templateType == 'Storyline' 
     ){
         return true;
