@@ -600,8 +600,8 @@ function determinePageFormat(content){
 /**
  * Determines if a page can run a check for a debut comic based on the type of template the page is.
  * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
- *   Organization, Location, Vehicle, Item, Race, Reality, Event, and Storyline
- * Unexceptable types of templates are Comic, Television Episode, Marvel Staff, Image, Novel, and User Page
+ *   Organization, Location, Vehicle, Item, Race, Reality, and Storyline
+ * Unexceptable types of templates are Comic, Event (because of different formatting), Television Episode, Marvel Staff, Image, Novel, and User Page
  * If further page templates are created this will need to be edited.
  * @param {string} templateType - type of 
  * @return {boolean} a Boolean description of whether we should run a check to find a debut comic
@@ -615,7 +615,6 @@ function pageCanRunDebutCheck(templateType){
         || templateType == 'Item' 
         || templateType == 'Race' 
         || templateType == 'Reality' 
-        // || templateType == 'Event' 
         || templateType == 'Storyline' 
     ){
         return true;
