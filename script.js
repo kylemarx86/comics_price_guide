@@ -258,7 +258,7 @@ function gatherInfo(searchTerm){
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
-            var comicInfo = generalParser(data);
+            var comicInfo = generalParser(data, comicTitle);
             if(comicInfo.success){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
@@ -268,6 +268,11 @@ function gatherInfo(searchTerm){
                 }else{
                     image.attr('src', './resources/image_not_found.png');
                 }
+                // remove old error message from status bar relating to not finding page for old search term, if any
+                if(origTitle !== undefined){
+                    $( `#status p:contains('Could not find page for search term: ${origTitle}')` ).remove();
+                }
+                
             }else{
                 // display the error message
                 displayError(comicInfo.errorMessage);
@@ -330,12 +335,13 @@ function retrieveImageURL(image, fileName){
 /**
  * 
  * @param {object} response - JSON response object from wiki
+ * @param {object} searchTerm - Term searched in query to the wiki. Important for error messages
  * @returns {object} object with properties:
  *          {boolean} success - description of the call
  *          {string} content - content of the page queried from the wiki
  *          {string} errorMessage - message if query was unsuccessful
  */
-function generalParser(response){
+function generalParser(response, searchTerm){
     var key = 0;
     var data = {
         success: false
@@ -345,7 +351,7 @@ function generalParser(response){
 
     if(key < 0){
         // call was unsuccessful
-        data.errorMessage = 'Could not find page for search term';
+        data.errorMessage = `Could not find page for search term: ${searchTerm}`;
     }else{
         // call was successful
         data.success = true;
