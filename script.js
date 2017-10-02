@@ -222,7 +222,7 @@ function gatherInfo(searchTerm){
                 }else{
                     // unable to determine type of page content came from
                     // display error in status bar
-                    displayError('Unable to determine format of conent.');
+                    displayError(pageFormatObj.errorMessage);
                 }
             }else{
                 displayError(data.errorMessage);
@@ -359,6 +359,7 @@ function generalParser(response){
  * @param {object} pattern - regex pattern object to test
  * @param {string} content - content from the wiki to check against regex pattern
  * @returns {array} array of objects containing titles of the pages found and the titles of the images associated with them
+ *                  NOTE: if no matches of pattern caught, method will return an empty array.
  */
 function parseDisambiguation(pattern, content){
     var tempMatchArr = null;
@@ -567,6 +568,7 @@ function determinePageFormat(content){
     }else{
         // check if content is of type character disambiguation
         var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
+        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
@@ -575,8 +577,8 @@ function determinePageFormat(content){
             // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
             var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title capture group
-            var disambiguation = parseDisambiguation(pattern, content);
-            if(disambiguation !== null){
+            var disambiguation = parseDisambiguation(pattern, content);         // method should always be returning an array
+            if(disambiguation.length !== 0){
                 formatObj.pageType = 'genDisambiguation';
                 formatObj.pages = disambiguation;
                 var $div = $('<div>').addClass('disambig');     // necessary???
@@ -586,6 +588,7 @@ function determinePageFormat(content){
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
                 formatObj.success = false;
+                formatObj.errorMessage = 'Could not recognize page formatting';
             }
         }
     }
