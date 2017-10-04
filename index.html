@@ -14,24 +14,18 @@
   <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-  <div class='row'>
-    <form class='col s12'></form>
-      <!-- <i class='material-icons'>search</i> -->
-      <div class='input-field col s6'>
-          
+  <div class='row valign-wrapper'>
+    <form class='col s12 valign-wrapper'>
+      <div class='input-field col s8'>
           <input id='searchTerm' type='text' name='searchTerm' class='validate'>
-          <label for='searchTerm'>Search</label>
+          <label for='searchTerm'><i class='material-icons left'>search</i>Search</label>
       </div>
+      <div class="col s4">
+        <a id='submit' class="waves-effect waves-deep-purple btn red"><i class="material-icons left">send</i>Submit</a>
+      </div>      
     </form>
   </div>
-
   
-  <!-- <i class="material-icons">search</i> -->
-  
-  <button id='submit' class="valign-wrapper">
-    <i class="material-icons">send</i>
-    <span class=''>Submit</span>
-  </button>
   
   <div id='results'>
     <div id='status'></div>
