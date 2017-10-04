@@ -7,12 +7,32 @@
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="materialize-src/js/bin/materialize.min.js"></script>
   
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   
   <!-- <script src="https://code.jquery.com/jquery.min.js"></script> -->
   <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-  <input type='text' name='searchTerm' id='searchTerm'>
-  <button id='submit'>Submit</button>
+  <div class='row'>
+    <form class='col s12'></form>
+      <!-- <i class='material-icons'>search</i> -->
+      <div class='input-field col s6'>
+          
+          <input id='searchTerm' type='text' name='searchTerm' class='validate'>
+          <label for='searchTerm'>Search</label>
+      </div>
+    </form>
+  </div>
+
+  
+  <!-- <i class="material-icons">search</i> -->
+  
+  <button id='submit' class="valign-wrapper">
+    <i class="material-icons">send</i>
+    <span class=''>Submit</span>
+  </button>
+  
   <div id='results'>
     <div id='status'></div>
     <div id='info'></div>
