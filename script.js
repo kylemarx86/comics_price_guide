@@ -94,10 +94,20 @@ function Debut(comic, year, img, sig){
 
 $(document).ready(function(){
     applyEventHandlers();
+    setFocus();     // for testing only??
 });
 
 function applyEventHandlers(){
     $('#submit').click(submitForm);
+    $('#searchTerm').keydown(function(e){
+        if(e.keyCode === 13){
+            submitForm();
+        }
+    });
+}
+
+function setFocus(){
+    $('#searchTerm').focus();
 }
 
 function submitForm(){
