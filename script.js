@@ -185,18 +185,31 @@ function gatherInfo(searchTerm){
                             // get debut issues and display them
                             var debutInfo = parseDebut(content);
                             if(debutInfo.success){
-                                $('#debut').text('Debut:');
+                                // create row for title debut
+                                // $('#debut').text('Debut:');
+                                var $title = $('<div>').addClass('row').text('Debut:');
+                                // create row for debut entries
+                                var $entries = $('<div>').addClass('row');
+                                $('#debut').append($title, $entries);
+
                                 for(var i = 0; i < debutInfo.debutList.length; i++){
                                     // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                    var $debut = $('<div>').addClass('debutEntry')
+                                    var $debut = $('<div>').addClass('debutEntry col s12 m4 center-align');
+                                    var $card = $('<div>').addClass('card blue-grey darken-1');
+                                    var $cardContent = $('<div>').addClass('card-content white-text');
+
+                                    var $mantle = $('<div>').addClass('card-title');
                                     var $issue = $('<div>').text(debutInfo.debutList[i].issue);
                                     var $img = $('<img>');
+
                                     if(debutInfo.debutList[i].mantle !== null){
-                                        var $mantle = $('<div>').text(debutInfo.debutList[i].mantle);
-                                        $debut.append($mantle);
+                                        $mantle.text(debutInfo.debutList[i].mantle);
+                                        $cardContent.append($mantle);
                                     }
-                                    $debut.append($issue, $img);
-                                    $('#debut').append($debut);
+                                    $cardContent.append($issue, $img);
+                                    $card.append($cardContent);
+                                    $debut.append($card);
+                                    $($entries).append($debut);
                                     searchWikiForComic($img, debutInfo.debutList[i].issue);
                                 }
                             }else{
