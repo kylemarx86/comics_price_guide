@@ -186,7 +186,6 @@ function gatherInfo(searchTerm){
                             var debutInfo = parseDebut(content);
                             if(debutInfo.success){
                                 // create row for title debut
-                                // $('#debut').text('Debut:');
                                 var $title = $('<div>').addClass('row').text('Debut:');
                                 // create row for debut entries
                                 var $entries = $('<div>').addClass('row');
@@ -232,12 +231,16 @@ function gatherInfo(searchTerm){
                         // content is for a general disambig
                         // add the page titles and images to the DOM
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
-                            $div = $('<div>');
-                            var $page = $('<p>').text(pageFormatObj.pages[i].page);
+                            var $entry = $('<div>').addClass('disambigEntry col s12 m4 center-align');
+                            var $card = $('<div>').addClass('card blue-grey darken-1');
+                            var $cardContent = $('<div>').addClass('card-content white-text');
+                            var $page = $('<div>').addClass('card-title').text(pageFormatObj.pages[i].page);
                             var $img = $('<img>');
-                            $div.append($page, $img);
+                            $cardContent.append($page, $img);
+                            $card.append($cardContent);
+                            $entry.append($card);
                             retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);     // final part should be imgTitle not img for clarity
-                            $('#info').append($div);
+                            $('#info').append($entry);
                         }
                         // await user response to determine how search will proceed
                     }
