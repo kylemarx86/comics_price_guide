@@ -673,7 +673,9 @@ function addVolumeToIssue(title){
 function clearResultsAndStatus(){
     // $('#status ').empty();
     $('#searchPath .col').empty();
+    // empty errors and hide element
     $('#errors').empty();
+    $('#errors').addClass('hidden');
     
     $('#info').empty();
     $('#debut').empty();
@@ -681,6 +683,12 @@ function clearResultsAndStatus(){
 }
 
 function displayError(message){
-    var $text = $('<p>').text(message);
-    $('#errors').append($text);
+    var $errors = $('#errors');
+    if( $errors.hasClass('hidden') ){
+        $errors.removeClass('hidden');
+        $errors.append( $('<li>').addClass('collection-item error').text('ERROR') );
+    }
+
+    var $error = $('<li>').addClass('collection-item error').text(message);
+    $errors.append($error);
 }
