@@ -160,7 +160,10 @@ function gatherInfo(searchTerm){
             if(data.success){
                 var content = data.content.revisions[0]['*'];
                 var pageFormatObj = determinePageFormat(content);
-                $('#status').append(`<p>Search for ${searchObj.getTitle()}</p>`);
+                $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
+                $('#searchPath .col').append($searchCrumb);
+                // $('#status').append(`<p>Search for ${searchObj.getTitle()}</p>`);
+                // add search to breadcrumbs
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
@@ -668,12 +671,16 @@ function addVolumeToIssue(title){
 }
 
 function clearResultsAndStatus(){
+    // $('#status ').empty();
+    $('#searchPath .col').empty();
+    $('#errors').empty();
+    
     $('#info').empty();
     $('#debut').empty();
-    $('#status').empty();
+    
 }
 
 function displayError(message){
     var $text = $('<p>').text(message);
-    $('#status').append($text);
+    $('#errors').append($text);
 }
