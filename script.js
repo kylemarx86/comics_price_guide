@@ -298,7 +298,8 @@ function gatherInfo(searchTerm){
                 }
                 // remove old error message from status bar relating to not finding page for old search term, if any
                 if(origTitle !== undefined){
-                    $( `#status p:contains('Could not find page for search term: ${origTitle}')` ).remove();
+                    // $( `#error li:contains('Could not find page for search term: ${origTitle}')` ).remove();
+                    $( `#errors li:contains(${origTitle})` ).remove();
                 }
                 
             }else{
@@ -675,7 +676,7 @@ function clearResultsAndStatus(){
     $('#searchPath .col').empty();
     // empty errors and hide element
     $('#errors').empty();
-    $('#errors').addClass('hidden');
+    $('#errors').addClass('hide');
     
     $('#info').empty();
     $('#debut').empty();
@@ -684,8 +685,8 @@ function clearResultsAndStatus(){
 
 function displayError(message){
     var $errors = $('#errors');
-    if( $errors.hasClass('hidden') ){
-        $errors.removeClass('hidden');
+    if( $errors.hasClass('hide') ){
+        $errors.removeClass('hide');
         $errors.append( $('<li>').addClass('collection-item error').text('ERROR') );
     }
 
