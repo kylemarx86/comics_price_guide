@@ -170,7 +170,8 @@ function gatherInfo(searchTerm){
                         // content is for a template page
                         
                         // get type of page/search
-                        var $type = $('<p>').text(`Page type: ${pageFormatObj.templateType}`);
+                        var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
+                                            .text(`Page type: ${pageFormatObj.templateType}`);
                         // get image title
                         var $img = $('<img>');
                         var imageTitle = parseImageTitle(content);
@@ -190,6 +191,7 @@ function gatherInfo(searchTerm){
                             if(debutInfo.success){
                                 // create row for title debut
                                 var $title = $('<div>').addClass('row').text('Debut:');
+                                
                                 // create row for debut entries
                                 var $entries = $('<div>').addClass('row');
                                 $('#debut').append($title, $entries);
