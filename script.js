@@ -190,8 +190,9 @@ function gatherInfo(searchTerm){
                             var debutInfo = parseDebut(content);
                             if(debutInfo.success){
                                 // create row for title debut
-                                var $title = $('<div>').addClass('row').text('Debut:');
-                                
+                                var $title = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
+                                    .text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
+
                                 // create row for debut entries
                                 var $entries = $('<div>').addClass('row');
                                 $('#debut').append($title, $entries);
