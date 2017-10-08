@@ -162,7 +162,6 @@ function gatherInfo(searchTerm){
                 var pageFormatObj = determinePageFormat(content);
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
-                // $('#status').append(`<p>Search for ${searchObj.getTitle()}</p>`);
                 // add search to breadcrumbs
 
                 if(pageFormatObj.success){
@@ -691,9 +690,9 @@ function displayError(message){
     var $errors = $('#errors');
     if( $errors.hasClass('hide') ){
         $errors.removeClass('hide');
-        $errors.append( $('<li>').addClass('collection-item error').text('ERROR') );
+        $errors.append( $('<li>').addClass('collection-item red-text error').text('ERROR') );
     }
 
-    var $error = $('<li>').addClass('collection-item error').text(message);
+    var $error = $('<li>').addClass('collection-item red-text error').text(message);
     $errors.append($error);
 }
