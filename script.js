@@ -136,10 +136,10 @@ function gatherInfo(searchTerm){
   * @param {string} [origSearchTerm] - term searched in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
   function initialWikiQuery(searchObj, origSearchTerm){
-    // for testing
-    if(origSearchTerm !== undefined){
-        console.log('origSearchTerm', origSearchTerm)
-    }
+    // // for testing
+    // if(origSearchTerm !== undefined){
+    //     console.log('origSearchTerm', origSearchTerm)
+    // }
 
     var extraDataOptions = {
         prop: 'revisions',
@@ -268,10 +268,10 @@ function gatherInfo(searchTerm){
   * @param {string} [origTitle] - title of comic in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
   function searchWikiForComic(image, comicTitle, origTitle){
-    // for testing
-    if(origTitle !== undefined){
-        console.log('origTitle', origTitle)
-    }
+    // // for testing
+    // if(origTitle !== undefined){
+    //     console.log('origTitle', origTitle)
+    // }
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -290,6 +290,7 @@ function gatherInfo(searchTerm){
             if(comicInfo.success){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
+                // console.log('content: ', content);
                 var imageTitle = parseImageTitle(content);
                 if(imageTitle !== null){
                     retrieveImageURL(image, imageTitle);
@@ -298,7 +299,7 @@ function gatherInfo(searchTerm){
                 }
                 // remove old error message from status bar relating to not finding page for old search term, if any
                 if(origTitle !== undefined){
-                    // $( `#error li:contains('Could not find page for search term: ${origTitle}')` ).remove();
+                    // $( `#error lgreei:contains('Could not find page for search term: ${origTitle}')` ).remove();
                     $( `#errors li:contains(${origTitle})` ).remove();
                 }
                 
