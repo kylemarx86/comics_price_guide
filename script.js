@@ -181,14 +181,14 @@ function gatherInfo(searchTerm){
                             $img.attr('src', './resources/image_not_found.png');
                         }
                         // create column
-                        var $col = $('<div>').addClass('col');
+                        var $col = $('<div>').addClass('col center-align s10 offset-s1 m6 offset-m3 l4 offset-l4');
                         // create card
                         var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                         // create card-image
-                        var $card_image = $('<div>').addClass('card-image');
+                        var $card_content = $('<div>').addClass('card-content');
                         // image
-                        $card_image.append($img);
-                        $card.append($card_image);
+                        $card_content.append($img);
+                        $card.append($card_content);
                         $col.append($card);
                         
                         // add type and image to the DOM
@@ -257,17 +257,14 @@ function gatherInfo(searchTerm){
                         // then cards for each page need to be created and appended to the Image col section
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
                             var $col = $('<div>').addClass('disambigEntry col s12 m4 center-align');
-                            // var $entry = $('<div>').addClass('disambigEntry col s12 m4 center-align');
-                            // var $card = $('<div>').addClass('card blue-grey darken-1');
                             var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                             var $cardContent = $('<div>').addClass('card-content white-text');
                             var $page = $('<div>').addClass('card-title').text(pageFormatObj.pages[i].page);
                             var $img = $('<img>');
                             $cardContent.append($page, $img);
                             $card.append($cardContent);
-                            // $entry.append($card);
                             $col.append($card);
-                            retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);     // final part should be imgTitle not img for clarity
+                            retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);
                             $('#info .image').append($col);
                         }
                         // await user response to determine how search will proceed
