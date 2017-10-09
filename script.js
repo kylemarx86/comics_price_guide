@@ -167,7 +167,8 @@ function gatherInfo(searchTerm){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        
+                        // console.log('content', content)
+
                         // get type of page/search
                         var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
                                             .text(`Page type: ${pageFormatObj.templateType}`);
@@ -179,8 +180,20 @@ function gatherInfo(searchTerm){
                         }else{
                             $img.attr('src', './resources/image_not_found.png');
                         }
+                        // create column
+                        var $col = $('<div>').addClass('col');
+                        // create card
+                        var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
+                        // create card-image
+                        var $card_image = $('<div>').addClass('card-image');
+                        // image
+                        $card_image.append($img);
+                        $card.append($card_image);
+                        $col.append($card);
+                        
                         // add type and image to the DOM
-                        $('#info').append($type, $img);
+                        $('#info .text').append($type);
+                        $('#info .image').append($col);
 
                         // check to see if we can parse out debut issues based on the type of template the page used
                         //   since not all page templates have information on first appearances
@@ -235,17 +248,27 @@ function gatherInfo(searchTerm){
                     }else{
                         // content is for a general disambig
                         // add the page titles and images to the DOM
+                        
+                        // page type needs "disambiguation" needs to be stated
+                        var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
+                                .text(`Page type: ${pageFormatObj.pageType}`);
+                        $('#info .text').append($type);
+
+                        // then cards for each page need to be created and appended to the Image col section
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
-                            var $entry = $('<div>').addClass('disambigEntry col s12 m4 center-align');
-                            var $card = $('<div>').addClass('card blue-grey darken-1');
+                            var $col = $('<div>').addClass('disambigEntry col s12 m4 center-align');
+                            // var $entry = $('<div>').addClass('disambigEntry col s12 m4 center-align');
+                            // var $card = $('<div>').addClass('card blue-grey darken-1');
+                            var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                             var $cardContent = $('<div>').addClass('card-content white-text');
                             var $page = $('<div>').addClass('card-title').text(pageFormatObj.pages[i].page);
                             var $img = $('<img>');
                             $cardContent.append($page, $img);
                             $card.append($cardContent);
-                            $entry.append($card);
+                            // $entry.append($card);
+                            $col.append($card);
                             retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);     // final part should be imgTitle not img for clarity
-                            $('#info').append($entry);
+                            $('#info .image').append($col);
                         }
                         // await user response to determine how search will proceed
                     }
@@ -584,12 +607,14 @@ function constructQueryString(titlesValue, extraDataOptions){
  * @param {string} content - revision content from the wiki
  * @returns {object} object with properties:
  *          {boolean} success - description of the whether the page's format could be discerned
- *          {string} pageType - type of page formatting either 'template', 'charDisambiguation' (character disambiguation), or 'genDisambiguation' (general disambiguation)            // look more into jsdocs to how to format this
+ *          {string} pageType - type of page formatting either 'template', 'charDisambiguation' (character disambiguation), or 'disambiguation' (general disambiguation)            // look more into jsdocs to how to format this
  *          {string} templateType - used when pageType = 'template', describes the wiki's template that was used to create the page
  *          {string} imageTitle - used when pageType = 'template', title of the main image for the page
  *          {string} character - used when pageType = 'charDisambiguation', the name of the main character found
- *          {array} pages - used when pageType = 'genDisambiguation', array of objects (defined in the parseDisambiguation method)
+ *          {array} pages - used when pageType = 'disambiguation', array of objects (defined in the parseDisambiguation method)
  *          {string} errorMessage - message if call was unsuccessful
+ * 
+ * NOTE: CONSIDER CHANGING PAGE TYPE TO TWO WORD TERMS FOR USE IN OTHER METHODS
  */
 function determinePageFormat(content){
     var formatObj = {
@@ -605,7 +630,7 @@ function determinePageFormat(content){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // no image title because second call will capture it
+        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // old does not work in all cases because of ';'. removed ';' in next attempt
         var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
         var character = pattern.exec(content);
         if(character !== null){
@@ -617,7 +642,7 @@ function determinePageFormat(content){
             var pattern = /New Header1_[\d]*\s*=\s\[\[([\w.'() -]*)\|?.*\]\]; (.*)/g;    // with image title capture group
             var disambiguation = parseDisambiguation(pattern, content);         // method should always be returning an array
             if(disambiguation.length !== 0){
-                formatObj.pageType = 'genDisambiguation';
+                formatObj.pageType = 'disambiguation';
                 formatObj.pages = disambiguation;
             }else{
                 // in case there is something that doesn't fit these patterns or page templates change
@@ -664,7 +689,6 @@ function pageCanRunDebutCheck(templateType){
  */
 function addVolumeToIssue(title){
     var pattern = /(.*) (\d+$)/g;
-    // var placeHolder = null;
     var temp = pattern.exec(title);
 
     if(temp !== null){
@@ -675,13 +699,14 @@ function addVolumeToIssue(title){
 }
 
 function clearResultsAndStatus(){
-    // $('#status ').empty();
     $('#searchPath .col').empty();
     // empty errors and hide element
     $('#errors').empty();
     $('#errors').addClass('hide');
-    
-    $('#info').empty();
+    // empty character/general info
+    $('#info .text').empty();
+    $('#info .image').empty();
+    // empty debut info
     $('#debut').empty();
     
 }
