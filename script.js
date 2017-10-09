@@ -212,7 +212,7 @@ function gatherInfo(searchTerm){
                                 for(var i = 0; i < debutInfo.debutList.length; i++){
                                     // for each debut add already gathered info to screen and search wiki for images of debut comic
                                     var $debut = $('<div>').addClass('debutEntry col s12 m4 center-align');
-                                    var $card = $('<div>').addClass('card light-blue darken-4');
+                                    var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                                     var $cardContent = $('<div>').addClass('card-content white-text');
 
                                     var $mantle = $('<div>').addClass('card-title');
