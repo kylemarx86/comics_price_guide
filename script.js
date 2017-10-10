@@ -175,6 +175,7 @@ function gatherInfo(searchTerm){
                         // get image title
                         var $img = $('<img>');
                         var imageTitle = parseImageTitle(content);
+                        // turn into separate method
                         if(imageTitle !== null){
                             retrieveImageURL($img, imageTitle);
                         }else{
@@ -183,14 +184,14 @@ function gatherInfo(searchTerm){
 
                         var $card_title = $('<div>').addClass('card-title').text(data.content.title);
                         
-                        // create column
-                        var $col = $('<div>').addClass('col center-align s10 offset-s1 m6 offset-m3 l4 offset-l4');
-                        // create card
+                        // create elements
+                        var $col = $('<div>').addClass('col center-align s10 offset-s1 m6 offset-m3 l2 offset-l5');
                         var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
-                        // create card-image
                         var $card_content = $('<div>').addClass('card-content white-text');
-                        // image
-                        $card_content.append($card_title, $img);
+                        var $img_container = $('<div>').addClass('card-image');
+                        // append elements
+                        $img_container.append($img);
+                        $card_content.append($card_title, $img_container);
                         $card.append($card_content);
                         $col.append($card);
                         
@@ -213,20 +214,22 @@ function gatherInfo(searchTerm){
                                 $('#debut').append($title, $entries);
 
                                 for(var i = 0; i < debutInfo.debutList.length; i++){
+                                    // create elements
                                     // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                    var $debut = $('<div>').addClass('debutEntry col s12 m4 center-align');
+                                    var $debut = $('<div>').addClass('debutEntry col s12 m4 l2 center-align');
                                     var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                                     var $cardContent = $('<div>').addClass('card-content white-text');
-
                                     var $mantle = $('<div>').addClass('card-title');
                                     var $issue = $('<div>').addClass('issue').text(debutInfo.debutList[i].issue);
+                                    var $img_container = $('<div>').addClass('card-image');
                                     var $img = $('<img>');
-
+                                    // append elements
                                     if(debutInfo.debutList[i].mantle !== null){
                                         $mantle.text(debutInfo.debutList[i].mantle);
                                         $cardContent.append($mantle);
                                     }
-                                    $cardContent.append($img, $issue);
+                                    $img_container.append($img);
+                                    $cardContent.append($img_container, $issue);
                                     $card.append($cardContent);
                                     $debut.append($card);
                                     $($entries).append($debut);
@@ -259,12 +262,14 @@ function gatherInfo(searchTerm){
 
                         // then cards for each page need to be created and appended to the Image col section
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
-                            var $col = $('<div>').addClass('disambigEntry col s12 m4 center-align');
+                            var $col = $('<div>').addClass('disambigEntry col s12 m4 l2 center-align');
                             var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                             var $cardContent = $('<div>').addClass('card-content white-text');
                             var $page = $('<div>').addClass('card-title').text(pageFormatObj.pages[i].page);
+                            var $img_container = $('<div>').addClass('card-image');
                             var $img = $('<img>');
-                            $cardContent.append($page, $img);
+                            $img_container.append($img);
+                            $cardContent.append($page, $img_container);
                             $card.append($cardContent);
                             $col.append($card);
                             retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);
