@@ -315,7 +315,7 @@ function gatherInfo(searchTerm){
             if(comicInfo.success){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
-                // console.log('content: ', content);
+                console.log('content: ', content);
                 var imageTitle = parseImageTitle(content);
                 if(imageTitle !== null){
                     retrieveImageURL(image, imageTitle);
@@ -522,12 +522,15 @@ function parseDebut(content){
 
 /**
  * Extract the title of an image from the page content returned from the wiki.
+ * NOTE: order of the primary and secondary searches is important because sometimes user entered 
+ * data places images with numerical quantifiers (usually denoting secondary images) ahead of those 
+ * without (usually denoting primary images).
  * @param {string} content - revision content from the wiki
  * @returns {string} imageTitle - title of the image being retrieved, or null if pattern not found
  */
 function parseImageTitle(content){
-    // var pattern = /\| Image\s*=\s?(.*)/g;
-    var pattern = /Image\d?\s*=\s?(.*)/g;
+    // primary search (look for images without numerical quantifiers)
+    var pattern = /Image\s*=\s?(.*)/g;
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
@@ -538,6 +541,18 @@ function parseImageTitle(content){
             imageTitle = matchResults[1];
         }
         // NOTE: consider creating exception if this second check fails 
+    }else{
+        // secondary search
+        pattern = /Image\d?\s*=\s?(.*)/g;
+        matchResults = pattern.exec(content);
+    
+        // if there are result
+        if(matchResults !== null){
+            // prevent the pushing of empty strings to images
+            if(matchResults[1] !== ""){
+                imageTitle = matchResults[1];
+            }
+        }
     }
     return imageTitle;
 }
