@@ -180,14 +180,17 @@ function gatherInfo(searchTerm){
                         }else{
                             $img.attr('src', './resources/image_not_found.png');
                         }
+
+                        var $card_title = $('<div>').addClass('card-title').text(data.content.title);
+                        
                         // create column
                         var $col = $('<div>').addClass('col center-align s10 offset-s1 m6 offset-m3 l4 offset-l4');
                         // create card
                         var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                         // create card-image
-                        var $card_content = $('<div>').addClass('card-content');
+                        var $card_content = $('<div>').addClass('card-content white-text');
                         // image
-                        $card_content.append($img);
+                        $card_content.append($card_title, $img);
                         $card.append($card_content);
                         $col.append($card);
                         
