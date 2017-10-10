@@ -167,7 +167,7 @@ function gatherInfo(searchTerm){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        // console.log('content', content)
+                        console.log('content', content)
 
                         // get type of page/search
                         var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
@@ -320,7 +320,7 @@ function gatherInfo(searchTerm){
             if(comicInfo.success){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
-                console.log('content: ', content);
+                // console.log('content: ', content);
                 var imageTitle = parseImageTitle(content);
                 if(imageTitle !== null){
                     retrieveImageURL(image, imageTitle);
@@ -496,7 +496,7 @@ function parseDebut(content){
             // decipher second grouping
 
             // add first mantle to first object in debutList in debutObj
-            pattern = /(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/i     // pattern for working with parentheses and braces cases
+            pattern = /(?:\(|\{\{g\|)(?:as )?(?:\[\[)?(.*?)(?:\]\])?(?:\)|\}\})/i;      // pattern for working with parentheses and braces cases
             var mantle = pattern.exec(debutsTemp[1]);
             if(mantle !== null){
                 debutObj.debutList[0].mantle = mantle[1];
@@ -506,7 +506,7 @@ function parseDebut(content){
             // pattern: {{cid|"issue to grab"}} "{{|g" or "(" as? "mantle to grab" "}}" or ")"
             // pretty sure there are some cases where the "as" was omitted in this pattern. 
             // NOTE: important to have "as" case-insensitive, hence the i-flag
-            pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(.*?)(?:\)|\}\})/gi;     // pattern combining cases
+            pattern = /\{\{cid\|(.*?)\}\}(?:\(|\{\{g\|)(?:as )?(?:\[\[)?(.*?)(?:\]\])?(?:\)|\}\})/gi;     // pattern combining cases
             var extraDebuts = null;
         
             while( (extraDebuts = pattern.exec(debutsTemp[1])) !== null){
