@@ -1,16 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://code.jquery.com/jquery.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="style.css">
+
+  <!--Import jQuery before materialize.js-->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="materialize-src/js/bin/materialize.min.js"></script>
+  
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   
+  <!-- <script src="https://code.jquery.com/jquery.min.js"></script> -->
   <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-  <input type='text' name='searchTerm' id='searchTerm'>
-  <button id='submit'>Submit</button>
+  <div class='row valign-wrapper'>
+    <form class='col s12 valign-wrapper' onsubmit="return false;">
+      <div class='input-field col s8'>
+          <input id='searchTerm' type='text' name='searchTerm' class='validate'>
+          <label for='searchTerm'><i class='material-icons left'>search</i>Search</label>
+      </div>
+      <div class="col s4">
+        <a id='submit' class="waves-effect waves-deep-purple btn red darken-4"><i class="material-icons left">send</i>Submit</a>
+      </div>
+    </form>
+  </div>
+  
+  
   <div id='results'>
-    <div id='status'></div>
-    <div id='info'></div>
-    <div id='debut'></div>
+    <div id='status'>
+      <nav id='searchPath'>
+        <div class='nav-wrapper'>
+          <div class='col s12'></div>
+        </div>
+      </nav>
+      <div class='row'>
+        <div class="col s12">
+          <ul id='errors' class='collection red hide'>Errors</ul>
+        </div>
+      </div>
+    </div>
+    <div id='info'>
+      <div class='row text'></div>
+      <div class='row image'></div>
+    </div>
+    <div id='debut' class='row'></div>
   </div>
 </body>
 </html>
