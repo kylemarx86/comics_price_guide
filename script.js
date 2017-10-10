@@ -219,14 +219,14 @@ function gatherInfo(searchTerm){
                                     var $cardContent = $('<div>').addClass('card-content white-text');
 
                                     var $mantle = $('<div>').addClass('card-title');
-                                    var $issue = $('<div>').text(debutInfo.debutList[i].issue);
+                                    var $issue = $('<div>').addClass('issue').text(debutInfo.debutList[i].issue);
                                     var $img = $('<img>');
 
                                     if(debutInfo.debutList[i].mantle !== null){
                                         $mantle.text(debutInfo.debutList[i].mantle);
                                         $cardContent.append($mantle);
                                     }
-                                    $cardContent.append($issue, $img);
+                                    $cardContent.append($img, $issue);
                                     $card.append($cardContent);
                                     $debut.append($card);
                                     $($entries).append($debut);
