@@ -185,7 +185,7 @@ function gatherInfo(searchTerm){
                         var $card_title = $('<div>').addClass('card-title').text(data.content.title);
                         
                         // create elements
-                        var $col = $('<div>').addClass('col center-align s10 offset-s1 m6 offset-m3 l2 offset-l5');
+                        var $col = $('<div>').addClass('col center-align s10 offset-s1 m4 offset-m4 l2 offset-l5');
                         var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
                         var $card_content = $('<div>').addClass('card-content white-text');
                         var $img_container = $('<div>').addClass('card-image');
