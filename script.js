@@ -167,7 +167,7 @@ function gatherInfo(searchTerm){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        console.log('content', content)
+                        // console.log('content', content)
 
                         // get type of page/search
                         var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
@@ -517,11 +517,16 @@ function parseDebut(content){
                 debutObj.debutList.push(debut);
             }
         }   // end multiple debuts
+
+        // run X-Men standardizer on debutObj
+        debutObj = XMenStandardizer(debutObj);
     }else{
         // no firsts found
         // error / null object
         debutObj.errorMessage = 'No debuts found';
     }
+    
+    
     return debutObj;
 }
 
@@ -716,6 +721,25 @@ function addVolumeToIssue(title){
     }else{
         return null;
     }
+}
+
+/**
+ * Comics from X-Men Volume 1 are sometimes just listed (erroneously) as X-Men. This can lead to complications
+ * where the correct issue is not retrieved. To remedy this when a comic is found with the fitting pattern
+ * the words 'Vol 1' will be inserted to lead to the correct path.
+ * @param {obj} debutObj 
+ */
+function XMenStandardizer(debutObj){
+    var pattern = /^(X-Men) (#?\d+)/i;
+    if(debutObj.success){
+        for(var i = 0; i < debutObj.debutList.length; i++){
+            var res = pattern.exec(debutObj.debutList[i].issue);
+            if(res !== null){
+                debutObj.debutList[i].issue = `${res[1]} Vol 1 ${res[2]}`;
+            }
+        }
+    }
+    return debutObj;
 }
 
 function clearResultsAndStatus(){
