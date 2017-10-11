@@ -321,18 +321,40 @@ function gatherInfo(searchTerm){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
                 // console.log('content: ', content);
-                var imageTitle = parseImageTitle(content);
-                if(imageTitle !== null){
-                    retrieveImageURL(image, imageTitle);
-                }else{
+
+                // check to see if this is a disambiguation page
+                var pattern = /^\{\{Disambiguation/i;
+                var test = content.match(pattern);
+                if(test !== null){
+                    // search for comic yields disambiguation
+                    // search again with volume 
+                    // display the error message
+                    displayError(`Search for ${comicTitle} yielded disambiguation page.`);
+                    // if page for comic is not found than neither is the image for it
                     image.attr('src', './resources/image_not_found.png');
+                    // attempt again with different call (namely with a volume inserted). 
+                    // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
+                    var newTitle = addVolumeToIssue(comicTitle);
+                    if(newTitle !== null){
+                        searchWikiForComic(image, newTitle, comicTitle);
+                    }
+                }else{
+                    // search for comic is fine
+                    var imageTitle = parseImageTitle(content);
+                    if(imageTitle !== null){
+                        retrieveImageURL(image, imageTitle);
+                    }else{
+                        image.attr('src', './resources/image_not_found.png');
+                    }
+                    // remove old error message from status bar relating to not finding page for old search term, if any
+                    if(origTitle !== undefined){
+                        $( `#errors li:contains(${origTitle})` ).remove();
+                        if( $('#errors li').length === 1){
+                            $('#errors li').remove();
+                            $('#errors').addClass('hide');
+                        }
+                    }
                 }
-                // remove old error message from status bar relating to not finding page for old search term, if any
-                if(origTitle !== undefined){
-                    // $( `#error lgreei:contains('Could not find page for search term: ${origTitle}')` ).remove();
-                    $( `#errors li:contains(${origTitle})` ).remove();
-                }
-                
             }else{
                 // display the error message
                 displayError(comicInfo.errorMessage);
@@ -720,7 +742,7 @@ function addVolumeToIssue(title){
         return null;
     }else{
         // volume not found
-        pattern = /(.*) ([\d.]+$)/g;
+        pattern = /(.*) ([\d.]+)\s{0,}$/;
         temp = pattern.exec(title);
     
         if(temp !== null){
