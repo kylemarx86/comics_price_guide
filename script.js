@@ -713,14 +713,23 @@ function pageCanRunDebutCheck(templateType){
  * @returns {string} title of the issue with extra text related to volume number, or returns null
  */
 function addVolumeToIssue(title){
-    var pattern = /(.*) (\d+$)/g;
-    var temp = pattern.exec(title);
-
+    var pattern = /.*Vol \d+.*/gi;
+    var temp = title.match(pattern);
     if(temp !== null){
-        return `${temp[1]} Vol 1 ${temp[2]}`;
-    }else{
+        // found volume
         return null;
+    }else{
+        // volume not found
+        pattern = /(.*) ([\d.]+$)/g;
+        temp = pattern.exec(title);
+    
+        if(temp !== null){
+            return `${temp[1]} Vol 1 ${temp[2]}`;
+        }else{
+            return null;
+        }
     }
+
 }
 
 /**
