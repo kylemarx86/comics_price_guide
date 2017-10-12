@@ -433,7 +433,12 @@ function generalParser(response, searchTerm){
 
     if(key < 0){
         // call was unsuccessful
-        data.errorMessage = `Could not find page for search term: ${searchTerm}`;
+        if(searchTerm !== undefined){
+            data.errorMessage = `Could not find page for search term: ${searchTerm}`;
+        }else{
+            data.errorMessage = `Could not find page for search term.`;
+        }
+        
     }else{
         // call was successful
         data.success = true;
@@ -605,7 +610,12 @@ function parseImageURL(response){
         
     if(imageObj.success){
         // call was successful
-        imageObj.imageSrc = data.content.imageinfo[0].url;
+        if(data.content.imageinfo !== undefined){
+            imageObj.imageSrc = data.content.imageinfo[0].url;
+        }else{
+            imageObj.errorMessage = 'Could not find image.';
+            imageObj.imageSrc = './resources/image_not_found.png';
+        }
     }else{
         // call was unsuccessful
         imageObj.errorMessage = 'Could not find image.';
