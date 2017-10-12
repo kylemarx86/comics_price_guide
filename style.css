@@ -52,7 +52,7 @@
 .materialize-red-text.text-darken-3 {
   color: #a21318 !important; }
 
-.materialize-red.darken-4 {
+.materialize-red.darken-4, .materialize-red.card-piece {
   background-color: #8b1014 !important; }
 
 .materialize-red-text.text-darken-4 {
@@ -112,7 +112,7 @@
 .red-text.text-darken-3 {
   color: #C62828 !important; }
 
-.red.darken-4 {
+.red.darken-4, .red.card-piece {
   background-color: #B71C1C !important; }
 
 .red-text.text-darken-4 {
@@ -196,7 +196,7 @@
 .pink-text.text-darken-3 {
   color: #ad1457 !important; }
 
-.pink.darken-4 {
+.pink.darken-4, .pink.card-piece {
   background-color: #880e4f !important; }
 
 .pink-text.text-darken-4 {
@@ -280,7 +280,7 @@
 .purple-text.text-darken-3 {
   color: #6a1b9a !important; }
 
-.purple.darken-4 {
+.purple.darken-4, .purple.card-piece {
   background-color: #4a148c !important; }
 
 .purple-text.text-darken-4 {
@@ -364,7 +364,7 @@
 .deep-purple-text.text-darken-3 {
   color: #4527a0 !important; }
 
-.deep-purple.darken-4 {
+.deep-purple.darken-4, .deep-purple.card-piece {
   background-color: #311b92 !important; }
 
 .deep-purple-text.text-darken-4 {
@@ -448,7 +448,7 @@
 .indigo-text.text-darken-3 {
   color: #283593 !important; }
 
-.indigo.darken-4 {
+.indigo.darken-4, .indigo.card-piece {
   background-color: #1a237e !important; }
 
 .indigo-text.text-darken-4 {
@@ -532,7 +532,7 @@
 .blue-text.text-darken-3 {
   color: #1565C0 !important; }
 
-.blue.darken-4 {
+.blue.darken-4, .blue.card-piece {
   background-color: #0D47A1 !important; }
 
 .blue-text.text-darken-4 {
@@ -562,85 +562,85 @@
 .blue-text.text-accent-4 {
   color: #2962FF !important; }
 
-.light-blue {
+.light-blue, .card-piece {
   background-color: #03a9f4 !important; }
 
 .light-blue-text {
   color: #03a9f4 !important; }
 
-.light-blue.lighten-5 {
+.light-blue.lighten-5, .lighten-5.card-piece {
   background-color: #e1f5fe !important; }
 
 .light-blue-text.text-lighten-5 {
   color: #e1f5fe !important; }
 
-.light-blue.lighten-4 {
+.light-blue.lighten-4, .lighten-4.card-piece {
   background-color: #b3e5fc !important; }
 
 .light-blue-text.text-lighten-4 {
   color: #b3e5fc !important; }
 
-.light-blue.lighten-3 {
+.light-blue.lighten-3, .lighten-3.card-piece {
   background-color: #81d4fa !important; }
 
 .light-blue-text.text-lighten-3 {
   color: #81d4fa !important; }
 
-.light-blue.lighten-2 {
+.light-blue.lighten-2, .lighten-2.card-piece {
   background-color: #4fc3f7 !important; }
 
 .light-blue-text.text-lighten-2 {
   color: #4fc3f7 !important; }
 
-.light-blue.lighten-1 {
+.light-blue.lighten-1, .lighten-1.card-piece {
   background-color: #29b6f6 !important; }
 
 .light-blue-text.text-lighten-1 {
   color: #29b6f6 !important; }
 
-.light-blue.darken-1 {
+.light-blue.darken-1, .darken-1.card-piece {
   background-color: #039be5 !important; }
 
 .light-blue-text.text-darken-1 {
   color: #039be5 !important; }
 
-.light-blue.darken-2 {
+.light-blue.darken-2, .darken-2.card-piece {
   background-color: #0288d1 !important; }
 
 .light-blue-text.text-darken-2 {
   color: #0288d1 !important; }
 
-.light-blue.darken-3 {
+.light-blue.darken-3, .darken-3.card-piece {
   background-color: #0277bd !important; }
 
 .light-blue-text.text-darken-3 {
   color: #0277bd !important; }
 
-.light-blue.darken-4 {
+.light-blue.darken-4, .card-piece {
   background-color: #01579b !important; }
 
 .light-blue-text.text-darken-4 {
   color: #01579b !important; }
 
-.light-blue.accent-1 {
+.light-blue.accent-1, .accent-1.card-piece {
   background-color: #80d8ff !important; }
 
 .light-blue-text.text-accent-1 {
   color: #80d8ff !important; }
 
-.light-blue.accent-2 {
+.light-blue.accent-2, .accent-2.card-piece {
   background-color: #40c4ff !important; }
 
 .light-blue-text.text-accent-2 {
   color: #40c4ff !important; }
 
-.light-blue.accent-3 {
+.light-blue.accent-3, .accent-3.card-piece {
   background-color: #00b0ff !important; }
 
 .light-blue-text.text-accent-3 {
   color: #00b0ff !important; }
 
-.light-blue.accent-4 {
+.light-blue.accent-4, .accent-4.card-piece {
   background-color: #0091ea !important; }
 
 .light-blue-text.text-accent-4 {
@@ -700,7 +700,7 @@
 .cyan-text.text-darken-3 {
   color: #00838f !important; }
 
-.cyan.darken-4 {
+.cyan.darken-4, .cyan.card-piece {
   background-color: #006064 !important; }
 
 .cyan-text.text-darken-4 {
@@ -784,7 +784,7 @@
 .teal-text.text-darken-3 {
   color: #00695c !important; }
 
-.teal.darken-4 {
+.teal.darken-4, .teal.card-piece {
   background-color: #004d40 !important; }
 
 .teal-text.text-darken-4 {
@@ -868,7 +868,7 @@
 .green-text.text-darken-3 {
   color: #2E7D32 !important; }
 
-.green.darken-4 {
+.green.darken-4, .green.card-piece {
   background-color: #1B5E20 !important; }
 
 .green-text.text-darken-4 {
@@ -952,7 +952,7 @@
 .light-green-text.text-darken-3 {
   color: #558b2f !important; }
 
-.light-green.darken-4 {
+.light-green.darken-4, .light-green.card-piece {
   background-color: #33691e !important; }
 
 .light-green-text.text-darken-4 {
@@ -1036,7 +1036,7 @@
 .lime-text.text-darken-3 {
   color: #9e9d24 !important; }
 
-.lime.darken-4 {
+.lime.darken-4, .lime.card-piece {
   background-color: #827717 !important; }
 
 .lime-text.text-darken-4 {
@@ -1120,7 +1120,7 @@
 .yellow-text.text-darken-3 {
   color: #f9a825 !important; }
 
-.yellow.darken-4 {
+.yellow.darken-4, .yellow.card-piece {
   background-color: #f57f17 !important; }
 
 .yellow-text.text-darken-4 {
@@ -1204,7 +1204,7 @@
 .amber-text.text-darken-3 {
   color: #ff8f00 !important; }
 
-.amber.darken-4 {
+.amber.darken-4, .amber.card-piece {
   background-color: #ff6f00 !important; }
 
 .amber-text.text-darken-4 {
@@ -1288,7 +1288,7 @@
 .orange-text.text-darken-3 {
   color: #ef6c00 !important; }
 
-.orange.darken-4 {
+.orange.darken-4, .orange.card-piece {
   background-color: #e65100 !important; }
 
 .orange-text.text-darken-4 {
@@ -1372,7 +1372,7 @@
 .deep-orange-text.text-darken-3 {
   color: #d84315 !important; }
 
-.deep-orange.darken-4 {
+.deep-orange.darken-4, .deep-orange.card-piece {
   background-color: #bf360c !important; }
 
 .deep-orange-text.text-darken-4 {
@@ -1456,7 +1456,7 @@
 .brown-text.text-darken-3 {
   color: #4e342e !important; }
 
-.brown.darken-4 {
+.brown.darken-4, .brown.card-piece {
   background-color: #3e2723 !important; }
 
 .brown-text.text-darken-4 {
@@ -1516,7 +1516,7 @@
 .blue-grey-text.text-darken-3 {
   color: #37474f !important; }
 
-.blue-grey.darken-4 {
+.blue-grey.darken-4, .blue-grey.card-piece {
   background-color: #263238 !important; }
 
 .blue-grey-text.text-darken-4 {
@@ -1576,7 +1576,7 @@
 .grey-text.text-darken-3 {
   color: #424242 !important; }
 
-.grey.darken-4 {
+.grey.darken-4, .grey.card-piece {
   background-color: #212121 !important; }
 
 .grey-text.text-darken-4 {
@@ -1982,7 +1982,7 @@ a {
 .z-depth-0 {
   box-shadow: none !important; }
 
-.z-depth-1, nav, .card-panel, .card, .toast, .btn, .btn-large, .btn-floating, .dropdown-content, .collapsible, .side-nav {
+.z-depth-1, nav, .card-panel, .card, .card-piece, .toast, .btn, .btn-large, .btn-floating, .dropdown-content, .collapsible, .side-nav {
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2); }
 
 .z-depth-1-half, .btn:hover, .btn-large:hover, .btn-floating:hover {
@@ -1991,7 +1991,7 @@ a {
 .z-depth-2 {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
 
-.z-depth-3 {
+.z-depth-3, .card-piece {
   box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3); }
 
 .z-depth-4, .modal {
@@ -3366,67 +3366,67 @@ small {
   border-radius: 2px;
   background-color: #fff; }
 
-.card {
+.card, .card-piece {
   position: relative;
   margin: 0.5rem 0 1rem 0;
   background-color: #fff;
   transition: box-shadow .25s;
   border-radius: 2px; }
-  .card .card-title {
+  .card .card-title, .card-piece .card-title {
     font-size: 24px;
     font-weight: 300; }
-    .card .card-title.activator {
+    .card .card-title.activator, .card-piece .card-title.activator {
       cursor: pointer; }
-  .card.small, .card.medium, .card.large {
+  .card.small, .small.card-piece, .card.medium, .medium.card-piece, .card.large, .large.card-piece {
     position: relative; }
-    .card.small .card-image, .card.medium .card-image, .card.large .card-image {
+    .card.small .card-image, .small.card-piece .card-image, .card.medium .card-image, .medium.card-piece .card-image, .card.large .card-image, .large.card-piece .card-image {
       max-height: 60%;
       overflow: hidden; }
-    .card.small .card-image + .card-content, .card.medium .card-image + .card-content, .card.large .card-image + .card-content {
+    .card.small .card-image + .card-content, .small.card-piece .card-image + .card-content, .card.medium .card-image + .card-content, .medium.card-piece .card-image + .card-content, .card.large .card-image + .card-content, .large.card-piece .card-image + .card-content {
       max-height: 40%; }
-    .card.small .card-content, .card.medium .card-content, .card.large .card-content {
+    .card.small .card-content, .small.card-piece .card-content, .card.medium .card-content, .medium.card-piece .card-content, .card.large .card-content, .large.card-piece .card-content {
       max-height: 100%;
       overflow: hidden; }
-    .card.small .card-action, .card.medium .card-action, .card.large .card-action {
+    .card.small .card-action, .small.card-piece .card-action, .card.medium .card-action, .medium.card-piece .card-action, .card.large .card-action, .large.card-piece .card-action {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0; }
-  .card.small {
+  .card.small, .small.card-piece {
     height: 300px; }
-  .card.medium {
+  .card.medium, .medium.card-piece {
     height: 400px; }
-  .card.large {
+  .card.large, .large.card-piece {
     height: 500px; }
-  .card.horizontal {
+  .card.horizontal, .horizontal.card-piece {
     display: flex; }
-    .card.horizontal.small .card-image, .card.horizontal.medium .card-image, .card.horizontal.large .card-image {
+    .card.horizontal.small .card-image, .horizontal.small.card-piece .card-image, .card.horizontal.medium .card-image, .horizontal.medium.card-piece .card-image, .card.horizontal.large .card-image, .horizontal.large.card-piece .card-image {
       height: 100%;
       max-height: none;
       overflow: visible; }
-      .card.horizontal.small .card-image img, .card.horizontal.medium .card-image img, .card.horizontal.large .card-image img {
+      .card.horizontal.small .card-image img, .horizontal.small.card-piece .card-image img, .card.horizontal.medium .card-image img, .horizontal.medium.card-piece .card-image img, .card.horizontal.large .card-image img, .horizontal.large.card-piece .card-image img {
         height: 100%; }
-    .card.horizontal .card-image {
+    .card.horizontal .card-image, .horizontal.card-piece .card-image {
       max-width: 50%; }
-      .card.horizontal .card-image img {
+      .card.horizontal .card-image img, .horizontal.card-piece .card-image img {
         border-radius: 2px 0 0 2px;
         max-width: 100%;
         width: auto; }
-    .card.horizontal .card-stacked {
+    .card.horizontal .card-stacked, .horizontal.card-piece .card-stacked {
       display: flex;
       flex-direction: column;
       flex: 1;
       position: relative; }
-      .card.horizontal .card-stacked .card-content {
+      .card.horizontal .card-stacked .card-content, .horizontal.card-piece .card-stacked .card-content {
         flex-grow: 1; }
-  .card.sticky-action .card-action {
+  .card.sticky-action .card-action, .sticky-action.card-piece .card-action {
     z-index: 2; }
-  .card.sticky-action .card-reveal {
+  .card.sticky-action .card-reveal, .sticky-action.card-piece .card-reveal {
     z-index: 1;
     padding-bottom: 64px; }
-  .card .card-image {
+  .card .card-image, .card-piece .card-image {
     position: relative; }
-    .card .card-image img {
+    .card .card-image img, .card-piece .card-image img {
       display: block;
       border-radius: 2px 2px 0 0;
       position: relative;
@@ -3435,40 +3435,40 @@ small {
       top: 0;
       bottom: 0;
       width: 100%; }
-    .card .card-image .card-title {
+    .card .card-image .card-title, .card-piece .card-image .card-title {
       color: #fff;
       position: absolute;
       bottom: 0;
       left: 0;
       max-width: 100%;
       padding: 24px; }
-  .card .card-content {
+  .card .card-content, .card-piece .card-content {
     padding: 24px;
     border-radius: 0 0 2px 2px; }
-    .card .card-content p {
+    .card .card-content p, .card-piece .card-content p {
       margin: 0;
       color: inherit; }
-    .card .card-content .card-title {
+    .card .card-content .card-title, .card-piece .card-content .card-title {
       display: block;
       line-height: 32px;
       margin-bottom: 8px; }
-      .card .card-content .card-title i {
+      .card .card-content .card-title i, .card-piece .card-content .card-title i {
         line-height: 32px; }
-  .card .card-action {
+  .card .card-action, .card-piece .card-action {
     position: relative;
     background-color: inherit;
     border-top: 1px solid rgba(160, 160, 160, 0.2);
     padding: 16px 24px; }
-    .card .card-action:last-child {
+    .card .card-action:last-child, .card-piece .card-action:last-child {
       border-radius: 0 0 2px 2px; }
-    .card .card-action a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating) {
+    .card .card-action a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating), .card-piece .card-action a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating) {
       color: #ffab40;
       margin-right: 24px;
       transition: color .3s ease;
       text-transform: uppercase; }
-      .card .card-action a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating):hover {
+      .card .card-action a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating):hover, .card-piece .card-action a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating):hover {
         color: #ffd8a6; }
-  .card .card-reveal {
+  .card .card-reveal, .card-piece .card-reveal {
     padding: 24px;
     position: absolute;
     background-color: #fff;
@@ -3479,7 +3479,7 @@ small {
     height: 100%;
     z-index: 3;
     display: none; }
-    .card .card-reveal .card-title {
+    .card .card-reveal .card-title, .card-piece .card-reveal .card-title {
       cursor: pointer;
       display: block; }
 

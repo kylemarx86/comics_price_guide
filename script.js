@@ -264,7 +264,7 @@ function gatherInfo(searchTerm){
  */
 function createCard(cardType, pageTitle, imageInfo){
     var $col = $('<div>').addClass(cardType);
-    var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
+    var $card = $('<div>').addClass('card-piece');
     var $card_content = $('<div>').addClass('card-content white-text');
     // add pageTitle, if defined
     if(pageTitle !== undefined){

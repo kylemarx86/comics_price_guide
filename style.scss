@@ -24,3 +24,10 @@
 .debutEntry{
     @extend .multipleEntry;
 }
+
+.card-piece{
+    @extend .card;
+    @extend .light-blue;
+    @extend .darken-4;
+    @extend .z-depth-3;
+}
