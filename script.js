@@ -259,11 +259,10 @@ function gatherInfo(searchTerm){
 /**
  * 
  * @param {string} cardType - string representing class name being added to the card
- * @param {string} pageTitle - title of the page the card represents
- * @param {string} imageInfo - info text at the bottom of the card
+ * @param {string} [pageTitle] - title of the page the card represents
+ * @param {string} [imageInfo] - info text at the bottom of the card
  */
 function createCard(cardType, pageTitle, imageInfo){
-    // var $col = $('<div>').addClass(`col s12 m4 l2 center-align ${cardType}`);
     var $col = $('<div>').addClass(cardType);
     var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
     var $card_content = $('<div>').addClass('card-content white-text');
@@ -323,7 +322,6 @@ function createCard(cardType, pageTitle, imageInfo){
                 var test = content.match(pattern);
                 if(test !== null){
                     // search for comic yields disambiguation
-                    // search again with volume 
                     // display the error message
                     displayError(`Search for ${comicTitle} yielded disambiguation page.`);
                     // if page for comic is not found than neither is the image for it
