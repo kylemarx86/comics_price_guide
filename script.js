@@ -172,8 +172,8 @@ function gatherInfo(searchTerm){
                         // get type of page/search
                         var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
                                             .text(`Page type: ${pageFormatObj.templateType}`);
-                        // get image title
-                        var $img = $('<img>');
+                        var $card = createCard('singleEntry', data.content.title);
+                        var $img = $card.find('img');
                         var imageTitle = parseImageTitle(content);
                         // turn into separate method
                         if(imageTitle !== null){
@@ -181,23 +181,9 @@ function gatherInfo(searchTerm){
                         }else{
                             $img.attr('src', './resources/image_not_found.png');
                         }
-
-                        var $card_title = $('<div>').addClass('card-title').text(data.content.title);
-                        
-                        // create elements
-                        var $col = $('<div>').addClass('col center-align s10 offset-s1 m4 offset-m4 l2 offset-l5');
-                        var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
-                        var $card_content = $('<div>').addClass('card-content white-text');
-                        var $img_container = $('<div>').addClass('card-image');
-                        // append elements
-                        $img_container.append($img);
-                        $card_content.append($card_title, $img_container);
-                        $card.append($card_content);
-                        $col.append($card);
-                        
                         // add type and image to the DOM
                         $('#info .text').append($type);
-                        $('#info .image').append($col);
+                        $('#info .image').append($card);
 
                         // check to see if we can parse out debut issues based on the type of template the page used
                         //   since not all page templates have information on first appearances
@@ -214,26 +200,16 @@ function gatherInfo(searchTerm){
                                 $('#debut').append($title, $entries);
 
                                 for(var i = 0; i < debutInfo.debutList.length; i++){
-                                    // create elements
                                     // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                    var $debut = $('<div>').addClass('debutEntry col s12 m4 l2 center-align');
-                                    var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
-                                    var $cardContent = $('<div>').addClass('card-content white-text');
-                                    var $mantle = $('<div>').addClass('card-title');
-                                    var $issue = $('<div>').addClass('issue').text(debutInfo.debutList[i].issue);
-                                    var $img_container = $('<div>').addClass('card-image');
-                                    var $img = $('<img>');
-                                    // append elements
                                     if(debutInfo.debutList[i].mantle !== null){
-                                        $mantle.text(debutInfo.debutList[i].mantle);
-                                        $cardContent.append($mantle);
+                                        // create card with mantle
+                                        var $card = createCard('debutEntry', debutInfo.debutList[i].mantle, debutInfo.debutList[i].issue);
+                                    }else{
+                                        // create card without mantle
+                                        var $card = createCard('debutEntry', '', debutInfo.debutList[i].issue);
                                     }
-                                    $img_container.append($img);
-                                    $cardContent.append($img_container, $issue);
-                                    $card.append($cardContent);
-                                    $debut.append($card);
-                                    $($entries).append($debut);
-                                    searchWikiForComic($img, debutInfo.debutList[i].issue);
+                                    $entries.append($card);
+                                    searchWikiForComic($card.find('img'), debutInfo.debutList[i].issue);
                                 }
                             }else{
                                 displayError(debutInfo.errorMessage);
@@ -253,27 +229,16 @@ function gatherInfo(searchTerm){
                         initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
-                        // add the page titles and images to the DOM
-                        
-                        // page type needs "disambiguation" needs to be stated
+                        // page type "disambiguation" needs to be stated
                         var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
                                 .text(`Page type: ${pageFormatObj.pageType}`);
                         $('#info .text').append($type);
 
-                        // then cards for each page need to be created and appended to the Image col section
+                        // then cards for each page need to be created and appended to the image section of the 
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
-                            var $col = $('<div>').addClass('disambigEntry col s12 m4 l2 center-align');
-                            var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
-                            var $cardContent = $('<div>').addClass('card-content white-text');
-                            var $page = $('<div>').addClass('card-title').text(pageFormatObj.pages[i].page);
-                            var $img_container = $('<div>').addClass('card-image');
-                            var $img = $('<img>');
-                            $img_container.append($img);
-                            $cardContent.append($page, $img_container);
-                            $card.append($cardContent);
-                            $col.append($card);
-                            retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);
-                            $('#info .image').append($col);
+                            var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
+                            retrieveImageURL($card.find('img'), pageFormatObj.pages[i].imageTitle);
+                            $('#info .image').append($card);
                         }
                         // await user response to determine how search will proceed
                     }
@@ -289,6 +254,37 @@ function gatherInfo(searchTerm){
         error: function (errorMessage) {
         }
     });
+}
+
+/**
+ * 
+ * @param {string} cardType - string representing class name being added to the card
+ * @param {string} pageTitle - title of the page the card represents
+ * @param {string} imageInfo - info text at the bottom of the card
+ */
+function createCard(cardType, pageTitle, imageInfo){
+    // var $col = $('<div>').addClass(`col s12 m4 l2 center-align ${cardType}`);
+    var $col = $('<div>').addClass(cardType);
+    var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
+    var $card_content = $('<div>').addClass('card-content white-text');
+    // add pageTitle, if defined
+    if(pageTitle !== undefined){
+        var $title = $('<div>').addClass('card-title').text(pageTitle);
+        $card_content.append($title);
+    }
+    // add image in container
+    var $img_container = $('<div>').addClass('card-image');
+    var $img = $('<img>');
+    $img_container.append($img);
+    $card_content.append($img_container);
+    // add imageInfo, if defined
+    if(imageInfo !== undefined){
+        $image_info = $('<div>').addClass().text(imageInfo);
+        $card_content.append($image_info);
+    }
+    $card.append($card_content);
+    $col.append($card);
+    return $col;
 }
 
 /**

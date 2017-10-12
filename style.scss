@@ -1,1 +1,26 @@
 @import "materialize-src/sass/materialize";
+
+.singleEntry{
+    @extend .col;
+    @extend .center-align;
+    @extend .s10;
+    @extend .offset-s1;
+    @extend .m4;
+    @extend .offset-m4;
+    @extend .l2;
+    @extend .offset-l5;
+}
+.multipleEntry{
+    @extend .col;
+    @extend .s12;
+    @extend .m4;
+    @extend .l2;
+    @extend .center-align;
+}
+
+.disambigEntry{
+    @extend .multipleEntry;
+}
+.debutEntry{
+    @extend .multipleEntry;
+}
