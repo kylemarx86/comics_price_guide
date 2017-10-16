@@ -151,7 +151,8 @@ function gatherInfo(searchTerm){
 
     $.ajax({
         type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        // url: 'https://marvel.wikia.com/api.php?' + queryString,
+        url: 'https://dc.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             // returns with object with success and other things
@@ -307,7 +308,8 @@ function createCard(cardType, pageTitle, imageInfo){
 
     $.ajax({
         type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        // url: 'https://marvel.wikia.com/api.php?' + queryString,
+        url: 'https://dc.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
@@ -384,7 +386,8 @@ function retrieveImageURL(image, fileName){
 
     $.ajax({
         type: "GET",
-        url: 'https://marvel.wikia.com/api.php?' + queryString,
+        // url: 'https://marvel.wikia.com/api.php?' + queryString,
+        url: 'https://dc.wikia.com/api.php?' + queryString,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             // parser will return object with a link to the appropriate image to use: image from wiki for success and default image_not_found for failures
@@ -585,6 +588,8 @@ function parseImageTitle(content){
             }
         }
     }
+    // remove html from image title, just in case. (came across this on DC wiki)
+    imageTitle = imageTitle.replace(/<(?:.|\n)*?>/gm, '');
     return imageTitle;
 }
 
@@ -673,7 +678,8 @@ function determinePageFormat(content){
         pageType: null
     }
     // check if content is of a template format
-    var pattern = /Marvel Database:\s?(.*) Template/g;
+    // var pattern = /Marvel Database:\s?(.*) Template/g;
+    var pattern = /DC Database:\s?(.*) Template/g;
     var template = pattern.exec(content);
     if(template !== null){
         formatObj.pageType = 'template';
@@ -682,7 +688,8 @@ function determinePageFormat(content){
     }else{
         // check if content is of type character disambiguation
         // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // old does not work in all cases because of ';'. removed ';' in next attempt
-        var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
+        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
+        var pattern = /MainPage\s*=\s?(.*)/g;       // DC capture
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
