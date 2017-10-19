@@ -104,6 +104,8 @@ function applyEventHandlers(){
             submitForm();
         }
     });
+    $('.switch-publisher .lever, .switch-publisher .logo').click(toggleActivePublisher);
+    // $('.switch-publisher .logo').click(toggleActivePublisher);
 }
 
 function setFocus(){
@@ -806,4 +808,11 @@ function displayError(message){
 
     var $error = $('<li>').addClass('collection-item red-text error').text(message);
     $errors.append($error);
+}
+
+
+
+
+function toggleActivePublisher(){
+    $('.switch-publisher .logo').toggleClass('inactive-image');
 }
