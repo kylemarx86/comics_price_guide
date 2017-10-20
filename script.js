@@ -1,5 +1,6 @@
 /**
- * Search object is based on the fact that there are multiple templates in the marvel wiki
+ * Search object is based on the fact that there are multiple templates in the marvel wiki (now expanded
+ * to DC wiki, as well)
  * Available templates from wiki: comic, character, team, gallery, organization, location, vehicle,
  *  item, race, reality, event, storyline, television episode, marvel staff, image, novel, user page
  * The scope of this project will focus on and make use of the following templates: comic, character, 
@@ -20,6 +21,7 @@
  * * @property {string} type - 
  * * @property {string} reality - 
  * * @property {string} debutArr - 
+ * @property {string} publisher - keep track of publisher
  */
 function Search(title) {
     this.title = title;
@@ -27,6 +29,7 @@ function Search(title) {
     this.type = null;           // unused so far
     this.reality = null;        // unused so far
     this.debutArr = [];
+    this.publisher = $('.switch-publisher').hasClass('marvel') ? 'marvel' : 'dc';
 }
 
 /**
@@ -81,6 +84,9 @@ Search.prototype.getDebutArr = function(){
 // Search.prototype.getDebutImg = function(){
 //     return this.debutImg;
 // }
+Search.prototype.getPublisher = function(){
+    return this.publisher;
+}
 
 
 
@@ -105,7 +111,6 @@ function applyEventHandlers(){
         }
     });
     $('.switch-publisher .lever, .switch-publisher .logo').click(toggleActivePublisher);
-    // $('.switch-publisher .logo').click(toggleActivePublisher);
 }
 
 function setFocus(){
@@ -133,7 +138,7 @@ function gatherInfo(searchTerm){
 
  /**
   * initialWikiQuery
-  * searches Marvel wiki for term and will call another function to parse information returned
+  * searches wiki for term and will call another function to parse information returned
   * @param {object} searchObj - search object containing name of term to be looked up
   * @param {string} [origSearchTerm] - term searched in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
@@ -149,12 +154,12 @@ function gatherInfo(searchTerm){
         rvsection: '0',
     };
     // NOTE: first parameter will change
-    var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);  
+    var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);
+    var publisher = searchObj.getPublisher();
 
     $.ajax({
         type: "GET",
-        // url: 'https://marvel.wikia.com/api.php?' + queryString,
-        url: 'https://dc.wikia.com/api.php?' + queryString,
+        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             // returns with object with success and other things
@@ -162,7 +167,7 @@ function gatherInfo(searchTerm){
             // console.log('data', data)
             if(data.success){
                 var content = data.content.revisions[0]['*'];
-                var pageFormatObj = determinePageFormat(content);
+                var pageFormatObj = determinePageFormat(content, publisher);
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
                 // add search to breadcrumbs
@@ -180,7 +185,7 @@ function gatherInfo(searchTerm){
                         var imageTitle = parseImageTitle(content);
                         // turn into separate method
                         if(imageTitle !== null){
-                            retrieveImageURL($img, imageTitle);
+                            retrieveImageURL($img, publisher, imageTitle);
                         }else{
                             $img.attr('src', './resources/image_not_found.png');
                         }
@@ -212,7 +217,7 @@ function gatherInfo(searchTerm){
                                         var $card = createCard('debutEntry', '', debutInfo.debutList[i].issue);
                                     }
                                     $entries.append($card);
-                                    searchWikiForComic($card.find('img'), debutInfo.debutList[i].issue);
+                                    searchWikiForComic($card.find('img'), publisher, debutInfo.debutList[i].issue);
                                 }
                             }else{
                                 displayError(debutInfo.errorMessage);
@@ -240,7 +245,7 @@ function gatherInfo(searchTerm){
                         // then cards for each page need to be created and appended to the image section of the 
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
                             var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
-                            retrieveImageURL($card.find('img'), pageFormatObj.pages[i].imageTitle);
+                            retrieveImageURL($card.find('img'), publisher, pageFormatObj.pages[i].imageTitle);
                             $('#info .image').append($card);
                         }
                         // await user response to determine how search will proceed
@@ -290,12 +295,13 @@ function createCard(cardType, pageTitle, imageInfo){
 }
 
 /**
-  * searches the Marvel wiki for a specific comic to receive information on it.
+  * searches wiki for a specific comic to receive information on it.
   * @param {object} image - DOM object to update the source of once image URL is received from wiki
+  * @param {string} publisher - name of the publisher of comic. Used to determine which API to query
   * @param {object} comicTitle - title of the issue we are searching for on the wiki
   * @param {string} [origTitle] - title of comic in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
-  function searchWikiForComic(image, comicTitle, origTitle){
+  function searchWikiForComic(image, publisher, comicTitle, origTitle){
     // // for testing
     // if(origTitle !== undefined){
     //     console.log('origTitle', origTitle)
@@ -310,8 +316,7 @@ function createCard(cardType, pageTitle, imageInfo){
 
     $.ajax({
         type: "GET",
-        // url: 'https://marvel.wikia.com/api.php?' + queryString,
-        url: 'https://dc.wikia.com/api.php?' + queryString,
+        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
@@ -334,13 +339,13 @@ function createCard(cardType, pageTitle, imageInfo){
                     // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                     var newTitle = addVolumeToIssue(comicTitle);
                     if(newTitle !== null){
-                        searchWikiForComic(image, newTitle, comicTitle);
+                        searchWikiForComic(image, publisher, newTitle, comicTitle);
                     }
                 }else{
                     // search for comic is fine
                     var imageTitle = parseImageTitle(content);
                     if(imageTitle !== null){
-                        retrieveImageURL(image, imageTitle);
+                        retrieveImageURL(image, publisher, imageTitle);
                     }else{
                         image.attr('src', './resources/image_not_found.png');
                     }
@@ -362,7 +367,7 @@ function createCard(cardType, pageTitle, imageInfo){
                 // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                 var newTitle = addVolumeToIssue(comicTitle);
                 if(newTitle !== null){
-                    searchWikiForComic(image, newTitle, comicTitle);
+                    searchWikiForComic(image, publisher, newTitle, comicTitle);
                 }
             }
         },
@@ -377,9 +382,10 @@ function createCard(cardType, pageTitle, imageInfo){
 /**
  * will find the complete path to an image on the wiki based on its title
  * @param {object} image - DOM object to update the source of once image URL is received from wiki
+ * @param {string} publisher - name of publishing company. Used to determine which API to query
  * @param {string} fileName - name of file to search the wiki for
  */
-function retrieveImageURL(image, fileName){
+function retrieveImageURL(image, publisher, fileName){
     var extraDataOptions = {
         prop: 'imageinfo',
         iiprop: 'url',
@@ -388,8 +394,7 @@ function retrieveImageURL(image, fileName){
 
     $.ajax({
         type: "GET",
-        // url: 'https://marvel.wikia.com/api.php?' + queryString,
-        url: 'https://dc.wikia.com/api.php?' + queryString,
+        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             // parser will return object with a link to the appropriate image to use: image from wiki for success and default image_not_found for failures
@@ -663,6 +668,7 @@ function constructQueryString(titlesValue, extraDataOptions){
  *   page, or a general disambiguation page.
  * Possible further options for page types exist.
  * @param {string} content - revision content from the wiki
+ * @param {string} publisher - name of the publisher of comic. Used to determine regex pattern to use in disambiguation
  * @returns {object} object with properties:
  *          {boolean} success - description of the whether the page's format could be discerned
  *          {string} pageType - type of page formatting either 'template', 'charDisambiguation' (character disambiguation), or 'disambiguation' (general disambiguation)            // look more into jsdocs to how to format this
@@ -674,14 +680,14 @@ function constructQueryString(titlesValue, extraDataOptions){
  * 
  * NOTE: CONSIDER CHANGING PAGE TYPE TO TWO WORD TERMS FOR USE IN OTHER METHODS
  */
-function determinePageFormat(content){
+function determinePageFormat(content, publisher){
     var formatObj = {
         success: true,
         pageType: null
     }
     // check if content is of a template format
-    // var pattern = /Marvel Database:\s?(.*) Template/g;
-    var pattern = /DC Database:\s?(.*) Template/g;
+    var pattern = /.* Database:\s?(.*) Template/g;
+
     var template = pattern.exec(content);
     if(template !== null){
         formatObj.pageType = 'template';
@@ -689,9 +695,7 @@ function determinePageFormat(content){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*;/g;       // old does not work in all cases because of ';'. removed ';' in next attempt
-        // var pattern = /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g;       // no image title because second call will capture it
-        var pattern = /MainPage\s*=\s?(.*)/g;       // DC capture
+        var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
@@ -815,4 +819,5 @@ function displayError(message){
 
 function toggleActivePublisher(){
     $('.switch-publisher .logo').toggleClass('inactive-image');
+    $('.switch-publisher .logo').parent().parent().toggleClass('marvel dc');
 }
