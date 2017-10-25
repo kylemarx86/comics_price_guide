@@ -167,13 +167,13 @@ function gatherInfo(searchTerm){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        console.log('content', content)
+                        // console.log('content', content)
 
                         // get type of page/search
                         var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
                                             .text(`Page type: ${pageFormatObj.templateType}`);
-                        // get image title
-                        var $img = $('<img>');
+                        var $card = createCard('singleEntry', data.content.title);
+                        var $img = $card.find('img');
                         var imageTitle = parseImageTitle(content);
                         // turn into separate method
                         if(imageTitle !== null){
@@ -181,23 +181,9 @@ function gatherInfo(searchTerm){
                         }else{
                             $img.attr('src', './resources/image_not_found.png');
                         }
-
-                        var $card_title = $('<div>').addClass('card-title').text(data.content.title);
-                        
-                        // create elements
-                        var $col = $('<div>').addClass('col center-align s10 offset-s1 m4 offset-m4 l2 offset-l5');
-                        var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
-                        var $card_content = $('<div>').addClass('card-content white-text');
-                        var $img_container = $('<div>').addClass('card-image');
-                        // append elements
-                        $img_container.append($img);
-                        $card_content.append($card_title, $img_container);
-                        $card.append($card_content);
-                        $col.append($card);
-                        
                         // add type and image to the DOM
                         $('#info .text').append($type);
-                        $('#info .image').append($col);
+                        $('#info .image').append($card);
 
                         // check to see if we can parse out debut issues based on the type of template the page used
                         //   since not all page templates have information on first appearances
@@ -214,26 +200,16 @@ function gatherInfo(searchTerm){
                                 $('#debut').append($title, $entries);
 
                                 for(var i = 0; i < debutInfo.debutList.length; i++){
-                                    // create elements
                                     // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                    var $debut = $('<div>').addClass('debutEntry col s12 m4 l2 center-align');
-                                    var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
-                                    var $cardContent = $('<div>').addClass('card-content white-text');
-                                    var $mantle = $('<div>').addClass('card-title');
-                                    var $issue = $('<div>').addClass('issue').text(debutInfo.debutList[i].issue);
-                                    var $img_container = $('<div>').addClass('card-image');
-                                    var $img = $('<img>');
-                                    // append elements
                                     if(debutInfo.debutList[i].mantle !== null){
-                                        $mantle.text(debutInfo.debutList[i].mantle);
-                                        $cardContent.append($mantle);
+                                        // create card with mantle
+                                        var $card = createCard('debutEntry', debutInfo.debutList[i].mantle, debutInfo.debutList[i].issue);
+                                    }else{
+                                        // create card without mantle
+                                        var $card = createCard('debutEntry', '', debutInfo.debutList[i].issue);
                                     }
-                                    $img_container.append($img);
-                                    $cardContent.append($img_container, $issue);
-                                    $card.append($cardContent);
-                                    $debut.append($card);
-                                    $($entries).append($debut);
-                                    searchWikiForComic($img, debutInfo.debutList[i].issue);
+                                    $entries.append($card);
+                                    searchWikiForComic($card.find('img'), debutInfo.debutList[i].issue);
                                 }
                             }else{
                                 displayError(debutInfo.errorMessage);
@@ -253,27 +229,16 @@ function gatherInfo(searchTerm){
                         initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
-                        // add the page titles and images to the DOM
-                        
-                        // page type needs "disambiguation" needs to be stated
+                        // page type "disambiguation" needs to be stated
                         var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
                                 .text(`Page type: ${pageFormatObj.pageType}`);
                         $('#info .text').append($type);
 
-                        // then cards for each page need to be created and appended to the Image col section
+                        // cards for each page need to be created and appended to the image area of the info section
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
-                            var $col = $('<div>').addClass('disambigEntry col s12 m4 l2 center-align');
-                            var $card = $('<div>').addClass('card light-blue darken-4 z-depth-3');
-                            var $cardContent = $('<div>').addClass('card-content white-text');
-                            var $page = $('<div>').addClass('card-title').text(pageFormatObj.pages[i].page);
-                            var $img_container = $('<div>').addClass('card-image');
-                            var $img = $('<img>');
-                            $img_container.append($img);
-                            $cardContent.append($page, $img_container);
-                            $card.append($cardContent);
-                            $col.append($card);
-                            retrieveImageURL($img, pageFormatObj.pages[i].imageTitle);
-                            $('#info .image').append($col);
+                            var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
+                            retrieveImageURL($card.find('img'), pageFormatObj.pages[i].imageTitle);
+                            $('#info .image').append($card);
                         }
                         // await user response to determine how search will proceed
                     }
@@ -289,6 +254,36 @@ function gatherInfo(searchTerm){
         error: function (errorMessage) {
         }
     });
+}
+
+/**
+ * 
+ * @param {string} cardType - string representing class name being added to the card
+ * @param {string} [pageTitle] - title of the page the card represents
+ * @param {string} [imageInfo] - info text at the bottom of the card
+ */
+function createCard(cardType, pageTitle, imageInfo){
+    var $col = $('<div>').addClass(cardType);
+    var $card = $('<div>').addClass('card-piece');
+    var $card_content = $('<div>').addClass('card-content white-text');
+    // add pageTitle, if defined
+    if(pageTitle !== undefined){
+        var $title = $('<div>').addClass('card-title').text(pageTitle);
+        $card_content.append($title);
+    }
+    // add image in container
+    var $img_container = $('<div>').addClass('card-image');
+    var $img = $('<img>');
+    $img_container.append($img);
+    $card_content.append($img_container);
+    // add imageInfo, if defined
+    if(imageInfo !== undefined){
+        $image_info = $('<div>').addClass().text(imageInfo);
+        $card_content.append($image_info);
+    }
+    $card.append($card_content);
+    $col.append($card);
+    return $col;
 }
 
 /**
@@ -321,18 +316,39 @@ function gatherInfo(searchTerm){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
                 // console.log('content: ', content);
-                var imageTitle = parseImageTitle(content);
-                if(imageTitle !== null){
-                    retrieveImageURL(image, imageTitle);
-                }else{
+
+                // check to see if this is a disambiguation page
+                var pattern = /^\{\{Disambiguation/i;
+                var test = content.match(pattern);
+                if(test !== null){
+                    // search for comic yields disambiguation
+                    // display the error message
+                    displayError(`Search for ${comicTitle} yielded disambiguation page.`);
+                    // if page for comic is not found than neither is the image for it
                     image.attr('src', './resources/image_not_found.png');
+                    // attempt again with different call (namely with a volume inserted). 
+                    // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
+                    var newTitle = addVolumeToIssue(comicTitle);
+                    if(newTitle !== null){
+                        searchWikiForComic(image, newTitle, comicTitle);
+                    }
+                }else{
+                    // search for comic is fine
+                    var imageTitle = parseImageTitle(content);
+                    if(imageTitle !== null){
+                        retrieveImageURL(image, imageTitle);
+                    }else{
+                        image.attr('src', './resources/image_not_found.png');
+                    }
+                    // remove old error message from status bar relating to not finding page for old search term, if any
+                    if(origTitle !== undefined){
+                        $( `#errors li:contains(${origTitle})` ).remove();
+                        if( $('#errors li').length === 1){
+                            $('#errors li').remove();
+                            $('#errors').addClass('hide');
+                        }
+                    }
                 }
-                // remove old error message from status bar relating to not finding page for old search term, if any
-                if(origTitle !== undefined){
-                    // $( `#error lgreei:contains('Could not find page for search term: ${origTitle}')` ).remove();
-                    $( `#errors li:contains(${origTitle})` ).remove();
-                }
-                
             }else{
                 // display the error message
                 displayError(comicInfo.errorMessage);
@@ -411,7 +427,12 @@ function generalParser(response, searchTerm){
 
     if(key < 0){
         // call was unsuccessful
-        data.errorMessage = `Could not find page for search term: ${searchTerm}`;
+        if(searchTerm !== undefined){
+            data.errorMessage = `Could not find page for search term: ${searchTerm}`;
+        }else{
+            data.errorMessage = `Could not find page for search term.`;
+        }
+        
     }else{
         // call was successful
         data.success = true;
@@ -517,11 +538,16 @@ function parseDebut(content){
                 debutObj.debutList.push(debut);
             }
         }   // end multiple debuts
+
+        // run X-Men standardizer on debutObj
+        debutObj = XMenStandardizer(debutObj);
     }else{
         // no firsts found
         // error / null object
         debutObj.errorMessage = 'No debuts found';
     }
+    
+    
     return debutObj;
 }
 
@@ -578,7 +604,12 @@ function parseImageURL(response){
         
     if(imageObj.success){
         // call was successful
-        imageObj.imageSrc = data.content.imageinfo[0].url;
+        if(data.content.imageinfo !== undefined){
+            imageObj.imageSrc = data.content.imageinfo[0].url;
+        }else{
+            imageObj.errorMessage = 'Could not find image.';
+            imageObj.imageSrc = './resources/image_not_found.png';
+        }
     }else{
         // call was unsuccessful
         imageObj.errorMessage = 'Could not find image.';
@@ -708,14 +739,42 @@ function pageCanRunDebutCheck(templateType){
  * @returns {string} title of the issue with extra text related to volume number, or returns null
  */
 function addVolumeToIssue(title){
-    var pattern = /(.*) (\d+$)/g;
-    var temp = pattern.exec(title);
-
+    var pattern = /.*Vol \d+.*/gi;
+    var temp = title.match(pattern);
     if(temp !== null){
-        return `${temp[1]} Vol 1 ${temp[2]}`;
-    }else{
+        // found volume
         return null;
+    }else{
+        // volume not found
+        pattern = /(.*) ([\d.]+)\s{0,}$/;
+        temp = pattern.exec(title);
+    
+        if(temp !== null){
+            return `${temp[1]} Vol 1 ${temp[2]}`;
+        }else{
+            return null;
+        }
     }
+
+}
+
+/**
+ * Comics from X-Men Volume 1 are sometimes just listed (erroneously) as X-Men. This can lead to complications
+ * where the correct issue is not retrieved. To remedy this when a comic is found with the fitting pattern
+ * the words 'Vol 1' will be inserted to lead to the correct path.
+ * @param {obj} debutObj 
+ */
+function XMenStandardizer(debutObj){
+    var pattern = /^(X-Men) (#?\d+)/i;
+    if(debutObj.success){
+        for(var i = 0; i < debutObj.debutList.length; i++){
+            var res = pattern.exec(debutObj.debutList[i].issue);
+            if(res !== null){
+                debutObj.debutList[i].issue = `${res[1]} Vol 1 ${res[2]}`;
+            }
+        }
+    }
+    return debutObj;
 }
 
 function clearResultsAndStatus(){
