@@ -183,7 +183,8 @@ function gatherInfo(searchTerm){
                                             .text(`Page type: ${pageFormatObj.templateType}`);
                         var $card = createCard('singleEntry', data.content.title);
                         var $img = $card.find('img');
-                        var imageTitle = parseImageTitle(content);
+
+                        var imageTitle = pageFormatObj.imageTitle;
                         // turn into separate method
                         if(imageTitle !== null){
                             retrieveImageURL($img, publisher, imageTitle);
