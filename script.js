@@ -234,7 +234,7 @@ function gatherInfo(searchTerm){
                                 .text(`Page type: ${pageFormatObj.pageType}`);
                         $('#info .text').append($type);
 
-                        // then cards for each page need to be created and appended to the image section of the 
+                        // cards for each page need to be created and appended to the image area of the info section
                         for(var i = 0; i < pageFormatObj.pages.length; i++){
                             var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
                             retrieveImageURL($card.find('img'), pageFormatObj.pages[i].imageTitle);
