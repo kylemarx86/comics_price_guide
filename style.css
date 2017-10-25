@@ -6819,4 +6819,24 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   stroke-linecap: round;
   /*shape-rendering: crispEdges;*/ }
 
+.switch-publisher label input[type=checkbox]:not(checked) + .lever {
+  background-color: red; }
+.switch-publisher label input[type=checkbox]:not(checked) + .lever:after {
+  background-color: red; }
+.switch-publisher label input[type=checkbox]:checked + .lever {
+  background-color: #0288d1; }
+.switch-publisher label input[type=checkbox]:checked + .lever:after {
+  background-color: #0288d1; }
+
+.inactive-image {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%); }
+
+.center {
+  left: 50%;
+  transform: translateX(-50%); }
+
+.search-card {
+  height: 125px; }
+
 /*# sourceMappingURL=style.css.map */
