@@ -211,13 +211,8 @@ function gatherInfo(searchTerm){
 
                                 for(var i = 0; i < debutInfo.debutList.length; i++){
                                     // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                    if(debutInfo.debutList[i].mantle !== null){
-                                        // create card with mantle
-                                        var $card = createCard('debutEntry', debutInfo.debutList[i].mantle, debutInfo.debutList[i].issue);
-                                    }else{
-                                        // create card without mantle
-                                        var $card = createCard('debutEntry', '', debutInfo.debutList[i].issue);
-                                    }
+                                    var mantle = (debutInfo.debutList[i].mantle !== null) ? debutInfo.debutList[i].mantle : '' ;
+                                    var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
                                     $entries.append($card);
                                     searchWikiForComic($card.find('img'), publisher, debutInfo.debutList[i].issue);
                                 }
