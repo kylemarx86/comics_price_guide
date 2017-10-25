@@ -110,7 +110,8 @@ function applyEventHandlers(){
             submitForm();
         }
     });
-    $('.switch-publisher .lever, .switch-publisher .logo').click(toggleActivePublisher);
+    $('.switch-publisher .lever').click(toggleActivePublisher);
+    $('.switch-publisher .logo').click(toggleSwitchForActivePublisher);
 }
 
 function setFocus(){
@@ -815,9 +816,13 @@ function displayError(message){
 }
 
 
-
+function toggleSwitchForActivePublisher(){
+    var checkBoxes = $('.switch-publisher input[type="checkbox"]');
+    checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+    toggleActivePublisher();
+}
 
 function toggleActivePublisher(){
     $('.switch-publisher .logo').toggleClass('inactive-image');
-    $('.switch-publisher .logo').parent().parent().toggleClass('marvel dc');
+    $('.switch-publisher .logo').parent().parent().parent().toggleClass('marvel dc');
 }

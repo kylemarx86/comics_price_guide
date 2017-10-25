@@ -52,3 +52,13 @@
     -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
 }
+
+
+.center{
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.search-card{
+    height: 125px;
+}

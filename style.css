@@ -6832,4 +6832,11 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%); }
 
+.center {
+  left: 50%;
+  transform: translateX(-50%); }
+
+.search-card {
+  height: 125px; }
+
 /*# sourceMappingURL=style.css.map */

@@ -14,56 +14,64 @@
   <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-  <div id='title-bar' class='row'>
-    <div class='card-panel red darken-4 white-text col s12 m12 l12'>
+  <div id="title-bar" class="row">
+    <div class="card-panel red darken-4 white-text col s12 m12 l12">
       Title area
     </div>
-
-    <!-- needs to be in a row and col -->
-    <!-- Switch -->
-    <div class="switch switch-publisher marvel">
-      <label>
-        <img src='resources/marvel_logo.png' class='logo'>
-        <input type="checkbox">
-        <span class="lever"></span>
-        <img src='resources/dc_logo.png' class='white logo inactive-image'>
-      </label>
+  </div>
+  
+  <div class="row">
+    <div class="card col s12 m10 offset-m1 l5 valign-wrapper switch switch-publisher marvel">
+      <div class="col center-align s12 search-card">
+        <div class="col s12 ">
+          <img src="resources/marvel_logo.png" class="logo responsive-img">
+          <img src="resources/dc_logo.png" class="white logo responsive-img inactive-image">
+        </div>
+        <div class="col s12">
+          <label class="center">
+            <input type="checkbox">
+            <span class="lever"></span>
+          </label>
+        </div>
+      </div>  
     </div>
-          
 
+    <div class="card col s12 m10 offset-m1 l7 valign-wrapper">
+      <form class="col s12 search-card valign-wrapper" onsubmit="return false;">
+        <div class="container valign-wrapper">
+          <div class="input-field col s12 ">
+            <input id="searchTerm" type="text" name="searchTerm" class="validate">
+            <label for="searchTerm" class=""><i class="material-icons left">search</i>Search</label>
+          </div>
+          <div class="col s4 m3 l3">
+            <a id="submit" class="waves-effect waves-deep-purple btn red darken-4"><i class="material-icons left">send</i>Submit</a>
+          </div>
+        </div>  
+      </form>
+    </div>
+    
   </div>
 
-  <div class='row valign-wrapper'>
-    <form class='col s12 valign-wrapper' onsubmit="return false;">
-      <div class='input-field col s8'>
-          <input id='searchTerm' type='text' name='searchTerm' class='validate'>
-          <label for='searchTerm'><i class='material-icons left'>search</i>Search</label>
-      </div>
-      <div class="col s4">
-        <a id='submit' class="waves-effect waves-deep-purple btn red darken-4"><i class="material-icons left">send</i>Submit</a>
-      </div>
-    </form>
-  </div>
-  
-  
-  <div id='results'>
-    <div id='status'>
-      <nav id='searchPath'>
-        <div class='nav-wrapper'>
-          <div class='col s12'></div>
+  <div id="results">
+    <div id="status">
+      <nav id="searchPath">
+        <div class="nav-wrapper">
+          <div class="col s12"></div>
         </div>
       </nav>
-      <div class='row'>
+      <div class="row">
         <div class="col s12">
-          <ul id='errors' class='collection red hide'>Errors</ul>
+          <ul id="errors" class="collection red hide">Errors</ul>
         </div>
       </div>
     </div>
-    <div id='info'>
-      <div class='row text'></div>
-      <div class='row image'></div>
+    <div id="info">
+      <div class="row text"></div>
+      <div class="row image"></div>
     </div>
-    <div id='debut' class='row'></div>
+    <div id="debut" class="row"></div>
   </div>
+  
+  <div class="hiddendiv common"></div>
 </body>
 </html>
