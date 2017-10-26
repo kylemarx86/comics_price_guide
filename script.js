@@ -178,7 +178,7 @@ function gatherInfo(searchTerm){
                         // content is for a template page
                         // console.log('content', content)
 
-                        // get type of page/search
+                        // create section header for type of page
                         var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.templateType}`);
                         var $card = createCard('singleEntry', data.content.title);
                         var $img = $card.find('img');
@@ -214,7 +214,7 @@ function gatherInfo(searchTerm){
                         initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
-                        // create page type section header
+                        // create section header for page type
                         var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.pageType}`);
                         $('#info .text').append($type);
 
@@ -733,10 +733,7 @@ function pageCanRunDebutCheck(templateType){
 function checkForDebuts(content, publisher){
     var debutInfo = parseDebut(content);
     if(debutInfo.success){
-        // create row for title debut
-        // var $title = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
-        //     .text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
-
+        // create section header debuts
         var $title = $('<h4>').addClass('section-header').text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
 
         // create row for debut entries
