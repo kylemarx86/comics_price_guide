@@ -32,6 +32,15 @@
     @extend .z-depth-3;
 }
 
+.section-header{
+    @extend .card-panel;
+    @extend .red;
+    @extend .darken-4;
+    @extend .white-text;
+    @extend .col;
+    @extend .s12;
+}
+
 
 .switch-publisher {
     label input[type=checkbox]:not(checked)+.lever {

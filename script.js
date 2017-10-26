@@ -178,12 +178,12 @@ function gatherInfo(searchTerm){
                         // content is for a template page
                         // console.log('content', content)
 
-                        // get type of page/search
-                        var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
-                                            .text(`Page type: ${pageFormatObj.templateType}`);
+                        // create section header for type of page
+                        var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.templateType}`);
                         var $card = createCard('singleEntry', data.content.title);
                         var $img = $card.find('img');
-                        var imageTitle = parseImageTitle(content);
+                        var imageTitle = pageFormatObj.imageTitle;
+
                         // turn into separate method
                         if(imageTitle !== null){
                             retrieveImageURL($img, publisher, imageTitle);
@@ -198,31 +198,7 @@ function gatherInfo(searchTerm){
                         //   since not all page templates have information on first appearances
                         if( pageCanRunDebutCheck(pageFormatObj.templateType) ){
                             // get debut issues and display them
-                            var debutInfo = parseDebut(content);
-                            if(debutInfo.success){
-                                // create row for title debut
-                                var $title = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
-                                    .text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
-
-                                // create row for debut entries
-                                var $entries = $('<div>').addClass('row');
-                                $('#debut').append($title, $entries);
-
-                                for(var i = 0; i < debutInfo.debutList.length; i++){
-                                    // for each debut add already gathered info to screen and search wiki for images of debut comic
-                                    if(debutInfo.debutList[i].mantle !== null){
-                                        // create card with mantle
-                                        var $card = createCard('debutEntry', debutInfo.debutList[i].mantle, debutInfo.debutList[i].issue);
-                                    }else{
-                                        // create card without mantle
-                                        var $card = createCard('debutEntry', '', debutInfo.debutList[i].issue);
-                                    }
-                                    $entries.append($card);
-                                    searchWikiForComic($card.find('img'), publisher, debutInfo.debutList[i].issue);
-                                }
-                            }else{
-                                displayError(debutInfo.errorMessage);
-                            }
+                            checkForDebuts(content, publisher);
                         }else{
                             displayError("This type of page does not typically have debuts");
                             // ensure image is displayed
@@ -238,9 +214,8 @@ function gatherInfo(searchTerm){
                         initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
-                        // page type "disambiguation" needs to be stated
-                        var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
-                                .text(`Page type: ${pageFormatObj.pageType}`);
+                        // create section header for page type
+                        var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.pageType}`);
                         $('#info .text').append($type);
 
                         // cards for each page need to be created and appended to the image area of the info section
@@ -596,8 +571,10 @@ function parseImageTitle(content){
             }
         }
     }
-    // remove html from image title, just in case. (came across this on DC wiki)
-    imageTitle = imageTitle.replace(/<(?:.|\n)*?>/gm, '');
+    // remove html from imageTitle (as long as imageTitle isn't null), just in case. (came across this on DC wiki)
+    if(imageTitle !== null)
+        imageTitle = imageTitle.replace(/<(?:.|\n)*?>/gm, '');
+
     return imageTitle;
 }
 
@@ -719,6 +696,9 @@ function determinePageFormat(content, publisher){
     return formatObj;
 }
 
+
+
+
 /**
  * Determines if a page can run a check for a debut comic based on the type of template the page is.
  * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
@@ -742,6 +722,33 @@ function pageCanRunDebutCheck(templateType){
         return true;
     }else{
         return false;
+    }
+}
+
+/**
+ * Check for debuts and display them if the exist
+ * @param {string} content - content of the page queried from the wiki
+ * @param {string} publisher - name of the publisher of comic. Used to determine which API to query
+ */
+function checkForDebuts(content, publisher){
+    var debutInfo = parseDebut(content);
+    if(debutInfo.success){
+        // create section header debuts
+        var $title = $('<h4>').addClass('section-header').text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
+
+        // create row for debut entries
+        var $entries = $('<div>').addClass('row');
+        $('#debut').append($title, $entries);
+
+        for(var i = 0; i < debutInfo.debutList.length; i++){
+            // for each debut add already gathered info to screen and search wiki for images of debut comic
+            var mantle = (debutInfo.debutList[i].mantle !== null) ? debutInfo.debutList[i].mantle : '' ;
+            var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
+            $entries.append($card);
+            searchWikiForComic($card.find('img'), publisher, debutInfo.debutList[i].issue);
+        }
+    }else{
+        displayError(debutInfo.errorMessage);
     }
 }
 
