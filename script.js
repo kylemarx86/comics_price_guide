@@ -179,12 +179,11 @@ function gatherInfo(searchTerm){
                         // console.log('content', content)
 
                         // get type of page/search
-                        var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
-                                            .text(`Page type: ${pageFormatObj.templateType}`);
+                        var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.templateType}`);
                         var $card = createCard('singleEntry', data.content.title);
                         var $img = $card.find('img');
-
                         var imageTitle = pageFormatObj.imageTitle;
+
                         // turn into separate method
                         if(imageTitle !== null){
                             retrieveImageURL($img, publisher, imageTitle);
@@ -215,9 +214,8 @@ function gatherInfo(searchTerm){
                         initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
-                        // page type "disambiguation" needs to be stated
-                        var $type = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
-                                .text(`Page type: ${pageFormatObj.pageType}`);
+                        // create page type section header
+                        var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.pageType}`);
                         $('#info .text').append($type);
 
                         // cards for each page need to be created and appended to the image area of the info section
@@ -736,8 +734,10 @@ function checkForDebuts(content, publisher){
     var debutInfo = parseDebut(content);
     if(debutInfo.success){
         // create row for title debut
-        var $title = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
-            .text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
+        // var $title = $('<h4>').addClass('card-panel red darken-4 white-text col s12')
+        //     .text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
+
+        var $title = $('<h4>').addClass('section-header').text(`Debut${debutInfo.debutList.length > 1 ? 's' : ''}`);
 
         // create row for debut entries
         var $entries = $('<div>').addClass('row');
