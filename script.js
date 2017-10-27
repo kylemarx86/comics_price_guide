@@ -272,16 +272,17 @@ function createCard(cardType, pageTitle, imageInfo){
 
 /**
   * searches wiki for a specific comic to receive information on it.
-  * @param {object} image - DOM object to update the source of once image URL is received from wiki
+  * @param {object} $card - DOM object to update with thecover date and source of once image URL is received from wiki
   * @param {string} publisher - name of the publisher of comic. Used to determine which API to query
   * @param {object} comicTitle - title of the issue we are searching for on the wiki
   * @param {string} [origTitle] - title of comic in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
-  function searchWikiForComic(image, publisher, comicTitle, origTitle){
+  function searchWikiForComic($card, publisher, comicTitle, origTitle){
     // // for testing
     // if(origTitle !== undefined){
     //     console.log('origTitle', origTitle)
     // }
+
     var extraDataOptions = {
         prop: 'revisions',
         rvprop: 'content',
@@ -297,6 +298,8 @@ function createCard(cardType, pageTitle, imageInfo){
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
             var comicInfo = generalParser(data, comicTitle);
+            var $img = $card.find('img');
+            var $content = $card.find('.card-content');
             if(comicInfo.success){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
@@ -310,25 +313,29 @@ function createCard(cardType, pageTitle, imageInfo){
                     // display the error message
                     displayError(`Search for ${comicTitle} yielded disambiguation page.`);
                     // if page for comic is not found than neither is the image for it
-                    image.attr('src', './resources/image_not_found.png');
+                    $img.attr('src', './resources/image_not_found.png');
                     // attempt again with different call (namely with a volume inserted). 
                     // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                     var newTitle = addVolumeToIssue(comicTitle);
                     if(newTitle !== null){
-                        searchWikiForComic(image, publisher, newTitle, comicTitle);
+                        searchWikiForComic($card, publisher, newTitle, comicTitle);
                     }
                 }else{
-                    // search for comic is fine
+                    // successful search for comic
+                    // find and add image
                     var imageTitle = parseImageTitle(content);
                     if(imageTitle !== null){
-                        retrieveImageURL(image, publisher, imageTitle);
+                        retrieveImageURL($img, publisher, imageTitle);
                     }else{
-                        image.attr('src', './resources/image_not_found.png');
+                        $img.attr('src', './resources/image_not_found.png');
                     }
                     
-                    // working here
+                    // find and add cover date
                     var coverDate = parseCoverDate(content);
-                    console.log('cover date: ', coverDate);
+                    if(coverDate !== null){
+                        $div = $('<div>').addClass('cover-date').text(coverDate);
+                        $content.append($div);
+                    }
 
                     // remove old error message from status bar relating to not finding page for old search term, if any
                     if(origTitle !== undefined){
@@ -348,7 +355,7 @@ function createCard(cardType, pageTitle, imageInfo){
                 // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                 var newTitle = addVolumeToIssue(comicTitle);
                 if(newTitle !== null){
-                    searchWikiForComic(image, publisher, newTitle, comicTitle);
+                    searchWikiForComic($card, publisher, newTitle, comicTitle);
                 }
             }
         },
@@ -792,7 +799,7 @@ function checkForDebuts(content, publisher){
             var mantle = (debutInfo.debutList[i].mantle !== null) ? debutInfo.debutList[i].mantle : '' ;
             var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
             $entries.append($card);
-            searchWikiForComic($card.find('img'), publisher, debutInfo.debutList[i].issue);
+            searchWikiForComic($card, publisher, debutInfo.debutList[i].issue);
         }
     }else{
         displayError(debutInfo.errorMessage);
