@@ -898,7 +898,26 @@ function toggleActivePublisher(){
 function cardClicked(card){
     var text = card.find('.card-title').text();
     var searchObj = new Search(text);
+    var breadcrumbs = captureBreadcrumbs();
     clearResultsAndStatus();
+    addPreviousBreadcrumbs(breadcrumbs);
     initialWikiQuery(searchObj);
 }
 
+
+
+function captureBreadcrumbs(){
+    var breadcrumbs = [];
+    for(var i = 0; i < $('#searchPath .breadcrumb').length; i++){
+        var text = $(`#searchPath .breadcrumb:nth-of-type(${i+1})`).text();
+        breadcrumbs.push(text);
+    }
+    return breadcrumbs;
+}
+
+function addPreviousBreadcrumbs(arr){
+    for(var i = 0; i < arr.length; i++){
+        $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(arr[i]);
+        $('#searchPath .col').append($searchCrumb);
+    }
+}
