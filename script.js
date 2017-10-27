@@ -223,8 +223,14 @@ function gatherInfo(searchTerm){
                             var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
                             retrieveImageURL($card.find('img'), publisher, pageFormatObj.pages[i].imageTitle);
                             $('#info .image').append($card);
+
+                            (function(){
+                                var card = $card;
+                                $card.click(function(){
+                                    cardClicked(card);
+                                });
+                            })();
                         }
-                        // await user response to determine how search will proceed
                     }
                 }else{
                     // unable to determine type of page content came from
@@ -863,7 +869,6 @@ function clearResultsAndStatus(){
     $('#info .image').empty();
     // empty debut info
     $('#debut').empty();
-    
 }
 
 function displayError(message){
@@ -888,3 +893,12 @@ function toggleActivePublisher(){
     $('.switch-publisher .logo').toggleClass('inactive-image');
     $('.switch-publisher .logo').parent().parent().parent().toggleClass('marvel dc');
 }
+
+
+function cardClicked(card){
+    var text = card.find('.card-title').text();
+    var searchObj = new Search(text);
+    clearResultsAndStatus();
+    initialWikiQuery(searchObj);
+}
+
