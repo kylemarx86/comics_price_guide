@@ -290,6 +290,7 @@ function createCard(cardType, pageTitle, imageInfo){
     };
     comicTitle = comicTitle.replace('#', '');
     var queryString = constructQueryString(comicTitle, extraDataOptions);
+    var $img = $card.find('img');
 
     $.ajax({
         type: "GET",
@@ -298,7 +299,7 @@ function createCard(cardType, pageTitle, imageInfo){
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
             var comicInfo = generalParser(data, comicTitle);
-            var $img = $card.find('img');
+            
             var $content = $card.find('.card-content');
             if(comicInfo.success){
                 // page information was received
@@ -350,7 +351,7 @@ function createCard(cardType, pageTitle, imageInfo){
                 // display the error message
                 displayError(comicInfo.errorMessage);
                 // if page for comic is not found than neither is the image for it
-                image.attr('src', './resources/image_not_found.png');
+                $img.attr('src', './resources/image_not_found.png');
                 // attempt again with different call (namely with a volume inserted). 
                 // NOTE: This volume isn't necessarily the correct volume. The method always inserts volume 1
                 var newTitle = addVolumeToIssue(comicTitle);
@@ -362,7 +363,7 @@ function createCard(cardType, pageTitle, imageInfo){
         error: function (errorMessage) {
             // need to return something in case there is an error
             // if page for comic is not found than neither is the image for it
-            image.attr('src', './resources/image_not_found.png');
+            $img.attr('src', './resources/image_not_found.png');
         }
     });
 }
