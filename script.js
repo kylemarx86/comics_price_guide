@@ -172,6 +172,12 @@ function gatherInfo(searchTerm){
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
                 // add search to breadcrumbs
+                (function(){
+                    var breadcrumb = $searchCrumb;
+                    $searchCrumb.click(function(){
+                        breadcrumbClicked(breadcrumb);
+                    });
+                })();
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
@@ -917,7 +923,18 @@ function captureBreadcrumbs(){
 
 function addPreviousBreadcrumbs(arr){
     for(var i = 0; i < arr.length; i++){
-        $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(arr[i]);
-        $('#searchPath .col').append($searchCrumb);
+        $breadcrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(arr[i]);
+        $('#searchPath .col').append($breadcrumb);
+
+        (function(){
+            var breadcrumb = $breadcrumb;
+            $breadcrumb.click(function(){
+                breadcrumbClicked(breadcrumb);
+            });
+        })();
     }
+}
+
+function breadcrumbClicked(breadcrumb){
+    console.log('crumb clicked');
 }
