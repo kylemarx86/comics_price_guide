@@ -325,6 +325,11 @@ function createCard(cardType, pageTitle, imageInfo){
                     }else{
                         image.attr('src', './resources/image_not_found.png');
                     }
+                    
+                    // working here
+                    var coverDate = parseCoverDate(content);
+                    console.log('cover date: ', coverDate);
+
                     // remove old error message from status bar relating to not finding page for old search term, if any
                     if(origTitle !== undefined){
                         $( `#errors li:contains(${origTitle})` ).remove();
@@ -577,6 +582,48 @@ function parseImageTitle(content){
 
     return imageTitle;
 }
+
+/**
+ * Parse out the cover date of a comic based on revision content from the wiki
+ * @param {string} content - revision content from the wiki
+ */
+function parseCoverDate(content){
+    var coverDate = null;
+    var pattern = /Month\s*=\s?(.*)/g;
+    var matchResults = pattern.exec(content);
+    var month = null;
+    
+    if(matchResults !== null){
+        // prevent the pushing of empty strings to coverDate
+        if(matchResults[1] !== ""){
+            month = matchResults[1];
+            if( isNaN(month) ){
+                month = month.substr(month, 3);
+            }else{
+                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                month = months[month - 1];
+            }
+        }
+        // NOTE: consider creating exception if this second check fails 
+    }
+
+    pattern = /Year\s*=\s?(.*)/g;
+    matchResults = pattern.exec(content);
+    var year = null;
+    if(matchResults !== null){
+        // prevent the pushing of empty strings to coverDate
+        if(matchResults[1] !== ""){
+            year = matchResults[1];
+        }
+        // NOTE: consider creating exception if this second check fails 
+    }
+
+    if(year !== null){
+        coverDate = `${month} ${year}`;
+    }
+    return coverDate;
+}
+
 
 /**
  * Extract the URL source of an image featured on the wiki based on the results of a call to the wiki
