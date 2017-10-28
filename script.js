@@ -911,10 +911,17 @@ function cardClicked(card){
 }
 
 
-
-function captureBreadcrumbs(){
+/**
+ * captures the strings of text of the breadcrumbs in the searchPath area and gathers them into an array
+ * IDEA: add optional parameter to take an integer index of the last breadcrumb to be captured
+ * if no stop index defined capture all
+ * @param {integer} count - number of breadcrumbs (zero-based) to capture
+ * @return {array} breadcrumbs - array of text strings from the breadcrumbs in the searchPath area
+ */
+function captureBreadcrumbs(count){
     var breadcrumbs = [];
-    for(var i = 0; i < $('#searchPath .breadcrumb').length; i++){
+    var end = (count !== undefined) ? count : $('#searchPath .breadcrumb').length;
+    for(var i = 0; i < end; i++){
         var text = $(`#searchPath .breadcrumb:nth-of-type(${i+1})`).text();
         breadcrumbs.push(text);
     }
@@ -937,4 +944,16 @@ function addPreviousBreadcrumbs(arr){
 
 function breadcrumbClicked(breadcrumb){
     console.log('crumb clicked');
+    console.log(breadcrumb.text());
+
+    if( $('#searchPath .breadcrumb').index(breadcrumb) !==  $('#searchPath .breadcrumb').length - 1 ){
+        console.log('different than final destination');
+        var text = breadcrumb.text();
+        var searchObj = new Search(text);
+        // capture the breadcrumbs up to the index of the one clicked
+        var breadcrumbs = captureBreadcrumbs( $('#searchPath .breadcrumb').index(breadcrumb) );
+        clearResultsAndStatus();
+        addPreviousBreadcrumbs(breadcrumbs);
+        initialWikiQuery(searchObj);
+    }
 }
