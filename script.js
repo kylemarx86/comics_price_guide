@@ -118,21 +118,53 @@ function setFocus(){
     $('#searchTerm').focus();
 }
 
+// EVENT HANDLERS
+
+/**
+ * initiates wiki search based on value of search term
+ */
 function submitForm(){
     clearResultsAndStatus();
     var searchTerm = $("#searchTerm").val();
-    gatherInfo(searchTerm);
-}
-
-/**
- * starts chain of 
- * @param {string} searchTerm - term to be searched in the wiki
- */
-function gatherInfo(searchTerm){
     var searchObj = new Search(searchTerm);
     searchObj.toTitleCase();
     initialWikiQuery(searchObj);
 }
+
+/**
+* Keeps the checkbox 'switch' for active publisher in sync with the logo for the active publisher
+* Invokes toggleActivePublisher
+ */
+function toggleSwitchForActivePublisher(){
+    var checkBoxes = $('.switch-publisher input[type="checkbox"]');
+    checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+    toggleActivePublisher();
+}
+
+/**
+ * Updates the active publisher by toggling the classes in the switch -publisher area of the search area
+ */
+function toggleActivePublisher(){
+    $('.switch-publisher .logo').toggleClass('inactive-image');
+    $('.switch-publisher .logo').parent().parent().parent().toggleClass('marvel dc');
+}
+
+/**
+ * Event handler for DOM element cards.
+ * Will initiate searches based on the text of the card title of the card.
+ * Intended for use on cards coming from disambiguation pages and not cards that have no further path in the wikis.
+ * @param {object} card - DOM object representing a card in the 
+ */
+function cardClicked(card){
+    var text = card.find('.card-title').text();
+    var searchObj = new Search(text);
+    var breadcrumbs = captureBreadcrumbs();
+    clearResultsAndStatus();
+    addPreviousBreadcrumbs(breadcrumbs);
+    initialWikiQuery(searchObj);
+}
+
+
 
 
 // WIKI QUERY METHODS
@@ -895,38 +927,6 @@ function displayError(message){
     $errors.append($error);
 }
 
-/**
-* Keeps the checkbox 'switch' for active publisher in sync with the logo for the active publisher
-* Invokes toggleActivePublisher
- */
-function toggleSwitchForActivePublisher(){
-    var checkBoxes = $('.switch-publisher input[type="checkbox"]');
-    checkBoxes.prop("checked", !checkBoxes.prop("checked"));
-    toggleActivePublisher();
-}
-
-/**
- * Updates the active publisher by toggling the classes in the switch -publisher area of the search area
- */
-function toggleActivePublisher(){
-    $('.switch-publisher .logo').toggleClass('inactive-image');
-    $('.switch-publisher .logo').parent().parent().parent().toggleClass('marvel dc');
-}
-
-/**
- * Event handler for DOM element cards.
- * Will initiate searches based on the text of the card title of the card.
- * Intended for use on cards coming from disambiguation pages and not cards that have no further path in the wikis.
- * @param {object} card - DOM object representing a card in the 
- */
-function cardClicked(card){
-    var text = card.find('.card-title').text();
-    var searchObj = new Search(text);
-    var breadcrumbs = captureBreadcrumbs();
-    clearResultsAndStatus();
-    addPreviousBreadcrumbs(breadcrumbs);
-    initialWikiQuery(searchObj);
-}
 
 
 /**
