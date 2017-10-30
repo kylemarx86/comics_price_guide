@@ -865,6 +865,9 @@ function XMenStandardizer(debutObj){
     return debutObj;
 }
 
+/**
+ * Empties DOM element containers
+ */
 function clearResultsAndStatus(){
     $('#searchPath .col').empty();
     // empty errors and hide element
@@ -877,6 +880,10 @@ function clearResultsAndStatus(){
     $('#debut').empty();
 }
 
+/**
+ * Adds an error message to the list of error messages
+ * @param {string} message - text of the error message to display
+ */
 function displayError(message){
     var $errors = $('#errors');
     if( $errors.hasClass('hide') ){
@@ -888,19 +895,30 @@ function displayError(message){
     $errors.append($error);
 }
 
-
+/**
+* Keeps the checkbox 'switch' for active publisher in sync with the logo for the active publisher
+* Invokes toggleActivePublisher
+ */
 function toggleSwitchForActivePublisher(){
     var checkBoxes = $('.switch-publisher input[type="checkbox"]');
     checkBoxes.prop("checked", !checkBoxes.prop("checked"));
     toggleActivePublisher();
 }
 
+/**
+ * Updates the active publisher by toggling the classes in the switch -publisher area of the search area
+ */
 function toggleActivePublisher(){
     $('.switch-publisher .logo').toggleClass('inactive-image');
     $('.switch-publisher .logo').parent().parent().parent().toggleClass('marvel dc');
 }
 
-
+/**
+ * Event handler for DOM element cards.
+ * Will initiate searches based on the text of the card title of the card.
+ * Intended for use on cards coming from disambiguation pages and not cards that have no further path in the wikis.
+ * @param {object} card - DOM object representing a card in the 
+ */
 function cardClicked(card){
     var text = card.find('.card-title').text();
     var searchObj = new Search(text);
@@ -928,6 +946,10 @@ function captureBreadcrumbs(count){
     return breadcrumbs;
 }
 
+/**
+ * Add array of breadcrumbs to the search path and adds event handlers to each one created
+ * @param {array} arr - array of text strings forming the search path 
+ */
 function addPreviousBreadcrumbs(arr){
     for(var i = 0; i < arr.length; i++){
         $breadcrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(arr[i]);
@@ -942,12 +964,14 @@ function addPreviousBreadcrumbs(arr){
     }
 }
 
+/**
+ * Event handler for the clicking of breadcrumbs in the searchPath area.
+ * If the final breadcrumb was not clicked, will initiate a new search based on the text of the breadcrumb clicked
+ * @param {object} breadcrumb - DOM object clicked
+ */
 function breadcrumbClicked(breadcrumb){
-    console.log('crumb clicked');
-    console.log(breadcrumb.text());
-
     if( $('#searchPath .breadcrumb').index(breadcrumb) !==  $('#searchPath .breadcrumb').length - 1 ){
-        console.log('different than final destination');
+        // capture text of selected breadcrumb and create search based on it.
         var text = breadcrumb.text();
         var searchObj = new Search(text);
         // capture the breadcrumbs up to the index of the one clicked
