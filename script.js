@@ -264,7 +264,7 @@ function cardClicked(card){
 
                             (function(){
                                 var card = $card;
-                                $card.click(function(){
+                                card.click(function(){
                                     cardClicked(card);
                                 });
                             })();
@@ -957,7 +957,7 @@ function addPreviousBreadcrumbs(arr){
 
         (function(){
             var breadcrumb = $breadcrumb;
-            $breadcrumb.click(function(){
+            breadcrumb.click(function(){
                 breadcrumbClicked(breadcrumb);
             });
         })();
