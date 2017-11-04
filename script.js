@@ -156,6 +156,8 @@ function toggleActivePublisher(){
  * @param {object} card - DOM object representing a card in the 
  */
 function cardClicked(card){
+    // remove tooltip
+    $('.tooltipped').tooltip('remove');
     var text = card.find('.card-title').text();
     var searchObj = new Search(text);
     var breadcrumbs = captureBreadcrumbs();
@@ -231,6 +233,8 @@ function cardClicked(card){
                         // add type and image to the DOM
                         $('#info .text').append($type);
                         $('#info .image').append($card);
+                        // add tooltip, if necessary
+                        addToolTipToTitle($card);
 
                         // check to see if we can parse out debut issues based on the type of template the page used
                         //   since not all page templates have information on first appearances
@@ -261,6 +265,8 @@ function cardClicked(card){
                             var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
                             retrieveImageURL($card.find('img'), publisher, pageFormatObj.pages[i].imageTitle);
                             $('#info .image').append($card);
+                            // add tooltip, if necessary
+                            addToolTipToTitle($card);
 
                             (function(){
                                 var card = $card;
@@ -296,12 +302,13 @@ function createCard(cardType, pageTitle, imageInfo){
     var $card_content = $('<div>').addClass('card-content white-text');
     // add pageTitle, if defined
     if(pageTitle !== undefined){
-        var $title = $('<div>').addClass('card-title').text(pageTitle);
+        // var $title = $('<div>').addClass('card-title').text(pageTitle);
+        var $title = $('<a>').addClass('card-title truncate btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
         $card_content.append($title);
     }
     // add image in container
     var $img_container = $('<div>').addClass('card-image');
-    var $img = $('<img>');
+    var $img = $('<img>').attr('src', './resources/image_not_found.png');
     $img_container.append($img);
     $card_content.append($img_container);
     // add imageInfo, if defined
@@ -844,6 +851,8 @@ function checkForDebuts(content, publisher){
             var mantle = (debutInfo.debutList[i].mantle !== null) ? debutInfo.debutList[i].mantle : '' ;
             var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
             $entries.append($card);
+            // add tooltip, if necessary
+            addToolTipToTitle($card);
             searchWikiForComic($card, publisher, debutInfo.debutList[i].issue);
         }
     }else{
@@ -979,5 +988,19 @@ function breadcrumbClicked(breadcrumb){
         clearResultsAndStatus();
         addPreviousBreadcrumbs(breadcrumbs);
         initialWikiQuery(searchObj);
+    }
+}
+
+/**
+ * Will add a tooltip to the title area of a card if the text is truncated
+ * @param {object} $card - DOM object representing card 
+ */
+function addToolTipToTitle($card){
+    var $title = $card.find('.card-title');
+    if($title !== undefined){
+        if( $title[0].scrollWidth > Math.ceil($title.innerWidth()) ){
+            // Text has overflowed
+            $title.tooltip({delay: 50});
+        }
     }
 }
