@@ -234,6 +234,7 @@ function cardClicked(card){
                         $('#info .text').append($type);
                         $('#info .image').append($card);
                         // add tooltip, if necessary
+                        addTruncation($card);
                         addToolTipToTitle($card);
 
                         // check to see if we can parse out debut issues based on the type of template the page used
@@ -266,6 +267,7 @@ function cardClicked(card){
                             retrieveImageURL($card.find('img'), publisher, pageFormatObj.pages[i].imageTitle);
                             $('#info .image').append($card);
                             // add tooltip, if necessary
+                            addTruncation($card);
                             addToolTipToTitle($card);
 
                             (function(){
@@ -300,14 +302,15 @@ function createCard(cardType, pageTitle, imageInfo){
     var $col = $('<div>').addClass(cardType);
     var $card = $('<div>').addClass('card-piece');
     var $card_content = $('<div>').addClass('card-content white-text');
+
     // add pageTitle, if defined
     if(pageTitle !== undefined){
-        // var $title = $('<div>').addClass('card-title').text(pageTitle);
-        var $title = $('<a>').addClass('card-title truncate btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
+        // var $title = $('<a>').addClass('card-title truncate btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
+        var $title = $('<a>').addClass('card-title btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
         $card_content.append($title);
     }
     // add image in container
-    var $img_container = $('<div>').addClass('card-image');
+    var $img_container = $('<div>').addClass('image-container');
     var $img = $('<img>').attr('src', './resources/image_not_found.png');
     $img_container.append($img);
     $card_content.append($img_container);
@@ -379,6 +382,7 @@ function createCard(cardType, pageTitle, imageInfo){
                     if(imageTitle !== null){
                         retrieveImageURL($img, publisher, imageTitle);
                     }else{
+                        // NOTE: may not be necessary, as image src has already been set
                         $img.attr('src', './resources/image_not_found.png');
                     }
                     
@@ -852,6 +856,7 @@ function checkForDebuts(content, publisher){
             var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
             $entries.append($card);
             // add tooltip, if necessary
+            addTruncation($card);
             addToolTipToTitle($card);
             searchWikiForComic($card, publisher, debutInfo.debutList[i].issue);
         }
@@ -997,10 +1002,22 @@ function breadcrumbClicked(breadcrumb){
  */
 function addToolTipToTitle($card){
     var $title = $card.find('.card-title');
-    if($title !== undefined){
+    if($title.hasClass('card-title')){
         if( $title[0].scrollWidth > Math.ceil($title.innerWidth()) ){
             // Text has overflowed
             $title.tooltip({delay: 50});
         }
+    }
+}
+
+
+/**
+ * Will add truncation class to 
+ * @param {object} $card - DOM object representing card 
+ */
+function addTruncation($card){
+    var $title = $card.find('.card-title');
+    if($title.hasClass('card-title')){
+        $title.addClass('truncate');
     }
 }
