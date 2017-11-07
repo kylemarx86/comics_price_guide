@@ -6847,4 +6847,10 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 .search-card {
   height: 125px; }
 
+.singleEntry .card-piece {
+  height: unset; }
+
+.singleEntry a.btn, .singleEntry a.btn-large {
+  height: unset; }
+
 /*# sourceMappingURL=style.css.map */

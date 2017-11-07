@@ -233,9 +233,6 @@ function cardClicked(card){
                         // add type and image to the DOM
                         $('#info .text').append($type);
                         $('#info .image').append($card);
-                        // add tooltip, if necessary
-                        addTruncation($card);
-                        addToolTipToTitle($card);
 
                         // check to see if we can parse out debut issues based on the type of template the page used
                         //   since not all page templates have information on first appearances

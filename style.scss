@@ -42,6 +42,7 @@
     @extend .s12;
 }
 
+
 .image-container{
     max-height: 315px;
     overflow: hidden;
@@ -75,4 +76,12 @@
 
 .search-card{
     height: 125px;
+}
+
+
+.singleEntry .card-piece{
+    height: unset;
+}
+.singleEntry a.btn{
+    height: unset;
 }
