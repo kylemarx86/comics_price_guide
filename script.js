@@ -118,21 +118,55 @@ function setFocus(){
     $('#searchTerm').focus();
 }
 
+// EVENT HANDLERS
+
+/**
+ * initiates wiki search based on value of search term
+ */
 function submitForm(){
     clearResultsAndStatus();
     var searchTerm = $("#searchTerm").val();
-    gatherInfo(searchTerm);
-}
-
-/**
- * starts chain of 
- * @param {string} searchTerm - term to be searched in the wiki
- */
-function gatherInfo(searchTerm){
     var searchObj = new Search(searchTerm);
     searchObj.toTitleCase();
     initialWikiQuery(searchObj);
 }
+
+/**
+* Keeps the checkbox 'switch' for active publisher in sync with the logo for the active publisher
+* Invokes toggleActivePublisher
+ */
+function toggleSwitchForActivePublisher(){
+    var checkBoxes = $('.switch-publisher input[type="checkbox"]');
+    checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+    toggleActivePublisher();
+}
+
+/**
+ * Updates the active publisher by toggling the classes in the switch -publisher area of the search area
+ */
+function toggleActivePublisher(){
+    $('.switch-publisher .logo').toggleClass('inactive-image');
+    $('.switch-publisher .logo').parent().parent().parent().toggleClass('marvel dc');
+}
+
+/**
+ * Event handler for DOM element cards.
+ * Will initiate searches based on the text of the card title of the card.
+ * Intended for use on cards coming from disambiguation pages and not cards that have no further path in the wikis.
+ * @param {object} card - DOM object representing a card in the 
+ */
+function cardClicked(card){
+    // remove tooltip
+    $('.tooltipped').tooltip('remove');
+    var text = card.find('.card-title').text();
+    var searchObj = new Search(text);
+    var breadcrumbs = captureBreadcrumbs();
+    clearResultsAndStatus();
+    addPreviousBreadcrumbs(breadcrumbs);
+    initialWikiQuery(searchObj);
+}
+
+
 
 
 // WIKI QUERY METHODS
@@ -172,6 +206,12 @@ function gatherInfo(searchTerm){
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
                 // add search to breadcrumbs
+                (function(){
+                    var breadcrumb = $searchCrumb;
+                    $searchCrumb.click(function(){
+                        breadcrumbClicked(breadcrumb);
+                    });
+                })();
 
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
@@ -223,8 +263,17 @@ function gatherInfo(searchTerm){
                             var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
                             retrieveImageURL($card.find('img'), publisher, pageFormatObj.pages[i].imageTitle);
                             $('#info .image').append($card);
+                            // add tooltip, if necessary
+                            addTruncation($card);
+                            addToolTipToTitle($card);
+
+                            (function(){
+                                var card = $card;
+                                card.click(function(){
+                                    cardClicked(card);
+                                });
+                            })();
                         }
-                        // await user response to determine how search will proceed
                     }
                 }else{
                     // unable to determine type of page content came from
@@ -250,14 +299,16 @@ function createCard(cardType, pageTitle, imageInfo){
     var $col = $('<div>').addClass(cardType);
     var $card = $('<div>').addClass('card-piece');
     var $card_content = $('<div>').addClass('card-content white-text');
+
     // add pageTitle, if defined
     if(pageTitle !== undefined){
-        var $title = $('<div>').addClass('card-title').text(pageTitle);
+        // var $title = $('<a>').addClass('card-title truncate btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
+        var $title = $('<a>').addClass('card-title btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
         $card_content.append($title);
     }
     // add image in container
-    var $img_container = $('<div>').addClass('card-image');
-    var $img = $('<img>');
+    var $img_container = $('<div>').addClass('image-container');
+    var $img = $('<img>').attr('src', './resources/image_not_found.png');
     $img_container.append($img);
     $card_content.append($img_container);
     // add imageInfo, if defined
@@ -328,6 +379,7 @@ function createCard(cardType, pageTitle, imageInfo){
                     if(imageTitle !== null){
                         retrieveImageURL($img, publisher, imageTitle);
                     }else{
+                        // NOTE: may not be necessary, as image src has already been set
                         $img.attr('src', './resources/image_not_found.png');
                     }
                     
@@ -800,6 +852,9 @@ function checkForDebuts(content, publisher){
             var mantle = (debutInfo.debutList[i].mantle !== null) ? debutInfo.debutList[i].mantle : '' ;
             var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
             $entries.append($card);
+            // add tooltip, if necessary
+            addTruncation($card);
+            addToolTipToTitle($card);
             searchWikiForComic($card, publisher, debutInfo.debutList[i].issue);
         }
     }else{
@@ -853,6 +908,9 @@ function XMenStandardizer(debutObj){
     return debutObj;
 }
 
+/**
+ * Empties DOM element containers
+ */
 function clearResultsAndStatus(){
     $('#searchPath .col').empty();
     // empty errors and hide element
@@ -863,9 +921,12 @@ function clearResultsAndStatus(){
     $('#info .image').empty();
     // empty debut info
     $('#debut').empty();
-    
 }
 
+/**
+ * Adds an error message to the list of error messages
+ * @param {string} message - text of the error message to display
+ */
 function displayError(message){
     var $errors = $('#errors');
     if( $errors.hasClass('hide') ){
@@ -878,13 +939,82 @@ function displayError(message){
 }
 
 
-function toggleSwitchForActivePublisher(){
-    var checkBoxes = $('.switch-publisher input[type="checkbox"]');
-    checkBoxes.prop("checked", !checkBoxes.prop("checked"));
-    toggleActivePublisher();
+
+/**
+ * captures the strings of text of the breadcrumbs in the searchPath area and gathers them into an array
+ * IDEA: add optional parameter to take an integer index of the last breadcrumb to be captured
+ * if no stop index defined capture all
+ * @param {integer} count - number of breadcrumbs (zero-based) to capture
+ * @return {array} breadcrumbs - array of text strings from the breadcrumbs in the searchPath area
+ */
+function captureBreadcrumbs(count){
+    var breadcrumbs = [];
+    var end = (count !== undefined) ? count : $('#searchPath .breadcrumb').length;
+    for(var i = 0; i < end; i++){
+        var text = $(`#searchPath .breadcrumb:nth-of-type(${i+1})`).text();
+        breadcrumbs.push(text);
+    }
+    return breadcrumbs;
 }
 
-function toggleActivePublisher(){
-    $('.switch-publisher .logo').toggleClass('inactive-image');
-    $('.switch-publisher .logo').parent().parent().parent().toggleClass('marvel dc');
+/**
+ * Add array of breadcrumbs to the search path and adds event handlers to each one created
+ * @param {array} arr - array of text strings forming the search path 
+ */
+function addPreviousBreadcrumbs(arr){
+    for(var i = 0; i < arr.length; i++){
+        $breadcrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(arr[i]);
+        $('#searchPath .col').append($breadcrumb);
+
+        (function(){
+            var breadcrumb = $breadcrumb;
+            breadcrumb.click(function(){
+                breadcrumbClicked(breadcrumb);
+            });
+        })();
+    }
+}
+
+/**
+ * Event handler for the clicking of breadcrumbs in the searchPath area.
+ * If the final breadcrumb was not clicked, will initiate a new search based on the text of the breadcrumb clicked
+ * @param {object} breadcrumb - DOM object clicked
+ */
+function breadcrumbClicked(breadcrumb){
+    if( $('#searchPath .breadcrumb').index(breadcrumb) !==  $('#searchPath .breadcrumb').length - 1 ){
+        // capture text of selected breadcrumb and create search based on it.
+        var text = breadcrumb.text();
+        var searchObj = new Search(text);
+        // capture the breadcrumbs up to the index of the one clicked
+        var breadcrumbs = captureBreadcrumbs( $('#searchPath .breadcrumb').index(breadcrumb) );
+        clearResultsAndStatus();
+        addPreviousBreadcrumbs(breadcrumbs);
+        initialWikiQuery(searchObj);
+    }
+}
+
+/**
+ * Will add a tooltip to the title area of a card if the text is truncated
+ * @param {object} $card - DOM object representing card 
+ */
+function addToolTipToTitle($card){
+    var $title = $card.find('.card-title');
+    if($title.hasClass('card-title')){
+        if( $title[0].scrollWidth > Math.ceil($title.innerWidth()) ){
+            // Text has overflowed
+            $title.tooltip({delay: 50});
+        }
+    }
+}
+
+
+/**
+ * Will add truncation class to 
+ * @param {object} $card - DOM object representing card 
+ */
+function addTruncation($card){
+    var $title = $card.find('.card-title');
+    if($title.hasClass('card-title')){
+        $title.addClass('truncate');
+    }
 }

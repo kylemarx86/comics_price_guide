@@ -6820,6 +6820,13 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   stroke-linecap: round;
   /*shape-rendering: crispEdges;*/ }
 
+.card-piece {
+  height: 440px; }
+
+.image-container {
+  max-height: 315px;
+  overflow: hidden; }
+
 .switch-publisher label input[type=checkbox]:not(checked) + .lever {
   background-color: red; }
 .switch-publisher label input[type=checkbox]:not(checked) + .lever:after {
@@ -6839,5 +6846,11 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 
 .search-card {
   height: 125px; }
+
+.singleEntry .card-piece {
+  height: unset; }
+
+.singleEntry a.btn, .singleEntry a.btn-large {
+  height: unset; }
 
 /*# sourceMappingURL=style.css.map */

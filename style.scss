@@ -30,6 +30,7 @@
     @extend .light-blue;
     @extend .darken-4;
     @extend .z-depth-3;
+    height: 440px;
 }
 
 .section-header{
@@ -41,6 +42,11 @@
     @extend .s12;
 }
 
+
+.image-container{
+    max-height: 315px;
+    overflow: hidden;
+}
 
 .switch-publisher {
     label input[type=checkbox]:not(checked)+.lever {
@@ -70,4 +76,12 @@
 
 .search-card{
     height: 125px;
+}
+
+
+.singleEntry .card-piece{
+    height: unset;
+}
+.singleEntry a.btn{
+    height: unset;
 }
