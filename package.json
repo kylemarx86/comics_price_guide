@@ -1,0 +1,24 @@
+{
+  "name": "comics_price_guide",
+  "version": "1.0.0",
+  "description": "This application is a intended to be a resource for comics produced by Marvel Comics and DC Comics. By searching a character's name a chain of calls will be made to retrieve information on that character, including real name and debut comic, from Wikia resources. The information on debut comic will in turn be used to connect to the eBay API to retrieve pricing information on recently completed auctions for that comic.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kylemarx86/comics_price_guide.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kylemarx86/comics_price_guide/issues"
+  },
+  "homepage": "https://github.com/kylemarx86/comics_price_guide#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "hbs": "^4.0.1"
+  }
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="style.css">
+
+  <!--Import jQuery before materialize.js-->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="styling/materialize-src/js/bin/materialize.min.js"></script>
+  
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   
+  <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+  <div id="title-bar" class="row">
+    <div class="card-panel indigo darken-4 white-text col s12 m12 l12">
+      <img src='resources/main_logo.png'>
+    </div>
+  </div>
+  
+  <div class="row search-area">
+
+    <div class="card col s12 m10 offset-m1 l5 valign-wrapper switch switch-publisher marvel">
+      <div class="col center-align s12 search-card">
+        <div class="col s12 ">
+          <img src="resources/marvel_logo.png" class="logo responsive-img">
+          <img src="resources/dc_logo.png" class="white logo responsive-img inactive-image">
+        </div>
+        <div class="col s12">
+          <label class="center">
+            <input type="checkbox">
+            <span class="lever"></span>
+          </label>
+        </div>
+      </div>  
+    </div>
+
+    <div class="card col s12 m10 offset-m1 l7 valign-wrapper">
+      <form class="col s12 search-card valign-wrapper" onsubmit="return false;">
+        <div class="container valign-wrapper">
+          <div class="input-field col s12 ">
+            <input id="searchTerm" type="text" name="searchTerm" class="validate">
+            <label for="searchTerm" class=""><i class="material-icons left">search</i>Search</label>
+          </div>
+          <div class="col s4 m3 l3">
+            <a id="submit" class="waves-effect waves-deep-purple btn red darken-4"><i class="material-icons left">send</i>Submit</a>
+          </div>
+        </div>  
+      </form>
+    </div>
+
+  </div> <!-- end of search area -->
+
+  <div id="results">
+    <div id="status">
+      <nav id="searchPath">
+        <div class="nav-wrapper">
+          <div class="col s12"></div>
+        </div>
+      </nav>
+      <div class="row">
+        <div class="col s12">
+          <ul id="errors" class="collection red hide">Errors</ul>
+        </div>
+      </div>
+    </div>
+    <div id="info">
+      <div class="row text"></div>
+      <div class="row image"></div>
+    </div>
+    <div id="debut" class="row"></div>
+  </div> <!-- end of results -->
+  
+  <div class="hiddendiv common"></div>
+  {{!-- <script type="text/javascript" src="script/script.js"></script> --}}
+</body>
+</html>
