@@ -190,16 +190,18 @@ function cardClicked(card){
     };
     // NOTE: first parameter will change
     var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);
+    console.log('query',queryString);
     var publisher = searchObj.getPublisher();
 
     $.ajax({
         type: "GET",
         url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        // url: `https://marvel.fandom.com/api/v1/Search/CrossWiki?expand=1&query=${queryString}`,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             // returns with object with success and other things
             data = generalParser(data, searchObj.getTitle());
-            // console.log('data', data)
+            console.log('data', data)
             if(data.success){
                 var content = data.content.revisions[0]['*'];
                 var pageFormatObj = determinePageFormat(content, publisher);
