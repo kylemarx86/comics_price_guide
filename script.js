@@ -177,118 +177,145 @@ function cardClicked(card){
   * @param {object} searchObj - search object containing name of term to be looked up
   * @param {string} [origSearchTerm] - term searched in previous search, for cases when a search yields inconclusive results and needs to be searched again
   */
-  function initialWikiQuery(searchObj, origSearchTerm){
+  async function initialWikiQuery(searchObj, origSearchTerm){
     // // for testing
     // if(origSearchTerm !== undefined){
     //     console.log('origSearchTerm', origSearchTerm)
     // }
 
     var extraDataOptions = {
-        prop: 'revisions',
-        rvprop: 'content',
-        rvsection: '0',
+        // prop: 'revisions',
+        // rvprop: 'content',
+        // rvsection: '0',
+        limit: 5,
+        minArticleQuality: 10,
+        batch: 1
+        // namespaces= '0,14'
     };
     // NOTE: first parameter will change
     var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);
     console.log('query',queryString);
     var publisher = searchObj.getPublisher();
+    // var url = `https://marvel.fandom.com/api/v1/Search/List?query=${queryString}&namespaces=0%2C14`;
+    var url = `https://marvel.fandom.com/api/v1/Search/List?${queryString}&namespaces=0%2C14`;
+    console.log('url', url);
 
-    $.ajax({
-        type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
-        // url: `https://marvel.fandom.com/api/v1/Search/CrossWiki?expand=1&query=${queryString}`,
-        dataType: "json",
-        success: function (data, textStatus, jqXHR) {
-            // returns with object with success and other things
-            data = generalParser(data, searchObj.getTitle());
-            console.log('data', data)
-            if(data.success){
-                var content = data.content.revisions[0]['*'];
-                var pageFormatObj = determinePageFormat(content, publisher);
-                $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
-                $('#searchPath .col').append($searchCrumb);
-                // add search to breadcrumbs
-                (function(){
-                    var breadcrumb = $searchCrumb;
-                    $searchCrumb.click(function(){
-                        breadcrumbClicked(breadcrumb);
-                    });
-                })();
-
-                if(pageFormatObj.success){
-                    if(pageFormatObj.pageType === 'template'){
-                        // content is for a template page
-                        // console.log('content', content)
-
-                        // create section header for type of page
-                        var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.templateType}`);
-                        var $card = createCard('singleEntry', data.content.title);
-                        var $img = $card.find('img');
-                        var imageTitle = pageFormatObj.imageTitle;
-
-                        // turn into separate method
-                        if(imageTitle !== null){
-                            retrieveImageURL($img, publisher, imageTitle);
-                        }else{
-                            $img.attr('src', './resources/image_not_found.png');
-                        }
-                        // add type and image to the DOM
-                        $('#info .text').append($type);
-                        $('#info .image').append($card);
-
-                        // check to see if we can parse out debut issues based on the type of template the page used
-                        //   since not all page templates have information on first appearances
-                        if( pageCanRunDebutCheck(pageFormatObj.templateType) ){
-                            // get debut issues and display them
-                            checkForDebuts(content, publisher);
-                        }else{
-                            displayError("This type of page does not typically have debuts");
-                            // ensure image is displayed
-                        }
-                        
-                    }else if(pageFormatObj.pageType === 'charDisambiguation'){
-                        // content is for a character disambig
-                            // run again to get debut issues
-                        // create a temp search obj
-                            // this object will run through a second time and return with an content from of a template pageType
-                            // and will gather the rest of the desired information                         
-                        var tempSearchObj = new Search(pageFormatObj.character);
-                        initialWikiQuery(tempSearchObj, searchObj.getTitle());
-                    }else{
-                        // content is for a general disambig
-                        // create section header for page type
-                        var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.pageType}`);
-                        $('#info .text').append($type);
-
-                        // cards for each page need to be created and appended to the image area of the info section
-                        for(var i = 0; i < pageFormatObj.pages.length; i++){
-                            var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
-                            retrieveImageURL($card.find('img'), publisher, pageFormatObj.pages[i].imageTitle);
-                            $('#info .image').append($card);
-                            // add tooltip, if necessary
-                            addTruncation($card);
-                            addToolTipToTitle($card);
-
-                            (function(){
-                                var card = $card;
-                                card.click(function(){
-                                    cardClicked(card);
-                                });
-                            })();
-                        }
-                    }
-                }else{
-                    // unable to determine type of page content came from
-                    // display error in status bar
-                    displayError(pageFormatObj.errorMessage);
-                }
-            }else{
-                displayError(data.errorMessage);
-            }
-        },  // end of success
-        error: function (errorMessage) {
+    let response = await fetch(url, {
+        'Access-Control-Allow-Method': 'GET',
+        mode: 'no-cors',
+        // 'Access-Control-Allow-Headers': 'application/json',
+        // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
+        'Access-Control-Allow-Origin': '*',
+        headers: {
+            'Content-Type': 'application/json'
         }
     });
+
+    if(response.ok){
+        let json = await response.json();
+    }else{
+        alert("HTTP-Error: " + response.status);
+    }
+    // $.ajax({
+    //     type: "GET",
+    //     // url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+    //     // url: `https://marvel.fandom.com/api/v1/Search/CrossWiki?expand=1&query=${queryString}`,
+    //     url: `https://marvel.fandom.com/api/v1/Search/List?query=${queryString}&namespaces=0%2C14`,
+    //     dataType: "application/json",
+    //     crossDomain: true,              // added 10/20/2020 to circumvent CORS error
+
+    //     success: function (data, textStatus, jqXHR) {
+    //         // returns with object with success and other things
+    //         data = generalParser(data, searchObj.getTitle());
+    //         console.log('data', data)
+    //         if(data.success){
+    //             console.log('data retrieved sucessfully');
+    //             // var content = data.content.revisions[0]['*'];
+    //             // var pageFormatObj = determinePageFormat(content, publisher);
+    //             // $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
+    //             // $('#searchPath .col').append($searchCrumb);
+    //             // // add search to breadcrumbs
+    //             // (function(){
+    //             //     var breadcrumb = $searchCrumb;
+    //             //     $searchCrumb.click(function(){
+    //             //         breadcrumbClicked(breadcrumb);
+    //             //     });
+    //             // })();
+
+    //             // if(pageFormatObj.success){
+    //             //     if(pageFormatObj.pageType === 'template'){
+    //             //         // content is for a template page
+    //             //         // console.log('content', content)
+
+    //             //         // create section header for type of page
+    //             //         var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.templateType}`);
+    //             //         var $card = createCard('singleEntry', data.content.title);
+    //             //         var $img = $card.find('img');
+    //             //         var imageTitle = pageFormatObj.imageTitle;
+
+    //             //         // turn into separate method
+    //             //         if(imageTitle !== null){
+    //             //             retrieveImageURL($img, publisher, imageTitle);
+    //             //         }else{
+    //             //             $img.attr('src', './resources/image_not_found.png');
+    //             //         }
+    //             //         // add type and image to the DOM
+    //             //         $('#info .text').append($type);
+    //             //         $('#info .image').append($card);
+
+    //             //         // check to see if we can parse out debut issues based on the type of template the page used
+    //             //         //   since not all page templates have information on first appearances
+    //             //         if( pageCanRunDebutCheck(pageFormatObj.templateType) ){
+    //             //             // get debut issues and display them
+    //             //             checkForDebuts(content, publisher);
+    //             //         }else{
+    //             //             displayError("This type of page does not typically have debuts");
+    //             //             // ensure image is displayed
+    //             //         }
+                        
+    //             //     }else if(pageFormatObj.pageType === 'charDisambiguation'){
+    //             //         // content is for a character disambig
+    //             //             // run again to get debut issues
+    //             //         // create a temp search obj
+    //             //             // this object will run through a second time and return with an content from of a template pageType
+    //             //             // and will gather the rest of the desired information                         
+    //             //         var tempSearchObj = new Search(pageFormatObj.character);
+    //             //         initialWikiQuery(tempSearchObj, searchObj.getTitle());
+    //             //     }else{
+    //             //         // content is for a general disambig
+    //             //         // create section header for page type
+    //             //         var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.pageType}`);
+    //             //         $('#info .text').append($type);
+
+    //             //         // cards for each page need to be created and appended to the image area of the info section
+    //             //         for(var i = 0; i < pageFormatObj.pages.length; i++){
+    //             //             var $card = createCard('disambigEntry', pageFormatObj.pages[i].page);
+    //             //             retrieveImageURL($card.find('img'), publisher, pageFormatObj.pages[i].imageTitle);
+    //             //             $('#info .image').append($card);
+    //             //             // add tooltip, if necessary
+    //             //             addTruncation($card);
+    //             //             addToolTipToTitle($card);
+
+    //             //             (function(){
+    //             //                 var card = $card;
+    //             //                 card.click(function(){
+    //             //                     cardClicked(card);
+    //             //                 });
+    //             //             })();
+    //             //         }
+    //             //     }
+    //             // }else{
+    //             //     // unable to determine type of page content came from
+    //             //     // display error in status bar
+    //             //     displayError(pageFormatObj.errorMessage);
+    //             // }
+    //         }else{
+    //             displayError(data.errorMessage);
+    //         }
+    //     },  // end of success
+    //     error: function (errorMessage) {
+    //     }
+    // });
 }
 
 /**
@@ -347,8 +374,9 @@ function createCard(cardType, pageTitle, imageInfo){
 
     $.ajax({
         type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
-        dataType: "json",
+        // url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        url: `https://marvel.fandom.com/api/v1/Search/List?query=${queryString}&limit=25&minArticleQuality=10&batch=1&namespaces=0%2C14`,
+        dataType: "application/json",
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
             var comicInfo = generalParser(data, comicTitle);
@@ -437,8 +465,9 @@ function retrieveImageURL(image, publisher, fileName){
 
     $.ajax({
         type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
-        dataType: "json",
+        // url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        url: `https://marvel.fandom.com/api/v1/Search/List?query=${queryString}&limit=25&minArticleQuality=10&batch=1&namespaces=0%2C14`,
+        dataType: "application/json",
         success: function (data, textStatus, jqXHR) {
             // parser will return object with a link to the appropriate image to use: image from wiki for success and default image_not_found for failures
             var imageContent = parseImageURL(data);
@@ -727,12 +756,14 @@ function parseImageURL(response){
  */
 function constructQueryString(titlesValue, extraDataOptions){
     // base data incorporated in all calls to wikia API
+    // ***************redoing the construct query string**********************************
     var data = {
-        format: 'json',
-        action: 'query',
-        callback: '?',
-        titles: encodeURIComponent(titlesValue),
-        redirects: ''
+        query: encodeURIComponent(titlesValue),
+        // format: 'application/json', //changed from json to application/json 10/20/2020  // might not need this
+        limit: 10,
+        minArticleQuality: 60,
+        batch: 1,       // The batch (page) of results to fetch
+        namespaces: encodeURIComponent('0,14')
     };
     // add extra key value pairs into data object
     for(var key in extraDataOptions){
