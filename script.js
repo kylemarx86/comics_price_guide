@@ -167,8 +167,6 @@ function cardClicked(card){
 }
 
 
-
-
 // WIKI QUERY METHODS
 
  /**
@@ -197,17 +195,17 @@ function cardClicked(card){
     console.log('query',queryString);
     var publisher = searchObj.getPublisher();
     // var url = `https://marvel.fandom.com/api/v1/Search/List?query=${queryString}&namespaces=0%2C14`;
-    var url = `https://marvel.fandom.com/api/v1/Search/List?${queryString}&namespaces=0%2C14`;
+    let url = `https://marvel.fandom.com/api/v1/Search/List?${queryString}&namespaces=0%2C14`;
     console.log('url', url);
 
     let response = await fetch(url, {
         'Access-Control-Allow-Method': 'GET',
         mode: 'no-cors',
         // 'Access-Control-Allow-Headers': 'application/json',
-        // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
+        // 'Access-Control-Allow-Origin': '*',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json, charset=utf-8'
         }
     });
 
@@ -215,7 +213,12 @@ function cardClicked(card){
         let json = await response.json();
     }else{
         alert("HTTP-Error: " + response.status);
+        console.log('response',response);
     }
+
+
+
+
     // $.ajax({
     //     type: "GET",
     //     // url: `https://${publisher}.wikia.com/api.php?${queryString}`,
