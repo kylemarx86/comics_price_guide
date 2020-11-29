@@ -185,9 +185,11 @@ function cardClicked(card){
     // }
 
     var extraDataOptions = {
+        action: 'query',
         prop: 'revisions',
         rvprop: 'content',
-        rvsection: '0',
+        format: 'json',
+        rvslots: 'main'
     };
     // NOTE: first parameter will change
     var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);
@@ -195,19 +197,20 @@ function cardClicked(card){
 
     $.ajax({
         type: "GET",
-        // url: `https://${publisher}.wikia.com/api.php?${queryString}`,
-        url: `https://marvel.fandom.com/api.php?action=query&prop=revisions&titles=thanos&rvprop=content&format=json&rvslots=main`,
+        url: `https://${publisher}.fandom.com/api.php?${queryString}`,
         dataType: "json",
-        withCredentials: "true",
-        'Access-Control-Allow-Origin': '*',
-        // SameSite: ""
+        // withCredentials: "true",
+        // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
+
         success: function (data, textStatus, jqXHR) {
             console.log('data', data);
             // returns with object with success and other things
             data = generalParser(data, searchObj.getTitle());
-            // console.log('data', data)
+            // console.log('data2', data)
             if(data.success){
-                var content = data.content.revisions[0]['*'];
+                // var content = data.content.revisions[0]['*'];
+                var content = data.content.revisions[0].slots.main['*'];
+                console.log('content', content)
                 var pageFormatObj = determinePageFormat(content, publisher);
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
@@ -475,6 +478,7 @@ function retrieveImageURL(image, publisher, fileName){
  *          {string} errorMessage - message if query was unsuccessful
  */
 function generalParser(response, searchTerm){
+    console.log('response', response);
     var key = 0;
     var data = {
         success: false
@@ -494,9 +498,51 @@ function generalParser(response, searchTerm){
         // call was successful
         data.success = true;
         data.content = response.query.pages[key];
+        // data.content = response.query.pages[key];
+        console.log('response.query.pages[key]', response.query.pages[key]);
     }
     return data;
 }
+
+
+// NOTE: pass another argument in, the term searched for so error message can contain it
+/**
+ * 
+ * @param {object} response - JSON response object from wiki
+ * @param {object} searchTerm - Term searched in query to the wiki. Important for error messages
+ * @returns {object} object with properties:
+ *          {boolean} success - description of the call
+ *          {string} content - content of the page queried from the wiki
+ *          {string} errorMessage - message if query was unsuccessful
+ */
+function generalParser2(response, searchTerm){
+    console.log('response', response);
+    var key = 0;
+    var data = {
+        success: false
+    }
+    for(i in response.query.pages)
+    key = i;
+
+    if(key < 0){
+        // call was unsuccessful
+        if(searchTerm !== undefined){
+            data.errorMessage = `Could not find page for search term: ${searchTerm}`;
+        }else{
+            data.errorMessage = `Could not find page for search term.`;
+        }
+        
+    }else{
+        // call was successful
+        data.success = true;
+        data.content = response.query.pages[key];
+        // data.content = response.query.pages[key];
+        console.log('response.query.pages[key]', response.query.pages[key]);
+    }
+    return data;
+}
+
+
 
 /**
  * returns an array of objects holding information on disambiguation pages including title and image
@@ -786,6 +832,7 @@ function determinePageFormat(content, publisher){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
+        // var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;
         var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;
         var character = pattern.exec(content);
         if(character !== null){
