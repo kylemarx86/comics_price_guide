@@ -354,7 +354,7 @@ function createCard(cardType, pageTitle, imageInfo){
 
     $.ajax({
         type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        url: `https://${publisher}.fandom.com/api.php?${queryString}`,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
@@ -441,10 +441,12 @@ function retrieveImageURL(image, publisher, fileName){
         iiprop: 'url',
     };
     var queryString = constructQueryString("File:"+fileName, extraDataOptions);
+    var url = `https://${publisher}.fandom.com/api.php?${queryString}`; //temp for testing
+    console.log('url to API for image', url);
 
     $.ajax({
         type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        url: `https://${publisher}.fandom.com/api.php?${queryString}`,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             // parser will return object with a link to the appropriate image to use: image from wiki for success and default image_not_found for failures
@@ -664,7 +666,8 @@ function parseDebut(content){
  */
 function parseImageTitle(content){
     // primary search (look for images without numerical quantifiers)
-    var pattern = /Image\s*=\s?(.*)/g;
+    // var pattern = /Image\s*=\s?(.*)/g;
+    var pattern = /Image\s*=\s?(.*)\s*\|/g;
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
