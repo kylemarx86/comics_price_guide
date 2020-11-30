@@ -833,7 +833,7 @@ function determinePageFormat(content, publisher){
     }else{
         // check if content is of type character disambiguation
         // var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;
-        var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;
+        var pattern = publisher === 'marvel' ? /main\s*=\s([^\|\]]*)\s*\n/g : /MainPage\s*=\s?(.*)/g;
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
