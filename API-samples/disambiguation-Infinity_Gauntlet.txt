@@ -1,0 +1,13 @@
+Disambiguation: Infinity Gauntlet
+
+{{DisambiguationFull
+| New Header1_1   = [[Infinity Gauntlet (Event)|Infinity Gauntlet<br/>(The Event)]]; Infinity Gauntlet Vol 1 1.jpg
+| New Header1_2   = [[Infinity Gauntlet (Item)|Infinity Gauntlet<br/>(The Item)]]; Infinity Gauntlet (Item) from New Avengers Vol 3 3 001.jpg
+
+| New Header2     = Comics
+| New Header2_1   = [[Infinity Gauntlet Vol 1|Infinity Gauntlet<br>Vol 1]]; Infinity Gauntlet Vol 1 1.jpg
+| New Header2_2   = [[Infinity Gauntlet Vol 2|Infinity Gauntlet<br>Vol 2]]; Infinity Gauntlet Vol 2 1.jpg
+
+| New Header3     = Others
+| New Header3_1   = [[Ifinity Gauntlet Laundro-Mat]]; Ifinity Gauntlet Laundromat (Earth-9047) from What The-- Vol 1 18.jpg
+}}
