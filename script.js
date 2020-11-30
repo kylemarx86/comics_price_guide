@@ -442,7 +442,7 @@ function retrieveImageURL(image, publisher, fileName){
     };
     var queryString = constructQueryString("File:"+fileName, extraDataOptions);
     var url = `https://${publisher}.fandom.com/api.php?${queryString}`; //temp for testing
-    console.log('url to API for image', url);
+    // console.log('url to API for image', url);
 
     $.ajax({
         type: "GET",
