@@ -1,0 +1,108 @@
+Vehicle: Blackbird
+
+{{Merge From|X-Jet (Earth-1610)}}
+{{Marvel Database: Vehicle Template
+| Image                   = X-Men_Blackbird_from_New_X-Men_Vol_2_29_0001.jpg
+| OfficialName            = Blackbird
+| Distinguish1            = 
+| Title                   = 
+| Nicknames               = X-Jet
+| Universe                = 
+| LeadDesigner            = Clarence "Kelly" Johnson
+| AdditionalDesigners     = Lockheed "Skunk Works", [[Forge (Earth-616)|Forge]]
+| PlaceOfCreation         = [[Strategic Homeland Intervention, Enforcement and Logistics Division (Earth-616)|S.H.I.E.L.D.]]/Lockheed aviation factory
+| PlaceOfDestruction      = 
+| Origin                  = [[Charles Xavier (Earth-616)|Professor Charles Xavier]] obtained the Blackbird from [[Strategic Homeland Intervention, Enforcement and Logistics Division (Earth-616)|S.H.I.E.L.D.]] as a replacement for the obsolete [[X-Men Stratojet|Stratojet]].
+| Status                  = Active
+| CurrentModel            = RS-150 ([[Shi'ar Empire|Shi'ar]] technology upgrade)
+| CurrentOwner            = [[X-Men (Earth-616)|X-Men]]
+| PreviousOwners          = [[Strategic Homeland Intervention, Enforcement and Logistics Division (Earth-616)|S.H.I.E.L.D.]] 
+| TransportMethod         = Supersonic flight
+| Dimensions              = 88' 4" long, 62' 6" wingspan, 19' 2" height
+| Origin                  = Financied By Professor X
+| Creators                = Chris Claremont; Dave Cockrum; 
+| First                   = X-Men #104
+
+| HistoryText             = {{Quote|That's, like, the '''third''' blackbird [[X-Men (Earth-616)|we]]'ve lost in the last month.|[[Robert Herman (Earth-616)|Glob Herman]]|Dead Man Logan Vol 1 5}}
+
+The Blackbird is the [[X-Men (Earth-616)|X-Men's]] main source of conventional transportation. [[Charles Xavier (Earth-616) |Professor Charles Xavier]] somehow gained at least one working version of the RS-150 Blackbird from [[Strategic Homeland Intervention, Enforcement and Logistics Division (Earth-616) |S.H.I.E.L.D.]], after the X-Men's [[X-Men Stratojet|Stratojet]] had been destroyed by [[Luchino Nefaria (Earth-616)|Count Nefaria]].{{r|X-Men #94}} Located in an aircraft hangar on the grounds of the [[Xavier's School for Gifted Youngsters]], the Blackbird served the Professor and X-Men for many years.  At some time, the Professor upgraded to the SR-71 Blackbird. The Devil's Rock was the exit and entry point for the X-Men's aircraft.{{r|X-Men Vol 1 104}}
+
+After the X-Men were thought dead in [[Dallas]], [[Texas (State)|Texas]], [[Kurt Wagner (Earth-616)|Nightcrawler]], who had since joined [[Excalibur (Earth-616)|Excalibur]], teleported into the Skunk Works, a part of the Lockheed Aircraft Corporation, and started-up the SR-71 Blackbird, taking it back to [[England]].  {{Citation}}
+
+===Upgrade===
+After an extended sojourn in space with the [[Starjammers (Earth-616)|Starjammers]], Professor Xavier returned to Earth and both the original and third teams of [[X-Men (Earth-616)|X-Men]] reassembled under his leadership.  At this time, Prof. Xavier asked [[Forge (Earth-616)|Forge]], a mutant with an unusual talent for inventing mechanical devices, to upgrade the Blackbird and include [[Shi'ar Empire|Shi'ar]] technology, including a cloaking device which literally made the Blackbird invisible.  The Professor also had [[Cerebro (Mutant Detector)|Cerebro's]], the X-Men's original machine used to detect [[Homo Superior|mutants]] all over the world, software installed into the Blackbird, for non-telepathic use.  Professor Xavier later had many Blackbirds built and filled the hangar.{{Citation}}
+
+After deciding that he needed to make a stronger presence, Professor Xavier regathered his X-Men as a public team and created the [[X-Corporation (Earth-616)|X-Corp]].  Professor X had new Blackbirds designed, ones with an "X" across the top (see [[X-Wing]]) of the jet.  As [[Cerebro (Founder) (Earth-616)|Cerebro]] had become sentient and destroyed, [[Henry McCoy (Earth-616)|Beast]] added [[Cerebra (Mutant Detector)|Cerebra]], Cerebro's more powerful replacement, to the Blackbirds.{{Citation}}
+
+After [[Kuan-Yin Xorn (Earth-616)|Kuan-Yin Xorn]] impersonated [[Max Eisenhardt (Earth-616)|Magneto]] and destroyed the Xavier mansion, Beast rebuilt the sub-basement and [[Scott Summers (Earth-616)|Cyclops]] asked [[Warren Worthington III (Earth-616)|Angel]] to purchase new Blackbirds. Since the mansion's reconstruction, the exit and entry point for the X-Men's aircraft was relocated beneath the basketball court. Upon departure and landing, a klaxon will sound warning for anyone nearby to vacate the area. Students are advised to move immediately, once the klaxon sounds. Even after moving to [[Graymalkin Industries]] and later [[Utopia (X-Men Base)|Utopia]], these new Blackbirds have moved with the X-Men. It is presumed that the jets went to the Jean Grey School after the events of Schism.{{Citation}}
+
+== [[Multiverse|Alternate Realities]] ==
+===Ultimate Universe ([[Earth-1610]])===
+[[File:Blackbird - Ultimate X-Men 1.jpg|thumb|left|300px]]
+[[X-Jet (Earth-1610)|Blackbird]] in X-Men Ultimate.
+
+(Similar Model B-2 Spirit from Earth-1218: Our Reality)
+{{clear}}
+===Crossoververse ([[Earth-7642]])===
+[[File:X-Men Blackbird from Team X Team 7 Vol 1 1 001.jpg|thumb|left|300px]]
+On [[Earth-7642]], [[Team X (Earth-7642)|Team X]] used a ''Lockheed SR-71 Blackbird.''{{r|Team X/Team 7 Vol 1 1}} Decades later, the [[X-Men (Earth-7642)|X-Men]] flew counterparts of the [[Earth-616]] blackbirds.{{r|Uncanny X-Men and The New Teen Titans Vol 1 1}}
+{{clear}}
+===X-Men Movies ([[Earth-10005]])===
+[[File:X-Men_Blackbird from X-Men First Class (film) 0001.jpg|thumb|right|Original Blackbird]]
+
+The original Blackbird was designed and built by [[Henry McCoy (Earth-10005)|Hank McCoy]] in the early 60s, during his time working for the CIA. It was used to transport the newly-formed [[X-Men (Earth-10005)|X-Men]] to [[Cuba]] in order to fight the [[Hellfire Club (Earth-10005)|Hellfire Club]]. It was heavily damaged by [[Janos Quested (Earth-10005)|Riptide]] and crash-landed in Cuba.{{r|X-Men: First Class}}
+
+[[File:X-Men Blackbird from X-Men (film) 001.jpg|thumb|left|Second Blackbird]]
+As in 2000, the X-Men had a Blackbird, called mainly X-Jet. It was used by the team to get to Liberty Island.{{r|X-Men (film)}}
+
+A new model was used later by Jean Grey and Storm used it to travel to [[Kurt Wagner (Earth-10005)|Nightcrawler]], then back to get [[James Howlett (Earth-10005)|Wolverine]], [[Rogue (Marie) (Earth-10005)|Rogue]], [[John Allerdyce (Earth-10005)|Pyro]] and [[Robert Drake (Earth-10005)|Iceman]]. They flew to [[Alkali Lake]]'s dam to save captured Xavier Institute students and to foil [[William Stryker]]'s plan. When they were asked to stay, Rogue and Iceman waited in the X-Jet while Pyro abandoned them to join the [[Brotherhood of Mutants (Earth-10005)|Brotherhood of Mutants]]. Rogue and Iceman flew the X-Jet to save the X-Men and the captured mutants. Jean Grey stayed behind to counter the flood and sent the X-Jet to safety from the incoming wave from the broken dam.{{r|X2 (film)}}
+
+[[File:X-Men Blackbird from X2 (film) 001.jpg|thumb|right|Third Blackbird]]
+During Magneto's assault on Alcatraz Island, the X-Men used the X-Jet to travel there in stealth mode. When [[Jean Grey (Earth-10005)|Jean Grey]], now the Phoenix, unleashed her power, the X-Jet was disintegrated along with most of the island.{{r|X-Men: The Last Stand}}
+
+By the year 2023, the X-Jet had already been rebuilt, apearing to be stealthy and fast enough that the Sentinels couldn't detect it. The X-Jet was used to transport Storm, Wolverine, Professor X and Magneto to meet with [[Free Mutants (Earth-10005)|Free Mutants]]. Later when the Sentinels found them, Magneto lifted the jet and sent it flying into the Sentinels. Storm the shot a lightning bolt into it's engine, causing it to blow up, destroying hundreds of Sentinels in the process. But when the small number of Sentinels ambushed and annihilated the group, an injured Magneto used every last debris from the destroyed X-Jet to fortify the temple's door before retreating back inside through Blink's portal.{{r|X-Men: Days of Future Past (film)}}
+{{clear}}
+
+===X-Men: The Animated Series ([[Earth-92131]])===
+[[File:Needed.jpg|thumb|left|300px]]
+Blackbird in X-Men Cartoon Series.
+{{clear}}
+===X-Men Marvel Anime ([[Earth-101001]])===
+[[File:Needed.jpg|thumb|left|300px]]
+Blackbird in X-Men Anime.
+{{clear}}
+==Miscellaneous==
+[[File:X-Men Blackbird from Official Handbook of the Marvel Universe Vol 2 15 0001.jpg|thumb|Design Specs of the original Blackbird]]
+'''Travel Radius:''' 6,100 miles (9,760 km)<br> 
+'''Maximum Velocity (at sea level):''' Mach 2.3 (1,770 mph / 2,832 kph)<br> 
+'''Maximum Velocity (at 120,000 feet):''' Mach 4.2 (3,234 mph / 5,175 kph)<br>
+'''Service Ceiling:''' 230,000 feet (69,000 meters)<br> 
+'''Maximum Rate of Climb:''' 29.5 miles per minute<br> 
+'''Onboard Equipment:''' [[Shi'ar Empire|Shi'ar]] cloaking device and sensors, pressurized cabin, [[Cerebro (Mutant Detector)|Cerebro]], then later [[Cerebra (Mutant Detector)|Cerebra]].{{r|Marvel Vehicles: Owner's Workshop Manual Vol 1 1}}<br>
+'''Onboard Weaponry:''' The SR-71 was designed as a spy plane, sacrificing weaponry for surveillance equipment.  Starting with the 5th generation of the Blackbird, the jet has been equipped with weaponry, including concussion missiles and automatic laser batteries{{r|Marvel Vehicles: Owner's Workshop Manual Vol 1 1}} The Blackbird also relies on the offensive capabilities of its passengers and crew.<br>
+'''Weight (unloaded, including fuel):''' 125,000 lbs (56,800 kg) <br> 
+'''Weight (at maximum capacity):''' 145,000 lbs (65,900 kg) <br> 
+'''Maximum Cargo:''' 20,000 lbs (9,100 kg) <br>
+
+| Notes                   = 
+*The original X-Men Blackbird was visually based on a modified, scaled-up version of the '''''Lockheed SR-71''''' Blackbird spy plane (hence the name) but was modified to carry several passengers, as well as for Vertical Take-Off and Landing (VTOL). Some writers have referred to this design as the "SR-73" (possibly unofficial). The original Blackbird was crashed, torn apart, or otherwise destroyed on a regular basis, but each time it was rebuilt. Later versions incorporated technology created by Forge and the Shi'ar, including weapon systems, holographic active camouflage, and engines capable of hypersonic speeds.
+*There currently appear to be three Blackbirds, one for each main X-Men team.
+*The X-Men Blackbird from [[Earth-1610]], Ultimate Universe, was model based on a modified '''''Stealth B-2 Spirit''''', too modified to carry several passengers.
+*In the first [[X-Men (film)|X-Men film]] (2000), the X-Men use a vehicle called the '''''X-Jet.''''' The comic-book versions of the X-Men have now switched to their own X-Jet.
+*In ''[[Marvel: Avengers Alliance]]'', it is called the RS-150B Blackbird. It is one of the six jets that can used for Flight Deck Remote Ops and is the Level 5 Upgrade of the Level 4 Quinjet v. A2.
+| Trivia                  = 
+*Kurt Wagner is the current owner of the Blackbird
+| Links                   = ==Related Articles==
+* [[X-Men]]
+* [[X-Jet]]
+* [[X-Jet (Earth-1610)]]
+* [[X-Wing]]
+* [[X-Men Dove]]
+* [[X-Men Stratojet]]
+* [[X-Factor Plane]]
+* [[X-Copter]]
+* [[Quinjet|Avengers' Quinjet]]
+}}
+[[Category: Magneto's Equipment]]
+[[Category:Aircraft]]
+[[Category:X-Men Vehicles]]
