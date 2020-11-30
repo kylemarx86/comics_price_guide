@@ -203,14 +203,14 @@ function cardClicked(card){
         // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
 
         success: function (data, textStatus, jqXHR) {
-            console.log('data', data);
+            // console.log('data', data);
             // returns with object with success and other things
             data = generalParser(data, searchObj.getTitle());
             // console.log('data2', data)
             if(data.success){
                 // var content = data.content.revisions[0]['*'];
                 var content = data.content.revisions[0].slots.main['*'];
-                console.log('content', content)
+                // console.log('content', content)
                 var pageFormatObj = determinePageFormat(content, publisher);
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
@@ -448,6 +448,7 @@ function retrieveImageURL(image, publisher, fileName){
         type: "GET",
         url: `https://${publisher}.fandom.com/api.php?${queryString}`,
         dataType: "json",
+        // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com', // added hoping to load images properly. currently getting 404 errors for images yet image urls are correct
         success: function (data, textStatus, jqXHR) {
             // parser will return object with a link to the appropriate image to use: image from wiki for success and default image_not_found for failures
             var imageContent = parseImageURL(data);
@@ -480,7 +481,7 @@ function retrieveImageURL(image, publisher, fileName){
  *          {string} errorMessage - message if query was unsuccessful
  */
 function generalParser(response, searchTerm){
-    console.log('response', response);
+    // console.log('response', response);
     var key = 0;
     var data = {
         success: false
@@ -501,7 +502,7 @@ function generalParser(response, searchTerm){
         data.success = true;
         data.content = response.query.pages[key];
         // data.content = response.query.pages[key];
-        console.log('response.query.pages[key]', response.query.pages[key]);
+        // console.log('response.query.pages[key]', response.query.pages[key]);
     }
     return data;
 }
@@ -751,13 +752,20 @@ function parseCoverDate(content){
 function parseImageURL(response){
     var data = generalParser(response);
     var imageObj = {
-        success: data.success,
+        success: data.success
     };
         
     if(imageObj.success){
         // call was successful
         if(data.content.imageinfo !== undefined){
             imageObj.imageSrc = data.content.imageinfo[0].url;
+
+            var pattern = /(https:\/\/.*)\/revision/g;     //jump to this spot
+            var possImgSrc = pattern.exec(imageObj.imageSrc);
+            if(possImgSrc !== null){
+                imageObj.imageSrc = possImgSrc[1];
+            }  // will keep former image source if not found
+
         }else{
             imageObj.errorMessage = 'Could not find image.';
             imageObj.imageSrc = './resources/image_not_found.png';
