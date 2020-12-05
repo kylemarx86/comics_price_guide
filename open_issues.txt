@@ -1,6 +1,7 @@
 List of open issues that should be resolved
 
-1. Search of "thor" yields "Error", "Could not recognize page formatting"
-2. Search of "venom" yield disambiguation page. The first result is the film. Need to sort this out further.
-3. Search of "spider-man" yields "Error", "Could not recognize page formatting"
-4. Search of "green goblin" yields "Error", "Could not recognize page formatting". This can also be achieved be searching "green" and clicking card of "green goblin"
+1. Search of "thor" yields "Error", "Could not recognize page formatting". - resolved
+2. Search of "venom" yield disambiguation page. The first result is the film. Need to sort this out further. - resolved
+3. Search of "spider-man" yields "Error", "Could not recognize page formatting".  - resolved
+4. Search of "green goblin" yields "Error", "Could not recognize page formatting". This can also be achieved be searching "green" and clicking card of "green goblin".  - resolved
+5. Search for Genosha has debut of "Uncanny X-Men #235" (fine) but month of Ear 1988. This seems to be an odd format for months
