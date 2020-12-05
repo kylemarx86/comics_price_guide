@@ -1,4 +1,3 @@
-
 /**
  * Search object is based on the fact that there are multiple templates in the marvel wiki (now expanded
  * to DC wiki, as well)
@@ -843,12 +842,14 @@ function determinePageFormat(content, publisher){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        // var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;
-        var pattern = publisher === 'marvel' ? /main\s*=\s([^\|\]]*)\s*\n/g : /MainPage\s*=\s?(.*)/g;
+        // var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;      // original old regex
+        var pattern = publisher === 'marvel' ? /main\s*=\s([^\|\]]*)\s*\n/g : /MainPage\s*=\s?(.*)/g;       // works for non-disambiguation pages
+        // var pattern = publisher === 'marvel' ? /(main|Main Character)\s*=\s\[?\[?([^\|\]]*)\]?\]?\|?.*/g : /MainPage\s*=\s?(.*)/g;   // attempt at parsing disambiguation pages
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
             formatObj.character = character[1];
+            // formatObj.character = character[2]; // will work for regex of marvel wiki (not sure about DC). could throw if statement to differentiate. does not work to bring up pages
         }else{
             // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
