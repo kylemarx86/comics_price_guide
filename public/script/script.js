@@ -713,7 +713,14 @@ function parseCoverDate(content){
         if(matchResults[1] !== ""){
             month = matchResults[1];
             if( isNaN(month) ){
-                month = month.substr(month, 3);
+                var arr = month.split(" ");
+                if (arr.length > 1){
+                  console.log('arr', arr)
+                  arr[arr.length - 1] = arr[arr.length - 1].substr(arr[arr.length - 1],3);
+                  month = arr.join(' '); 
+                }else{
+                  month = month.substr(month, 3);  
+                }
             }else{
                 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 month = months[month - 1];
