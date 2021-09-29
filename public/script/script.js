@@ -103,6 +103,16 @@ $(document).ready(function(){
     setFocus();     // for testing only??
 });
 
+/**
+ * Summary: Applies event handlers to DOM elements.
+ * 
+ * Description: DOM elements that receive event handlers are: submit button,
+ *    enter key, publisher logos, and publisher toggle button.
+ * 
+ * @see submitForm
+ * @see toggleActivePublisher
+ * @see toggleSwitchForActivePublisher
+ */
 function applyEventHandlers(){
     $('#submit').click(submitForm);
     $('#searchTerm').keydown(function(e){
@@ -114,14 +124,24 @@ function applyEventHandlers(){
     $('.switch-publisher .logo').click(toggleSwitchForActivePublisher);
 }
 
+/**
+ * Description: Sets focus on the search bar.
+ */
 function setFocus(){
     $('#searchTerm').focus();
 }
 
-// EVENT HANDLERS
+// ***** EVENT HANDLERS *****
 
 /**
- * initiates wiki search based on value of search term
+ * Description: Initiates wiki search based on value of search term.
+ * 
+ * Summary: Creates new search object from term in the search bar. Prepares the
+ *    search term for wiki search. Initiates wiki query.
+ * 
+ * @see clearResultsAndStatus
+ * @see toTitleCase
+ * @see initialWikiQuery
  */
 function submitForm(){
     clearResultsAndStatus();
@@ -132,8 +152,10 @@ function submitForm(){
 }
 
 /**
-* Keeps the checkbox 'switch' for active publisher in sync with the logo for the active publisher
-* Invokes toggleActivePublisher
+ * Description: Keeps the checkbox 'switch' for active publisher in sync with
+ *    the logo for the active publisher.
+ * 
+ * @see toggleActivePublisher
  */
 function toggleSwitchForActivePublisher(){
     var checkBoxes = $('.switch-publisher input[type="checkbox"]');
@@ -142,7 +164,8 @@ function toggleSwitchForActivePublisher(){
 }
 
 /**
- * Updates the active publisher by toggling the classes in the switch -publisher area of the search area
+ * Description: Updates the active publisher by toggling the classes in the
+ *    switch-publisher area of the search area.
  */
 function toggleActivePublisher(){
     $('.switch-publisher .logo').toggleClass('inactive-image');
@@ -150,9 +173,18 @@ function toggleActivePublisher(){
 }
 
 /**
- * Event handler for DOM element cards.
- * Will initiate searches based on the text of the card title of the card.
- * Intended for use on cards coming from disambiguation pages and not cards that have no further path in the wikis.
+ * Description: Event handler for DOM element cards. Initiates searches based on 
+ *    the text of the card title of the card.
+ * 
+ * Summary: Initiates searches based on the text of the card title of the card.
+ *    Intended for use on cards coming from disambiguation pages and not cards 
+ *    that have no further path in the wikis.
+ * 
+ * @see captureBreadcrumbs
+ * @see clearResultsAndStatus
+ * @see addPreviousBreadcrumbs
+ * @see initialWikiQuery
+ * 
  * @param {object} card - DOM object representing a card in the 
  */
 function cardClicked(card){
@@ -167,9 +199,7 @@ function cardClicked(card){
 }
 
 
-
-
-// WIKI QUERY METHODS
+// ***** WIKI QUERY METHODS *****
 
  /**
   * initialWikiQuery
@@ -298,10 +328,15 @@ function initialWikiQuery(searchObj, origSearchTerm){
 }
 
 /**
+ * Description: Create card DOM element.
  * 
- * @param {string} cardType - string representing class name being added to the card
- * @param {string} [pageTitle] - title of the page the card represents
- * @param {string} [imageInfo] - info text at the bottom of the card
+ * Summary: Creates card DOM element with image
+ * 
+ * @param {string} cardType    string representing class name being added to the card
+ * @param {string} [pageTitle] title of the page the card represents
+ * @param {string} [imageInfo] info text at the bottom of the card
+ * 
+ * @return {object} $col 
  */
 function createCard(cardType, pageTitle, imageInfo){
     var $col = $('<div>').addClass(cardType);
@@ -657,12 +692,19 @@ function parseDebut(content){
 }
 
 /**
- * Extract the title of an image from the page content returned from the wiki.
- * NOTE: order of the primary and secondary searches is important because sometimes user entered 
- * data places images with numerical quantifiers (usually denoting secondary images) ahead of those 
- * without (usually denoting primary images).
- * @param {string} content - revision content from the wiki
- * @returns {string} imageTitle - title of the image being retrieved, or null if pattern not found
+ * Description: Extracts the title of an image from the page content returned 
+ *    from the wiki.
+ * 
+ * Summary: Parses the image title out from content returned form the wiki.
+ *    NOTE: order of the primary and secondary searches is important because 
+ *    sometimes user entered data places images with numerical quantifiers
+ *    (usually denoting secondary images) ahead of those without (usually 
+ *    denoting primary images).
+ * 
+ * @param {string} content Revision content from the wiki.
+ * 
+ * @return {string} Title of the image being retrieved, or null if pattern 
+ *                     not found.
  */
 function parseImageTitle(content){
     // primary search (look for images without numerical quantifiers)
@@ -699,8 +741,10 @@ function parseImageTitle(content){
 }
 
 /**
- * Parse out the cover date of a comic based on revision content from the wiki
- * @param {string} content - revision content from the wiki
+ * Description: Parses out the cover date of a comic based on revision content
+ *    from the wiki.
+ * 
+ * @param {string} content Revision content from the wiki.
  */
 function parseCoverDate(content){
     var coverDate = null;
@@ -748,9 +792,15 @@ function parseCoverDate(content){
 
 
 /**
- * Extract the URL source of an image featured on the wiki based on the results of a call to the wiki
- * @param {object} response - JSON object returned from the wiki based on a query for an image
- * @returns {object} object with properties:
+ * Description: Extracts the URL source of an image featured on the wiki based
+ *    on the results of a call to the wiki.
+ * 
+ * @see generalParser
+ * 
+ * @param {object} response JSON object returned from the wiki based on a query
+ *                             for an image.
+ * 
+ * @return {object} object with properties:
  *          {boolean} success - description of the call
  *          {string} imageSrc - URL of the image
  *          {string} errorMessage - message if call was unsuccessful
@@ -784,13 +834,20 @@ function parseImageURL(response){
     return imageObj;
 }
 
-// HELPER METHODS
+// ***** HELPER METHODS *****
 
 /**
- * parse together data options to create query string for calls to wikia API
- * @param {string} titlesValue - title of the page to be searched for
- * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
- * @returns {string} query string to send to the wiki
+ * Description: Parses together data options to create query string for calls
+ *    to wikia API.
+ * 
+ * @see encodeURIComponent
+ * 
+ * @param {string} titlesValue      Title of the page to be searched for.
+ * @param {object} extraDataOptions An object holding key value pairs for
+ *                                     extra data options not standard to 
+ *                                     all calls.
+ * 
+ * @return {string} Query string to send to the wiki.
  */
 function constructQueryString(titlesValue, extraDataOptions){
     // base data incorporated in all calls to wikia API
@@ -877,12 +934,19 @@ function determinePageFormat(content, publisher){
 
 
 /**
- * Determines if a page can run a check for a debut comic based on the type of template the page is.
- * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
- *   Organization, Location, Vehicle, Item, Race, Reality, and Storyline
- * Unexceptable types of templates are Comic, Event (because of different formatting), Television Episode, Marvel Staff, Image, Novel, and User Page
- * If further page templates are created this will need to be edited.
- * @param {string} templateType - type of 
+ * Description: Determines if a page can run a check for a debut comic based
+ *    on the type of template the page is.
+ * 
+ * Summary: Logical test to see if page can run a check for debut comic based 
+ *    on template type returned from wiki. Types of templates that are 
+ *    exceptable to run checks for debut comics are Character, Team, 
+ *    Organization, Location, Vehicle, Item, Race, Reality, and Storyline. 
+ *    Unexceptable types of templates are Comic, Event (because of different 
+ *    formatting), Television Episode, Marvel Staff, Image, Novel, and User 
+ *    Page. If further page templates are created this will need to be edited.
+ * 
+ * @param {string} templateType type of template the wiki page is formatted for
+ * 
  * @return {boolean} a Boolean description of whether we should run a check to find a debut comic
  */
 function pageCanRunDebutCheck(templateType){
@@ -903,9 +967,21 @@ function pageCanRunDebutCheck(templateType){
 }
 
 /**
- * Check for debuts and display them if the exist
- * @param {string} content - content of the page queried from the wiki
- * @param {string} publisher - name of the publisher of comic. Used to determine which API to query
+ * Description: Checks for debuts and display them if they exist.
+ * 
+ * Summary: Takes returned content from the wiki, searches for debut info, and 
+ *    creates card DOM elements to represent each debut. Searches wiki for 
+ *    debut comic. If no debut info is found, will display an error.
+ * 
+ * @see parseDebut
+ * @see createCard
+ * @see addTruncation
+ * @see addToolTipToTitle
+ * @see searchWikiForComic
+ * @see displayError
+ * 
+ * @param {string} content   content of the page queried from the wiki
+ * @param {string} publisher name of the publisher of comic. Used to determine which API to query
  */
 function checkForDebuts(content, publisher){
     var debutInfo = parseDebut(content);
@@ -922,7 +998,7 @@ function checkForDebuts(content, publisher){
             var mantle = (debutInfo.debutList[i].mantle !== null) ? debutInfo.debutList[i].mantle : '' ;
             var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
             $entries.append($card);
-            // add tooltip, if necessary
+            // add truncation and tooltip, if necessary
             addTruncation($card);
             addToolTipToTitle($card);
             searchWikiForComic($card, publisher, debutInfo.debutList[i].issue);
