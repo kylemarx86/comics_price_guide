@@ -228,10 +228,6 @@ function cardClicked(card){
   *                                   and needs to be searched again.
   */
 function initialWikiQuery(searchObj, origSearchTerm){
-    // // for testing
-    // if(origSearchTerm !== undefined){
-    //     console.log('origSearchTerm', origSearchTerm)
-    // }
 
     var extraDataOptions = {
         action: 'query',
@@ -252,14 +248,11 @@ function initialWikiQuery(searchObj, origSearchTerm){
         // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
 
         success: function (data, textStatus, jqXHR) {
-            // console.log('data', data);
             // returns with object with success and other things
             data = generalParser(data, searchObj.getTitle());
-            // console.log('data2', data)
             if(data.success){
                 // var content = data.content.revisions[0]['*'];
                 var content = data.content.revisions[0].slots.main['*'];
-                // console.log('content', content)
                 var pageFormatObj = determinePageFormat(content, publisher);
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
@@ -274,7 +267,6 @@ function initialWikiQuery(searchObj, origSearchTerm){
                 if(pageFormatObj.success){
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        // console.log('content', content)
 
                         // create section header for type of page
                         var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.templateType}`);
@@ -366,7 +358,6 @@ function createCard(cardType, pageTitle, imageInfo){
 
     // add pageTitle, if defined
     if(pageTitle !== undefined){
-        // var $title = $('<a>').addClass('card-title truncate btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
         var $title = $('<a>').addClass('card-title btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
         $card_content.append($title);
     }
@@ -407,10 +398,6 @@ function createCard(cardType, pageTitle, imageInfo){
   *                               and needs to be searched again.
   */
   function searchWikiForComic($card, publisher, comicTitle, origTitle){
-    // // for testing
-    // if(origTitle !== undefined){
-    //     console.log('origTitle', origTitle)
-    // }
 
     var extraDataOptions = {
         prop: 'revisions',
@@ -433,7 +420,6 @@ function createCard(cardType, pageTitle, imageInfo){
             if(comicInfo.success){
                 // page information was received
                 var content  = comicInfo.content.revisions[0]['*'];
-                // console.log('content: ', content);
 
                 // check to see if this is a disambiguation page
                 var pattern = /^\{\{Disambiguation/i;
@@ -518,7 +504,6 @@ function retrieveImageURL(image, publisher, fileName){
     };
     var queryString = constructQueryString("File:"+fileName, extraDataOptions);
     var url = `https://${publisher}.fandom.com/api.php?${queryString}`; //temp for testing
-    // console.log('url to API for image', url);
 
     $.ajax({
         type: "GET",
@@ -560,7 +545,6 @@ function retrieveImageURL(image, publisher, fileName){
  *           {string} errorMessage - message if query was unsuccessful
  */
 function generalParser(response, searchTerm){
-    // console.log('response', response);
     var key = 0;
     var data = {
         success: false
