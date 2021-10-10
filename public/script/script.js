@@ -227,6 +227,7 @@ function cardClicked(card){
   *                                   when a search yields inconclusive results
   *                                   and needs to be searched again.
   */
+//  // jump to initalWikiQuery
 function initialWikiQuery(searchObj, origSearchTerm){
 
     var extraDataOptions = {
@@ -246,13 +247,19 @@ function initialWikiQuery(searchObj, origSearchTerm){
         dataType: "json",
         // withCredentials: "true",
         // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
-
+        
         success: function (data, textStatus, jqXHR) {
             // returns with object with success and other things
+            // console.log('data',data);
+            
             data = generalParser(data, searchObj.getTitle());
+            
+            // console.log('data',data);
             if(data.success){
                 // var content = data.content.revisions[0]['*'];
                 var content = data.content.revisions[0].slots.main['*'];
+                console.log('content: ',content);
+
                 var pageFormatObj = determinePageFormat(content, publisher);
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
@@ -265,6 +272,7 @@ function initialWikiQuery(searchObj, origSearchTerm){
                 })();
 
                 if(pageFormatObj.success){
+                    console.log('page type:', pageFormatObj.pageType)
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
 
@@ -301,6 +309,7 @@ function initialWikiQuery(searchObj, origSearchTerm){
                             // this object will run through a second time and return with an content from of a template pageType
                             // and will gather the rest of the desired information                         
                         var tempSearchObj = new Search(pageFormatObj.character);
+                        console.log('title of search: ', searchObj.getTitle());
                         initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
@@ -419,7 +428,12 @@ function createCard(cardType, pageTitle, imageInfo){
             var $content = $card.find('.card-content');
             if(comicInfo.success){
                 // page information was received
+                // FOR MARVEL API
                 var content  = comicInfo.content.revisions[0]['*'];
+
+                // FOR DC API
+                // var content  = comicInfo.content.revisions[0].slots.main['*'];
+                console.log('content info:', content)
 
                 // check to see if this is a disambiguation page
                 var pattern = /^\{\{Disambiguation/i;
@@ -565,6 +579,7 @@ function generalParser(response, searchTerm){
         data.success = true;
         data.content = response.query.pages[key];
     }
+    console.log(data);
     return data;
 }
 
@@ -818,7 +833,7 @@ function parseImageURL(response){
         if(data.content.imageinfo !== undefined){
             imageObj.imageSrc = data.content.imageinfo[0].url;
 
-            var pattern = /(https:\/\/.*)\/revision/g;     //jump to this spot
+            var pattern = /(https:\/\/.*)\/revision/g;
             var possImgSrc = pattern.exec(imageObj.imageSrc);
             if(possImgSrc !== null){
                 imageObj.imageSrc = possImgSrc[1];
@@ -915,12 +930,18 @@ function determinePageFormat(content, publisher){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
+           // first pattern marvel, second pattern DC
         var pattern = publisher === 'marvel' ? /(main|Main Character)\s*=\s\[?\[?([^\|\]\n]*)/g : /MainPage\s*=\s?(.*)/g;   // attempt at parsing disambiguation pages
 
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
-            formatObj.character = character[2];
+            if(publisher === "marvel"){
+                formatObj.character = character[2];
+            }else{
+                // publisher is DC
+                formatObj.character = character[1];
+            }
         }else{
             // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
@@ -938,8 +959,6 @@ function determinePageFormat(content, publisher){
     }
     return formatObj;
 }
-
-
 
 
 /**
