@@ -931,17 +931,12 @@ function determinePageFormat(content, publisher){
     }else{
         // check if content is of type character disambiguation
            // first pattern marvel, second pattern DC
-        var pattern = publisher === 'marvel' ? /(main|Main Character)\s*=\s\[?\[?([^\|\]\n]*)/g : /MainPage\s*=\s?(.*)/g;   // attempt at parsing disambiguation pages
+        var pattern = publisher === 'marvel' ? /(?:main|Main Character)\s*=\s\[?\[?([^\|\]\n]*)/g : /MainPage\s*=\s?(.*)/g;   // attempt at parsing disambiguation pages
 
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
-            if(publisher === "marvel"){
-                formatObj.character = character[2];
-            }else{
-                // publisher is DC
-                formatObj.character = character[1];
-            }
+            formatObj.character = character[1];
         }else{
             // NOTE: this section looks odd and should probably be cleaned up
             // check if content is of type general disambiguation
