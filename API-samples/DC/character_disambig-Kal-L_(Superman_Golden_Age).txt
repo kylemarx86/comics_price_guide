@@ -1,0 +1,57 @@
+{{Disambig
+| Image                   = [[File:SupermanKalL.jpg|150px|link=Kal-L (Earth-Two)]]
+| MainPage                = Kal-L (Earth-Two)
+| AltID                   = [[Superman]]; [[Overman]]
+| ImageText               = Superman
+| Description             = On [[Earth-Two]], '''[[Superman]]''' was born '''Kal-L''', son of [[Jor-L]] and [[Lora]] on the doomed planet [[Krypton]]. When Kal-L was just a baby, his parents sent him away, moments before the planet's destruction. He landed on Earth, where he would take up the civilian identity of '''[[Clark Kent]]''' and fight crime as the Man of Steel, Superman. First a reporter and then the editor or the '''[[Daily Star]]''', Clark Kent was happily married with '''[[Lois Lane]]'''. After his native world was destroyed in the [[Crisis on Infinite Earths]], he lived in a pocket dimension with his wife and [[Alexander Luthor, Jr.]]. 
+
+The [[Golden Age]] Superman first appeared in {{c|Action Comics #1}} (1938), and was created by [[Jerry Siegel]] and [[Joe Shuster]]. He died in {{c|Infinite Crisis #7}} (2006) in a fight with [[Superboy-Prime]]. 
+
+| Gallery                 = 
+==Multiverse==
+===The New 52===
+<gallery mode="packed-hover">
+File:Kal-L Earth 2 002.jpg|{{thumbnav|Kal-El (Earth 2)|Earth 2|Based on Kal-L|Kal-El}}
+File:Overman (Earth 10).jpg|{{thumbnav|Kal-L (Earth 10)|Earth 10|[[The Multiversity: Mastermen Vol 1 1|Mastermen]]|Overman}}
+File:The New Frontier boom .jpg|{{thumbnav|Kal-L (Earth-21)|Earth 21|[[DC: The New Frontier]]|Superman}}
+File:Kal-L (Earth-30) 0001.jpg|{{thumbnav|Kal-L (Earth-30)|Earth 30|[[Red Son]]|Superman}}
+</gallery>
+
+===Dark Multiverse===
+<gallery mode="packed-hover">
+File:Kal-L Dark Multiverse Earth-Two 001.jpg|{{thumbnav|Kal-L (Dark Multiverse: Infinite Crisis)|Dark Multiverse|[[Tales from the Dark Multiverse: Infinite Crisis Vol 1 1|Dark Multiverse: Infinite Crisis]]|Superman}}
+File:None.jpg|{{thumbnav|Kal-L (Death Metal: Infinite Crisis)|Dark Multiverse|[[Dark Nights Death Metal Trinity Crisis|Death Metal: Infinite Crisis]]|Superman}}
+File:None.jpg|{{thumbnav|Kal-L (Death Metal: Final Crisis)|Dark Multiverse|[[Dark Nights Death Metal Trinity Crisis|Death Metal: Final Crisis]]|Superman}}
+File:None.jpg|{{thumbnav|Kal-L (Dark Multiverse: Crisis on Infinite Earths: Earth-Two)|Dark Multiverse|[[Tales from the Dark Multiverse: Crisis on Infinite Earths Vol 1 1|Dark Multiverse: Crisis on Infinite Earths]]|Superman}}
+</gallery>
+
+===Post-Crisis===
+<gallery mode="packed-hover">
+File:Superman Batman Wonder Woman Earth-2.jpg|{{thumbnav|Kal-L (Earth-2)|Earth-2|[[Justice Society Infinity (Earth-2)|Justice Society Infinity]]|Superman}}
+File:Overman (Earth-10) 001.png|{{thumbnav|Kal-L (Earth-10)|Earth-10|[[Final Crisis: Superman Beyond|Superman Beyond]]|Overman}}
+File:Superman (New Frontier).png|{{thumbnav|Kal-L (Earth-21)|Earth-21|[[DC: The New Frontier]]|Superman}}
+File:Superman Red Son 01.jpg|{{thumbnav|Kal-L (Earth-30)|Earth-30|[[Red Son]]|Superman}}
+</gallery>
+
+===Pre-Crisis===
+<gallery mode="packed-hover">
+File:DCNF Superman vs. Batman.jpg|{{thumbnav|Kal-L (Earth-21)|Earth-260|[[DC: The New Frontier]]|Superman}}
+File:Superman Red Son 02.jpg|{{thumbnav|Kal-L (Earth-30)|Earth-1598|[[Red Son]]|Superman}}
+</gallery>
+
+==Other Media==
+<gallery mode="packed-hover">
+File:Tom Turbine DCAU.jpg|{{thumbnav|Tom Turbine (DCAU: Legends)|DCAU|Based on Kal-L|Tom Turbine}}
+File:None.jpg|{{thumbnav|Kal-L (Injustice: Earth Two)|Injustice|[[Injustice 2 (Video Game)|Injustice 2]]|Superman}}
+File:Kal-L Superman Red Son Movie 0001.jpg|{{thumbnav|Kal-L (Superman: Red Son Movie)|DCUAOM|[[Superman: Red Son (Movie)|Superman: Red Son]]|Superman}}
+File:Kal-L Man of Tomorrow Earth-2 0001.png|{{thumbnav|Kal-L (Man of Tomorrow: Earth-2)|DCUAOM|[[Justice Society: World War II (Movie)|Justice Society: World War II]]|Superman}}
+</gallery>
+
+| SeeAlso                 = 
+* [[Kal-El]]
+}}
+
+{{Superman}}
+{{Justice Society}}
+[[Category:Superman]]
+[[Category:Justice Society of America]]

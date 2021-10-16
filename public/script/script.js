@@ -15,13 +15,13 @@
  *  word meaning first. For the purposes of this project I will keep track of as many of these debuts as possible,
  *  keeping track of associated information like debut comic, its significance, and its image.
  *   
- * @param {string} title - title of the thing to be searched on the wiki
+ * @param {string} title Title of the thing to be searched on the wiki.
  * @property {string} title - 
  * * @property {string} properName - 
  * * @property {string} type - 
  * * @property {string} reality - 
  * * @property {string} debutArr - 
- * @property {string} publisher - keep track of publisher
+ * @property {string} publisher - Keeps track of publisher.
  */
 function Search(title) {
     this.title = title;
@@ -97,12 +97,27 @@ function Debut(comic, year, img, sig){
     this.sig = sig;
 }
 
-
+/**
+ * Summary: Main function.
+ * 
+ * @see applyEventHandlers
+ * @see setFocus
+ */
 $(document).ready(function(){
     applyEventHandlers();
     setFocus();     // for testing only??
 });
 
+/**
+ * Summary: Applies event handlers to DOM elements.
+ * 
+ * Description: DOM elements that receive event handlers are: submit button,
+ *    enter key, publisher logos, and publisher toggle button.
+ * 
+ * @see submitForm
+ * @see toggleActivePublisher
+ * @see toggleSwitchForActivePublisher
+ */
 function applyEventHandlers(){
     $('#submit').click(submitForm);
     $('#searchTerm').keydown(function(e){
@@ -114,14 +129,24 @@ function applyEventHandlers(){
     $('.switch-publisher .logo').click(toggleSwitchForActivePublisher);
 }
 
+/**
+ * Summary: Sets focus on the search bar.
+ */
 function setFocus(){
     $('#searchTerm').focus();
 }
 
-// EVENT HANDLERS
+// ***** EVENT HANDLERS *****
 
 /**
- * initiates wiki search based on value of search term
+ * Summary: Initiates wiki search based on value of search term.
+ * 
+ * Description: Creates new search object from term in the search bar. Prepares the
+ *    search term for wiki search. Initiates wiki query.
+ * 
+ * @see clearResultsAndStatus
+ * @see toTitleCase
+ * @see initialWikiQuery
  */
 function submitForm(){
     clearResultsAndStatus();
@@ -132,8 +157,10 @@ function submitForm(){
 }
 
 /**
-* Keeps the checkbox 'switch' for active publisher in sync with the logo for the active publisher
-* Invokes toggleActivePublisher
+ * Summary: Keeps the checkbox 'switch' for active publisher in sync with
+ *    the logo for the active publisher.
+ * 
+ * @see toggleActivePublisher
  */
 function toggleSwitchForActivePublisher(){
     var checkBoxes = $('.switch-publisher input[type="checkbox"]');
@@ -142,7 +169,8 @@ function toggleSwitchForActivePublisher(){
 }
 
 /**
- * Updates the active publisher by toggling the classes in the switch -publisher area of the search area
+ * Summary: Updates the active publisher by toggling the classes in the
+ *    switch-publisher area of the search area.
  */
 function toggleActivePublisher(){
     $('.switch-publisher .logo').toggleClass('inactive-image');
@@ -150,10 +178,18 @@ function toggleActivePublisher(){
 }
 
 /**
- * Event handler for DOM element cards.
- * Will initiate searches based on the text of the card title of the card.
- * Intended for use on cards coming from disambiguation pages and not cards that have no further path in the wikis.
- * @param {object} card - DOM object representing a card in the 
+ * Summary: Initiates searches based on the text of the card title of the card.
+ * 
+ * Description: Initiates searches based on the text of the card title of the 
+ *    card. Intended for use on cards coming from disambiguation pages and not 
+ *    cards that have no further path in the wikis.
+ * 
+ * @see captureBreadcrumbs
+ * @see clearResultsAndStatus
+ * @see addPreviousBreadcrumbs
+ * @see initialWikiQuery
+ * 
+ * @param {object} card DOM object representing a card.
  */
 function cardClicked(card){
     // remove tooltip
@@ -167,26 +203,39 @@ function cardClicked(card){
 }
 
 
-
-
-// WIKI QUERY METHODS
+// ***** WIKI QUERY METHODS *****
 
  /**
-  * initialWikiQuery
-  * searches wiki for term and will call another function to parse information returned
-  * @param {object} searchObj - search object containing name of term to be looked up
-  * @param {string} [origSearchTerm] - term searched in previous search, for cases when a search yields inconclusive results and needs to be searched again
+  * Summary: Searches wiki for term and will call another function to parse returned information.
+  * 
+  * @see constructQueryString
+  * @see getTitle
+  * @see getPublisher
+  * @see createCard
+  * @see retrieveImageURL
+  * @see pageCanRunDebutCheck
+  * @see checkForDebuts
+  * @see displayError
+  * @see initialWikiQuery (used recursively for character disambiguation pages)
+  * @see addTruncation
+  * @see addToolTipToTitle
+  * @see cardClicked
+  * 
+  * @param {object} searchObj      Search object containing name of term to be
+  *                                   looked up.
+  * @param {string} origSearchTerm Term searched in previous search, for cases
+  *                                   when a search yields inconclusive results
+  *                                   and needs to be searched again.
   */
-  function initialWikiQuery(searchObj, origSearchTerm){
-    // // for testing
-    // if(origSearchTerm !== undefined){
-    //     console.log('origSearchTerm', origSearchTerm)
-    // }
+//  // jump to initalWikiQuery
+function initialWikiQuery(searchObj, origSearchTerm){
 
     var extraDataOptions = {
+        action: 'query',
         prop: 'revisions',
         rvprop: 'content',
-        rvsection: '0',
+        format: 'json',
+        rvslots: 'main'
     };
     // NOTE: first parameter will change
     var queryString = constructQueryString(searchObj.getTitle(), extraDataOptions);
@@ -194,14 +243,23 @@ function cardClicked(card){
 
     $.ajax({
         type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        url: `https://${publisher}.fandom.com/api.php?${queryString}`,
         dataType: "json",
+        // withCredentials: "true",
+        // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com',
+        
         success: function (data, textStatus, jqXHR) {
             // returns with object with success and other things
+            // console.log('data',data);
+            
             data = generalParser(data, searchObj.getTitle());
-            // console.log('data', data)
+            
+            // console.log('data',data);
             if(data.success){
-                var content = data.content.revisions[0]['*'];
+                // var content = data.content.revisions[0]['*'];
+                var content = data.content.revisions[0].slots.main['*'];
+                console.log('content: ',content);
+
                 var pageFormatObj = determinePageFormat(content, publisher);
                 $searchCrumb = $('<a>').addClass('breadcrumb').attr('href', '#!').text(searchObj.getTitle());
                 $('#searchPath .col').append($searchCrumb);
@@ -214,9 +272,9 @@ function cardClicked(card){
                 })();
 
                 if(pageFormatObj.success){
+                    console.log('page type:', pageFormatObj.pageType)
                     if(pageFormatObj.pageType === 'template'){
                         // content is for a template page
-                        // console.log('content', content)
 
                         // create section header for type of page
                         var $type = $('<h4>').addClass('section-header').text(`Page type: ${pageFormatObj.templateType}`);
@@ -251,6 +309,7 @@ function cardClicked(card){
                             // this object will run through a second time and return with an content from of a template pageType
                             // and will gather the rest of the desired information                         
                         var tempSearchObj = new Search(pageFormatObj.character);
+                        console.log('title of search: ', searchObj.getTitle());
                         initialWikiQuery(tempSearchObj, searchObj.getTitle());
                     }else{
                         // content is for a general disambig
@@ -290,10 +349,16 @@ function cardClicked(card){
 }
 
 /**
+ * Summary: Create card DOM element.
  * 
- * @param {string} cardType - string representing class name being added to the card
- * @param {string} [pageTitle] - title of the page the card represents
- * @param {string} [imageInfo] - info text at the bottom of the card
+ * Description: Creates card DOM element with image.
+ * 
+ * @param {string} cardType  String representing class name being added 
+ *                              to the card.
+ * @param {string} pageTitle Title of the page the card represents.
+ * @param {string} imageInfo Info text at the bottom of the card.
+ * 
+ * @returns {object) DOM element representing card.
  */
 function createCard(cardType, pageTitle, imageInfo){
     var $col = $('<div>').addClass(cardType);
@@ -302,7 +367,6 @@ function createCard(cardType, pageTitle, imageInfo){
 
     // add pageTitle, if defined
     if(pageTitle !== undefined){
-        // var $title = $('<a>').addClass('card-title truncate btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
         var $title = $('<a>').addClass('card-title btn tooltipped').attr({'data-position': 'top', 'data-tooltip': `${pageTitle}`}).text(pageTitle);
         $card_content.append($title);
     }
@@ -322,17 +386,27 @@ function createCard(cardType, pageTitle, imageInfo){
 }
 
 /**
-  * searches wiki for a specific comic to receive information on it.
-  * @param {object} $card - DOM object to update with thecover date and source of once image URL is received from wiki
-  * @param {string} publisher - name of the publisher of comic. Used to determine which API to query
-  * @param {object} comicTitle - title of the issue we are searching for on the wiki
-  * @param {string} [origTitle] - title of comic in previous search, for cases when a search yields inconclusive results and needs to be searched again
+  * Summary: Searches wiki for a specific comic to receive information on it.
+  * 
+  * @see constructQueryString
+  * @see generalParser
+  * @see displayError
+  * @see addVolumeToIssue
+  * @see searchWikiForComic (used recursively)
+  * @see parseImageTitle
+  * @see retrieveImageURL
+  * @see parseCoverDate
+  * 
+  * @param {object} $card      DOM object to update with the cover date and
+  *                               source of once image URL is received from wiki.
+  * @param {string} publisher  Name of the publisher of comic. Used to 
+  *                               determine which API to query.
+  * @param {object} comicTitle Title of the issue we are searching for on the wiki.
+  * @param {string} origTitle  Title of comic in previous search, for cases 
+  *                               when a search yields inconclusive results 
+  *                               and needs to be searched again.
   */
   function searchWikiForComic($card, publisher, comicTitle, origTitle){
-    // // for testing
-    // if(origTitle !== undefined){
-    //     console.log('origTitle', origTitle)
-    // }
 
     var extraDataOptions = {
         prop: 'revisions',
@@ -345,7 +419,7 @@ function createCard(cardType, pageTitle, imageInfo){
 
     $.ajax({
         type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        url: `https://${publisher}.fandom.com/api.php?${queryString}`,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             //parser should return success or failure upon determining if correct information was retrieved
@@ -354,8 +428,12 @@ function createCard(cardType, pageTitle, imageInfo){
             var $content = $card.find('.card-content');
             if(comicInfo.success){
                 // page information was received
+                // FOR MARVEL API
                 var content  = comicInfo.content.revisions[0]['*'];
-                // console.log('content: ', content);
+
+                // FOR DC API
+                // var content  = comicInfo.content.revisions[0].slots.main['*'];
+                console.log('content info:', content)
 
                 // check to see if this is a disambiguation page
                 var pattern = /^\{\{Disambiguation/i;
@@ -421,10 +499,17 @@ function createCard(cardType, pageTitle, imageInfo){
 }
 
 /**
- * will find the complete path to an image on the wiki based on its title
- * @param {object} image - DOM object to update the source of once image URL is received from wiki
- * @param {string} publisher - name of publishing company. Used to determine which API to query
- * @param {string} fileName - name of file to search the wiki for
+ * Summary: Completes path to an image on the wiki based on its title.
+ * 
+ * @see constructQueryString
+ * @see parseImageURL
+ * @see displayError
+ * 
+ * @param {object} image     DOM object to update the source of once image URL 
+ *                              is received from wiki.
+ * @param {string} publisher Name of publishing company. Used to determine which
+*                               API to query.
+ * @param {string} fileName  Name of file to search the wiki for.
  */
 function retrieveImageURL(image, publisher, fileName){
     var extraDataOptions = {
@@ -432,11 +517,13 @@ function retrieveImageURL(image, publisher, fileName){
         iiprop: 'url',
     };
     var queryString = constructQueryString("File:"+fileName, extraDataOptions);
+    var url = `https://${publisher}.fandom.com/api.php?${queryString}`; //temp for testing
 
     $.ajax({
         type: "GET",
-        url: `https://${publisher}.wikia.com/api.php?${queryString}`,
+        url: `https://${publisher}.fandom.com/api.php?${queryString}`,
         dataType: "json",
+        // 'Access-Control-Allow-Origin': 'https://marvel.fandom.com', // added hoping to load images properly. currently getting 404 errors for images yet image urls are correct
         success: function (data, textStatus, jqXHR) {
             // parser will return object with a link to the appropriate image to use: image from wiki for success and default image_not_found for failures
             var imageContent = parseImageURL(data);
@@ -456,17 +543,20 @@ function retrieveImageURL(image, publisher, fileName){
     });
 }
 
-// METHODS FOR PARSING
+// ***** METHODS FOR PARSING *****
 
 // NOTE: pass another argument in, the term searched for so error message can contain it
 /**
+ * Summary: Searches wiki response for specific term.
  * 
- * @param {object} response - JSON response object from wiki
- * @param {object} searchTerm - Term searched in query to the wiki. Important for error messages
+ * @param {object} response   JSON response object from wiki.
+ * @param {object} searchTerm Term searched in query to the wiki. Important 
+ *                               for error messages.
+ * 
  * @returns {object} object with properties:
- *          {boolean} success - description of the call
- *          {string} content - content of the page queried from the wiki
- *          {string} errorMessage - message if query was unsuccessful
+ *           {boolean} success - description of the call
+ *           {string} content - content of the page queried from the wiki
+ *           {string} errorMessage - message if query was unsuccessful
  */
 function generalParser(response, searchTerm){
     var key = 0;
@@ -489,15 +579,23 @@ function generalParser(response, searchTerm){
         data.success = true;
         data.content = response.query.pages[key];
     }
+    console.log(data);
     return data;
 }
 
 /**
- * returns an array of objects holding information on disambiguation pages including title and image
- * @param {object} pattern - regex pattern object to test
- * @param {string} content - content from the wiki to check against regex pattern
- * @returns {array} array of objects containing titles of the pages found and the titles of the images associated with them
- *                  NOTE: if no matches of pattern caught, method will return an empty array.
+ * Summary: Returns an array of objects holding information on disambiguation
+ *    pages including title and image.
+ * 
+ * Description: Parses page number and image title information.
+ * 
+ * @param {object} pattern Regex pattern object to test.
+ * @param {string} content Content from the wiki to check against regex pattern.
+ * 
+ * @returns {array} Array of objects containing titles of the pages found and the
+ *                    titles of the images associated with them. NOTE: if no 
+ *                    matches of pattern caught, method will return an empty
+ *                    array.
  */
 function parseDisambiguation(pattern, content){
     var tempMatchArr = null;
@@ -512,12 +610,19 @@ function parseDisambiguation(pattern, content){
 }
 
 /**
- * takes the result from the character page on the wiki and searches for and extracts the debut comic for the character
- * @param {string} content - revision content from the wiki
+ * Sumamry: Parses debut info out of wiki results.
+ * 
+ * Description: Takes the result from the character page on the wiki and
+ *    searches for and extracts the debut comic for the character.
+ * 
+ * @see XMenStandardizer
+ * 
+ * @param {string} content Latest revision content from the wiki.
+ * 
  * @returns {object} object with properties:
- *          {boolean} success - description of the success of the parsing
- *          {array} debutList - array of debut comic objects with each with properties issue and mantle
- *          {string} errorMessage - message if the patterns were not found in the content
+ *           {boolean} success - description of the success of the parsing
+ *           {array} debutList - array of debut comic objects with each with properties issue and mantle
+ *           {string} errorMessage - message if the patterns were not found in the content
  */
 function parseDebut(content){
     var debutObj = {
@@ -603,16 +708,24 @@ function parseDebut(content){
 }
 
 /**
- * Extract the title of an image from the page content returned from the wiki.
- * NOTE: order of the primary and secondary searches is important because sometimes user entered 
- * data places images with numerical quantifiers (usually denoting secondary images) ahead of those 
- * without (usually denoting primary images).
- * @param {string} content - revision content from the wiki
- * @returns {string} imageTitle - title of the image being retrieved, or null if pattern not found
+ * Summary: Extracts the title of an image from the page content returned 
+ *    from the wiki.
+ * 
+ * Description: Parses the image title out from content returned form the wiki.
+ *    NOTE: order of the primary and secondary searches is important because 
+ *    sometimes user entered data places images with numerical quantifiers
+ *    (usually denoting secondary images) ahead of those without (usually 
+ *    denoting primary images).
+ * 
+ * @param {string} content Revision content from the wiki.
+ * 
+ * @returns {string} Title of the image being retrieved, or null if pattern 
+ *                     not found.
  */
 function parseImageTitle(content){
     // primary search (look for images without numerical quantifiers)
-    var pattern = /Image\s*=\s?(.*)/g;
+    // var pattern = /Image\s*=\s?(.*)/g;
+    var pattern = /Image\s*=\s?(.*)\s*\|/g;
     var matchResults = pattern.exec(content);
     var imageTitle = null;
 
@@ -644,8 +757,12 @@ function parseImageTitle(content){
 }
 
 /**
- * Parse out the cover date of a comic based on revision content from the wiki
- * @param {string} content - revision content from the wiki
+ * Summary: Parses out the cover date of a comic based on revision content
+ *    from the wiki.
+ * 
+ * @param {string} content Revision content from the wiki.
+ * 
+ * @returns {string} Abbreviated month and full year of comic.
  */
 function parseCoverDate(content){
     var coverDate = null;
@@ -658,7 +775,13 @@ function parseCoverDate(content){
         if(matchResults[1] !== ""){
             month = matchResults[1];
             if( isNaN(month) ){
-                month = month.substr(month, 3);
+                var arr = month.split(" ");
+                if (arr.length > 1){
+                  arr[arr.length - 1] = arr[arr.length - 1].substr(arr[arr.length - 1],3);
+                  month = arr.join(' '); 
+                }else{
+                  month = month.substr(month, 3);  
+                }
             }else{
                 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 month = months[month - 1];
@@ -686,23 +809,36 @@ function parseCoverDate(content){
 
 
 /**
- * Extract the URL source of an image featured on the wiki based on the results of a call to the wiki
- * @param {object} response - JSON object returned from the wiki based on a query for an image
+ * Summary: Extracts the URL source of an image featured on the wiki based
+ *    on the results of a call to the wiki.
+ * 
+ * @see generalParser
+ * 
+ * @param {object} response JSON object returned from the wiki based on a query
+ *                             for an image.
+ * 
  * @returns {object} object with properties:
- *          {boolean} success - description of the call
- *          {string} imageSrc - URL of the image
- *          {string} errorMessage - message if call was unsuccessful
+ *           {boolean} success - description of the call
+ *           {string} imageSrc - URL of the image
+ *           {string} errorMessage - message if call was unsuccessful
  */
 function parseImageURL(response){
     var data = generalParser(response);
     var imageObj = {
-        success: data.success,
+        success: data.success
     };
         
     if(imageObj.success){
         // call was successful
         if(data.content.imageinfo !== undefined){
             imageObj.imageSrc = data.content.imageinfo[0].url;
+
+            var pattern = /(https:\/\/.*)\/revision/g;
+            var possImgSrc = pattern.exec(imageObj.imageSrc);
+            if(possImgSrc !== null){
+                imageObj.imageSrc = possImgSrc[1];
+            }  // will keep former image source if not found
+
         }else{
             imageObj.errorMessage = 'Could not find image.';
             imageObj.imageSrc = './resources/image_not_found.png';
@@ -715,13 +851,20 @@ function parseImageURL(response){
     return imageObj;
 }
 
-// HELPER METHODS
+// ***** HELPER METHODS *****
 
 /**
- * parse together data options to create query string for calls to wikia API
- * @param {string} titlesValue - title of the page to be searched for
- * @param {object} extraDataOptions - an object holding key value pairs for extra data options not standard to all call
- * @returns {string} query string to send to the wiki
+ * Summary: Parses together data options to create query string for calls
+ *    to wikia API.
+ * 
+ * @see encodeURIComponent
+ * 
+ * @param {string} titlesValue      Title of the page to be searched for.
+ * @param {object} extraDataOptions An object holding key value pairs for
+ *                                     extra data options not standard to 
+ *                                     all calls.
+ * 
+ * @returns {string} Query string to send to the wiki.
  */
 function constructQueryString(titlesValue, extraDataOptions){
     // base data incorporated in all calls to wikia API
@@ -749,19 +892,26 @@ function constructQueryString(titlesValue, extraDataOptions){
 }
 
 /**
- * Takes content from a wiki page and determines if it is a template page, a character disambiguation
- *   page, or a general disambiguation page.
- * Possible further options for page types exist.
- * @param {string} content - revision content from the wiki
- * @param {string} publisher - name of the publisher of comic. Used to determine regex pattern to use in disambiguation
+ * Summary: Determines page type based on wiki content.
+ * 
+ * Description: Takes content from a wiki page and determines if it is a 
+ *    template page, a character disambiguation page, or a general
+ *    disambiguation page. Possible further options for page types exist.
+ * 
+ * @see parseImageTitle
+ * @see parseDisambiguation
+ * 
+ * @param {string} content   Revision content from the wiki.
+ * @param {string} publisher Name of the publisher of comic. Used to determine regex pattern to use in disambiguation
+ * 
  * @returns {object} object with properties:
- *          {boolean} success - description of the whether the page's format could be discerned
- *          {string} pageType - type of page formatting either 'template', 'charDisambiguation' (character disambiguation), or 'disambiguation' (general disambiguation)            // look more into jsdocs to how to format this
- *          {string} templateType - used when pageType = 'template', describes the wiki's template that was used to create the page
- *          {string} imageTitle - used when pageType = 'template', title of the main image for the page
- *          {string} character - used when pageType = 'charDisambiguation', the name of the main character found
- *          {array} pages - used when pageType = 'disambiguation', array of objects (defined in the parseDisambiguation method)
- *          {string} errorMessage - message if call was unsuccessful
+ *           {boolean} success - description of the whether the page's format could be discerned
+ *           {string} pageType - type of page formatting either 'template', 'charDisambiguation' (character disambiguation), or 'disambiguation' (general disambiguation)            // look more into jsdocs to how to format this
+ *           {string} templateType - used when pageType = 'template', describes the wiki's template that was used to create the page
+ *           {string} imageTitle - used when pageType = 'template', title of the main image for the page
+ *           {string} character - used when pageType = 'charDisambiguation', the name of the main character found
+ *           {array} pages - used when pageType = 'disambiguation', array of objects (defined in the parseDisambiguation method)
+ *           {string} errorMessage - message if call was unsuccessful
  * 
  * NOTE: CONSIDER CHANGING PAGE TYPE TO TWO WORD TERMS FOR USE IN OTHER METHODS
  */
@@ -780,7 +930,9 @@ function determinePageFormat(content, publisher){
         formatObj.imageTitle = parseImageTitle(content);
     }else{
         // check if content is of type character disambiguation
-        var pattern = publisher === 'marvel' ? /Main Character\s*=\s\[\[([^\|\]]*)\|?.*/g : /MainPage\s*=\s?(.*)/g;
+           // first pattern marvel, second pattern DC
+        var pattern = publisher === 'marvel' ? /(?:main|Main Character)\s*=\s\[?\[?([^\|\]\n]*)/g : /MainPage\s*=\s?(.*)/g;   // attempt at parsing disambiguation pages
+
         var character = pattern.exec(content);
         if(character !== null){
             formatObj.pageType = 'charDisambiguation';
@@ -804,16 +956,22 @@ function determinePageFormat(content, publisher){
 }
 
 
-
-
 /**
- * Determines if a page can run a check for a debut comic based on the type of template the page is.
- * Types of templates that are exceptable to run checks for debut comics are Character, Team, 
- *   Organization, Location, Vehicle, Item, Race, Reality, and Storyline
- * Unexceptable types of templates are Comic, Event (because of different formatting), Television Episode, Marvel Staff, Image, Novel, and User Page
- * If further page templates are created this will need to be edited.
- * @param {string} templateType - type of 
- * @return {boolean} a Boolean description of whether we should run a check to find a debut comic
+ * Summary: Determines if a page can run a check for a debut comic based
+ *    on the type of template the page is.
+ * 
+ * Description: Logical test to see if page can run a check for debut comic 
+ *    based on template type returned from wiki. Types of templates that are 
+ *    exceptable to run checks for debut comics are Character, Team, 
+ *    Organization, Location, Vehicle, Item, Race, Reality, and Storyline. 
+ *    Unexceptable types of templates are Comic, Event (because of different 
+ *    formatting), Television Episode, Marvel Staff, Image, Novel, and User 
+ *    Page. If further page templates are created this will need to be edited.
+ * 
+ * @param {string} templateType Type of template the wiki page is formatted for.
+ * 
+ * @returns {boolean} A Boolean description of whether we should run a check 
+ *                       to find a debut comic.
  */
 function pageCanRunDebutCheck(templateType){
     if(templateType == 'Character' 
@@ -833,9 +991,22 @@ function pageCanRunDebutCheck(templateType){
 }
 
 /**
- * Check for debuts and display them if the exist
- * @param {string} content - content of the page queried from the wiki
- * @param {string} publisher - name of the publisher of comic. Used to determine which API to query
+ * Summary: Checks for debuts and display them if they exist.
+ * 
+ * Description: Takes returned content from the wiki, searches for debut info,
+ *    and creates card DOM elements to represent each debut. Searches wiki for 
+ *    debut comic. If no debut info is found, will display an error.
+ * 
+ * @see parseDebut
+ * @see createCard
+ * @see addTruncation
+ * @see addToolTipToTitle
+ * @see searchWikiForComic
+ * @see displayError
+ * 
+ * @param {string} content   Content of the page queried from the wiki.
+ * @param {string} publisher Name of the publisher of comic. Used to 
+ *                              determine which API to query.
  */
 function checkForDebuts(content, publisher){
     var debutInfo = parseDebut(content);
@@ -852,7 +1023,7 @@ function checkForDebuts(content, publisher){
             var mantle = (debutInfo.debutList[i].mantle !== null) ? debutInfo.debutList[i].mantle : '' ;
             var $card = createCard('debutEntry', mantle, debutInfo.debutList[i].issue);
             $entries.append($card);
-            // add tooltip, if necessary
+            // add truncation and tooltip, if necessary
             addTruncation($card);
             addToolTipToTitle($card);
             searchWikiForComic($card, publisher, debutInfo.debutList[i].issue);
@@ -863,11 +1034,17 @@ function checkForDebuts(content, publisher){
 }
 
 /**
- * attempt to insert a volume number (1) into the title string
- * returns null if it cannot find the pattern
- * NOTE: This method could be problematic because it always assumes a missing volume number implies volume 1
- * @param {string} title - original title of the issue checked
- * @returns {string} title of the issue with extra text related to volume number, or returns null
+ * Summary: Inserts volume number into the title string, if necessary.
+ * 
+ * Description: Attempts to insert a volume number (1) into the title string.
+ *    Returns null if it cannot find the pattern. **NOTE: This method could be 
+ *    problematic because it always assumes a missing volume number implies 
+ *    volume number of 1.
+ * 
+ * @param {string} title Original title of the issue checked.
+ * 
+ * @returns {string} Title of the issue with extra text related to volume 
+ *                      number, or returns null.
  */
 function addVolumeToIssue(title){
     var pattern = /.*Vol \d+.*/gi;
@@ -886,14 +1063,21 @@ function addVolumeToIssue(title){
             return null;
         }
     }
-
 }
 
 /**
- * Comics from X-Men Volume 1 are sometimes just listed (erroneously) as X-Men. This can lead to complications
- * where the correct issue is not retrieved. To remedy this when a comic is found with the fitting pattern
- * the words 'Vol 1' will be inserted to lead to the correct path.
- * @param {obj} debutObj 
+ * Summary: Standardizes a pattern to search the Marvel wiki for 
+ *    X-Men issues.
+ * 
+ * Description: Comics from X-Men Volume 1 are sometimes just listed (erroneously)
+ *    as X-Men. This can lead to complications where the correct issue is not
+ *    retrieved. To remedy this when a comic is found with the fitting pattern
+ *    the words 'Vol 1' will be inserted to lead to the correct path.
+ * 
+ * @param {object} debutObj Object with list of debuts.
+ * 
+ * @returns {object} Object with list of debuts now standardized for 
+ *                      X-Men titles.
  */
 function XMenStandardizer(debutObj){
     var pattern = /^(X-Men) (#?\d+)/i;
@@ -909,7 +1093,10 @@ function XMenStandardizer(debutObj){
 }
 
 /**
- * Empties DOM element containers
+ * Summary: Empties DOM element containers.
+ * 
+ * Descrption: Removes DOM elements related to or in the search path, any errors,
+ *    any elements in the info area, and elements in the debut area.
  */
 function clearResultsAndStatus(){
     $('#searchPath .col').empty();
@@ -924,8 +1111,9 @@ function clearResultsAndStatus(){
 }
 
 /**
- * Adds an error message to the list of error messages
- * @param {string} message - text of the error message to display
+ * Summary: Adds an error message to the list of error messages.
+ * 
+ * @param {string} message Text of the error message to display.
  */
 function displayError(message){
     var $errors = $('#errors');
@@ -941,11 +1129,16 @@ function displayError(message){
 
 
 /**
- * captures the strings of text of the breadcrumbs in the searchPath area and gathers them into an array
- * IDEA: add optional parameter to take an integer index of the last breadcrumb to be captured
- * if no stop index defined capture all
- * @param {integer} count - number of breadcrumbs (zero-based) to capture
- * @return {array} breadcrumbs - array of text strings from the breadcrumbs in the searchPath area
+ * Summary: Captures the strings of text of the breadcrumbs in the
+ *    searchPath area and gathers them into an array.
+ * 
+ * IDEA: Add optional parameter to take an integer index of the last breadcrumb 
+ *    to be captured if no stop index defined capture all.
+ * 
+ * @param {integer} count Number of breadcrumbs (zero-based) to capture.
+ * 
+ * @returns {array} Array of text strings from the breadcrumbs in the 
+ *                     searchPath area.
  */
 function captureBreadcrumbs(count){
     var breadcrumbs = [];
@@ -958,8 +1151,12 @@ function captureBreadcrumbs(count){
 }
 
 /**
- * Add array of breadcrumbs to the search path and adds event handlers to each one created
- * @param {array} arr - array of text strings forming the search path 
+ * Summary: Adds array of breadcrumbs to the search path and adds event
+ *    handlers to each one created.
+ * 
+ * @see breadcrumbClicked
+ * 
+ * @param {array} arr Array of text strings forming the search path.
  */
 function addPreviousBreadcrumbs(arr){
     for(var i = 0; i < arr.length; i++){
@@ -976,9 +1173,18 @@ function addPreviousBreadcrumbs(arr){
 }
 
 /**
- * Event handler for the clicking of breadcrumbs in the searchPath area.
- * If the final breadcrumb was not clicked, will initiate a new search based on the text of the breadcrumb clicked
- * @param {object} breadcrumb - DOM object clicked
+ * Summary: Reinitiates wiki query based on clicking of breadcrumbs.
+ * 
+ * Description: Event handler for the clicking of breadcrumbs in the searchPath 
+ *    area. If the final breadcrumb was not clicked, will initiate a new search
+ *    based on the text of the breadcrumb clicked.
+ * 
+ * @see captureBreadcrumbs
+ * @see clearResultsAndStatus
+ * @see addPreviousBreadcrumbs
+ * @see initialWikiQuery
+ * 
+ * @param {object} breadcrumb DOM object clicked.
  */
 function breadcrumbClicked(breadcrumb){
     if( $('#searchPath .breadcrumb').index(breadcrumb) !==  $('#searchPath .breadcrumb').length - 1 ){
@@ -994,8 +1200,9 @@ function breadcrumbClicked(breadcrumb){
 }
 
 /**
- * Will add a tooltip to the title area of a card if the text is truncated
- * @param {object} $card - DOM object representing card 
+ * Summary: Adds a tooltip to the title area of a card if the text is truncated.
+ * 
+ * @param {object} $card DOM object representing card.
  */
 function addToolTipToTitle($card){
     var $title = $card.find('.card-title');
@@ -1009,8 +1216,9 @@ function addToolTipToTitle($card){
 
 
 /**
- * Will add truncation class to 
- * @param {object} $card - DOM object representing card 
+ * Summary: Adds truncation class to card element.
+ * 
+ * @param {object} $card DOM object representing card.
  */
 function addTruncation($card){
     var $title = $card.find('.card-title');

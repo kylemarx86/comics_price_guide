@@ -1,0 +1,128 @@
+Team: Fantastic Four
+
+{{DisambiguationFull
+|logo          = [[File:Fantastic Four (2018) logo.png|300px|center]]
+|main_image    = Fantastic Four Vol 5 1 Marvel Comics 75th Anniversary Variant Textless.jpg
+|noimage       = No Image Team.jpg
+|main          = Fantastic Four (Earth-616)
+|main_name     = Fantastic Four
+|main_title    = 
+|description   = The '''[[Fantastic Four (Earth-616)|Fantastic Four]]''' are a team of adventurers and super-heroes. During an accident on an experimental rocket, they were all given fantastic powers through exposure to cosmic rays. Their original membership included the super-intelligent Reed Richards as '''[[Mister Fantastic|Mr. Fantastic]]''', his wife Sue Storm the '''[[Invisible Woman]]''', her brother Johnny Storm the '''[[Human Torch]]''' and Ben Grimm as the ever-lovin' blue-eyed '''[[Thing]]'''. This would expand to include many temporary members over the years. Located in [[New York City]], their headquarters is the [[Baxter Building]]. The ''Fantastic Four'' was created by [[Stan Lee]] and [[Jack Kirby]], first appearing in {{c|Fantastic Four #1}}. ([[1961]])
+
+|alternative1  = Four from the Fantastick
+|alternative2  = Fantastical Four
+|alternative3  = Ultimate Federalist Freedom Fighters
+|alternative4  = Megascale Metatalent Response Team Fantastic Four
+|alternative5  = Rocket Group
+|alternative6  = Fantastic Fur
+|alternative7  = Fantastical Four
+|alternative8  = Fatal Force
+|alternative9  = Fantastic Thors
+|alternative10 = X-Plorers
+|alternative11 = Four Fantastics
+|alternative12 = Femmetastic Four
+|alternative13 = Terrific Trio
+|alternative14 = 4 Inc
+|alternative15 = Les Quatres Fantastiques
+|alternative16 = Fantastic Four Consolidated
+
+|exclude1      = Fantastic Four (Mad Thinker's)
+|exclude2      = Fantastic Four (Clones)
+|exclude3      = Fantastic Four (Onslaught Reborn)
+|exclude4      = Fantastic Four (Uatu's creation)
+|exclude5      = Fantastic Four (Skrull
+|exclude6      = Fantastic Four (2099)
+
+|include1      = Fantastic Four (Earth-906); Fantastic Four (Earth-906).jpg
+|include2      = Fantastic Four (Earth-957); Ff 957.png
+|include3      = Fantastic Four (Earth-967)
+|include4      = Fantastic Five (Earth-982); Fantastic Four (Earth-982) Fantastic Five Vol 1 1.jpg
+|include5      = Fantastic Four (Earth-1018)
+|include6      = Fantastic Four (Earth-1037)
+|include7      = Fantastic Four (Earth-1189)
+|include8      = Fantastic Four (Earth-2600)
+|include9      = Fantastic Four (Earth-2841)
+|include10     = Fantastic Four (Earth-2992); Fantastic Four (Earth-2992).jpg
+|include11     = Fantastic Four (Earth-5012)
+|include12     = Fantastic Four (Earth-6232); Fantastic Four (Earth-6232).jpg
+|include13     = Fantastic Fur (Unknown Reality); Fantastic Fur (Earth-Unknown) from Spider-Man Annual Vol 3 1 001.jpg
+|include14     = Fantastic Three (Earth-8222); Fantastic Three (Earth-8222).jpg
+|include15     = Fantastic Four (Earth-8441); Fantastic Four (Earth-8441).jpg
+|include16     = Fantastic Four (Earth-8610); Fantastic Four (Earth-8610) Gates of What If.jpg
+|include17     = Fantastic Four (Earth-8861); Fantastic Four (Earth-8861).jpg
+|include18     = Fantastic Four (Earth-19121)
+|include19     = Fantastic Four (Earth-9009); Fantastic Four (Earth-9009).jpg
+|include20     = Fantastic Four (Earth-9011); Ff 9011.png
+|include21     = Fantastic Four (Earth-840645); Fantastic Four (Earth-840645).jpg
+|include22     = Fantastic Four (Earth-9590); Fantastic Four (Earth-9590).jpg
+|include23     = Fantastic Four (Earth-50116)
+|include24     = Fantastic Four (Earth-TRN009); Fantastic Four (Earth-TRN009) from Spider-Man Web of Shadows 001.jpg
+|include25     = Fantastic Four (Earth-30847); Fantastic Four (Earth-30847) from Marvel vs. Capcom 3 Fate of Two Worlds 0001.jpg
+|include26     = Fantastic Four (Earth-9871); Ff 9871.png
+|include27     = Fantastic Four (Earth-10051); Fantastic Four (Earth-10051) She-Hulk Sensational Vol 1 1.jpg
+|include28     = Fantastic Four (Earth-10995); Fantastic Four (Earth-10995) Spider-Man Heroes & Villains Collection Vol 1 13.jpg
+|include29     = Fantastic Four (Earth-11638)
+|include30     = Fantastic Four (Earth-8921)
+|include31     = Fantastic Four (Earth-14257); Fantastic Four (Earth-14257) from Amazing Spider-Man Vol 1 700.5.jpg
+|include32     = Fantastic Four (Earth-19725)
+|include33     = Fantastic Four (Earth-TRN665)
+|include34     = Fantastic Four (Earth-22025)
+|include35     = Fantastic Four (Earth-50810); Fantastic Four (Earth-50810) in Marvel MegaMorphs Doctor Octopus Vol 1 1 001.jpg
+|include36     = Fantastic Four (Earth-66209); Fantastic Four (Earth-66209) Mini Marvels Ultimate Collection Vol 1 1.jpg
+|include37     = Fantastic Four (Earth-TRN563); FF Season One Vol 1 1 Textless.jpg
+|include38     = Fantastic Four (Earth-77013); Fantastic Four (Earth-77013) Spider-Man Newspaper Strips.jpg
+|include39     = Fantastic Four (Earth-81156); Fantastic Four (Earth-81156) New Warriors Vol 4 20.jpg
+|include40     = Fantastic Four (Earth-90266); Fantastic Four (Earth-90266).jpg
+|include41     = Fantastic Four (Earth-91274)
+|include42     = Fantastic Four (Earth-92100); Fantastic Four (Earth-92100) What If Vol 2 42.jpg
+|include43     = Fantastic Four (Earth-92210); Fantastic Four (Earth-92210).jpg
+|include44     = Fantastic Four (Earth-11714)
+|include45     = Fantastic Four (Earth-96111)
+|include46     = Fantastic Four (Earth-96115)
+|include47     = Fantastic Four (Earth-200506); Fantastic Four (Earth-200506).jpg
+|include48     = Fantastic Four (Earth-10631)
+|include49     = Fantastic Four (Earth-200515)
+|include50     = Frightful Four (Earth-200781); Frightful Four (Earth-200781).jpg
+|include51     = 
+
+|includeComic1 = Fantastic Four (Unknown Reality); Fantastic Four (Earth-Unknown) from Amazing Spider-Man Vol 3 1 001.jpg
+|includeComic2 = Fantastic Four (Unknown Reality); Fantastic Four (Earth-Unknown) from Amazing Spider-Man Vol 5 36 0002.jpg
+|includeComic3 = 4 Inc (Earth-15164); 4 Inc (Earth-15164) from Nova Vol 4 33 0001.jpg
+
+| Others1      = Fantastic Four 2099; Fantastic Four (Uatu's creation) (Earth-928) from Fantastic Four 2099 Vol 1 2 Cover.jpg
+| Others2      = New Fantastic Four; Fantastic Four Vol 1 348 Textless.jpg
+| Others3      = [[Fantastic Four (Earth-65)|Fantastic Four<br/>(TV Show)]]; Fantastic Four (Earth-65) from Spider-Gwen Vol 2 7 001.png
+| Others4      = Fantastic Four, Inc. (Earth-616); Fantastic Four, Inc. (Earth-616) from Fantastic Four Vol 3 62 0001.jpg
+| Others5      = [[Fantastic Four (Clones) (Earth-616)|Fantastic Four clones]]; Fantastic Four (Clones) (Earth-616) from Fantastic Four Vol 1 328.jpg
+| Others6      = [[Fantastic Four (Mad Thinker's) (Earth-616)|Mad Thinker's Fantastic Four]]; Fantastic Four (Mad Thinker's) (Earth-616) from Marvel 2-In-One Vol 1 8 001.jpg
+| Others7      = [[Skrull Cows (Earth-616)|Skrull subversives]]; Avengers (Earth-616) and Skrull Cows (Earth-616) from Avengers Vol 1 93.jpg
+| Others8      = [[Fantastic Four (Skrull Zombies) (Earth-2149)|Skrull subversives]];  Fantastic Four (Skrull Zombies) (Earth-2149) from Black Panther Vol 4 29 001.jpg
+| Others9      = [[Fantastic Four (Skrulls) (Earth-50302)|Skrull subversives]]; Fantastic Four (Skrulls) (Earth-50302).jpg
+| Others10     = [[Fantastic Four (Skrulls) (Earth-99062)|Skrull subversives]]; Fantastic Four (Skrulls) (Earth-99062) Skrulls Vs. Power Pack Vol 1 2.jpg
+| Others11     = [[Fantastic Four (Robots) (Earth-TRN307)|Fantastic Four robots]]
+
+| Related1     = Fantastic Five; Fantastic Five (Earth-772) from What If Vol 2 1.jpg
+| Related2     = Fantastic Force; Fantastic Force Vol 2 1 Textless.jpg
+| Related3     = Fantastic Fur; Fantastic Fur from Porker 1.jpg
+| Related4     = Fantastic Three; Fantastic Three (Earth-616) from Moon Girl and Devil Dinosaur Vol 1 27 001.jpg
+| Related5     = Fearsome Four; Fearsome Four (Earth-58163) from Fantastic Four House of M Vol 1 3 001.jpg
+| Related6     = Future Foundation; FF Vol 2 16 Textless.jpg
+| Related7     = Frightful Four; Frightful Four (Earth-616) from Fantastic Four Vol 1 644 001.jpg
+| Related8     = Challengers of Doom (Earth-111); Earth-111 from Fantastic Four Vol 3 47 0001.jpg
+| Related9     = Fantastix (Earth-616); Fantastic Four Vol 6 4 Fantastix Variant Textless.jpg
+| Related10    = [[Four Fates (Eurth) (Earth-616)|Four Fates]]; Four Fates (Eurth) (Earth-616) from Avataars Covenant of the Shield Vol 1 2 0001.jpg
+| Related11    = [[Terrific Two (Warp World) (Earth-616)|Terrific Two]]; Terrific Two (Warp World) (Earth-616) from Infinity Wars Infinity Warps Vol 1 1 001.png
+| Related12    = [[Reuben Storm (Warp World) (Earth-616)|Wonderful One]]; Reuben Storm (Warp World) (Earth-616)from Secret Warps Iron Hammer Annual Vol 1 1 001.png
+| Related13    = Fantastic Fourteen (Earth-5421)
+| Related14    = Evil Twins (Earth-8311); Evil twins (Earth-8311) 1 (cut).jpg
+| Related15    = Challengers of the Fantastic (Earth-9602); Challengers of the Fantastic (Earth-9602) from Challengers of the Fantastic Vol 1 1 001.JPG
+| Related16    = [[Peter Porker (Earth-7231)|Fantastic Ham]]; Fantastic Ham from Ultimate Civil War Spider-Ham Vol 1 1 0001.jpg
+| Related17    = Finnigan's Four (Earth-9047); Finnigan's Four (Earth-9047) from What The-- Vol 1 18.jpg
+| Related18    = Fantastic Fifty-Four (Earth-16356)
+| Related19    = Fantastic Six (Earth-19725)
+| Related20    = Fantastic 4.0 (Earth-89771); Fantastic 4.0 (Earth-89771) from Franklin Richards Sons of Geniuses Vol 1 1 0001.jpg
+| Related21    = [[The Fantastic 400 (Earth-333333333)|Fantastic 400]]; The Fantastic 400 (Earth-33⅓) from Fantastic Four (UK) Vol 1 5 0001.jpg
+| Related22    = Terrific Three (Earth-TRN799)
+}}
+[[es:Fantastic Four]]
+[[it:Fantastici Quattro]]
